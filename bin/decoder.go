@@ -1,8 +1,17 @@
-// Copyright 2024 Teamgram Authors
+// Copyright (c) 2026 The Teamgram Authors (https://teamgram.net).
 //  All rights reserved.
 //
-// Author: Benqi (wubenqi@gmail.com)
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package bin
 
@@ -49,7 +58,7 @@ func (d *Decoder) Skip(n int) {
 
 // PeekClazzID returns next type id in Buffer, but does not consume it.
 func (d *Decoder) PeekClazzID() (uint32, error) {
-	if len(d.buf) < Size32 {
+	if len(d.buf) < WordLen {
 		return 0, io.ErrUnexpectedEOF
 	}
 	v := binary.LittleEndian.Uint32(d.buf)
@@ -75,11 +84,11 @@ func (d *Decoder) ClazzID() (uint32, error) {
 
 // Uint32 decodes unsigned 32-bit integer from Buffer.
 func (d *Decoder) Uint32() (uint32, error) {
-	v, err := d.PeekClazzID()
-	if err != nil {
-		return 0, err
+	if len(d.buf) < WordLen {
+		return 0, io.ErrUnexpectedEOF
 	}
-	d.buf = d.buf[Size32:]
+	v := binary.LittleEndian.Uint32(d.buf)
+	d.buf = d.buf[WordLen:]
 	return v, nil
 }
 
@@ -94,7 +103,7 @@ func (d *Decoder) Int64() (int64, error) {
 
 // Uint64 decodes 64-bit unsigned integer from Buffer.
 func (d *Decoder) Uint64() (uint64, error) {
-	const size = Size32 * 2
+	const size = WordLen * 2
 	if len(d.buf) < size {
 		return 0, io.ErrUnexpectedEOF
 	}
@@ -124,23 +133,23 @@ func (d *Decoder) ConsumeN(target []byte, n int) error {
 	return nil
 }
 
-// Bool decodes bare boolean from Buffer.
-func (d *Decoder) Bool() (bool, error) {
-	v, err := d.PeekClazzID()
-	if err != nil {
-		return false, err
-	}
-	switch v {
-	case ClazzID_boolTrue:
-		d.buf = d.buf[Size32:]
-		return true, nil
-	case ClazzID_boolFalse:
-		d.buf = d.buf[Size32:]
-		return false, nil
-	default:
-		return false, NewUnexpectedClazzID(v)
-	}
-}
+//// Bool decodes bare boolean from Buffer.
+//func (d *Decoder) Bool() (bool, error) {
+//	v, err := d.PeekClazzID()
+//	if err != nil {
+//		return false, err
+//	}
+//	switch v {
+//	case ClazzID_boolTrue:
+//		d.buf = d.buf[WordLen:]
+//		return true, nil
+//	case ClazzID_boolFalse:
+//		d.buf = d.buf[WordLen:]
+//		return false, nil
+//	default:
+//		return false, NewUnexpectedClazzID(v)
+//	}
+//}
 
 // ConsumeClazzID decodes type id from Buffer. If id differs from provided,
 // the *UnexpectedIDErr{ID: gotID} will be returned and buffer will be
@@ -153,27 +162,27 @@ func (d *Decoder) ConsumeClazzID(id uint32) error {
 	if v != id {
 		return NewUnexpectedClazzID(v)
 	}
-	d.buf = d.buf[Size32:]
+	d.buf = d.buf[WordLen:]
 	return nil
 }
 
-// VectorHeader decodes vector length from Buffer.
-func (d *Decoder) VectorHeader() (int, error) {
-	if err := d.ConsumeClazzID(ClazzID_vector); err != nil {
-		return 0, err
-	}
-	n, err := d.Int()
-	if err != nil {
-		return 0, err
-	}
-	if n < 0 {
-		return 0, &InvalidLengthError{
-			Length: int(n),
-			Where:  "vector",
-		}
-	}
-	return int(n), nil
-}
+//// VectorHeader decodes vector length from Buffer.
+//func (d *Decoder) VectorHeader() (int, error) {
+//	if err := d.ConsumeClazzID(ClazzID_vector); err != nil {
+//		return 0, err
+//	}
+//	n, err := d.Int()
+//	if err != nil {
+//		return 0, err
+//	}
+//	if n < 0 {
+//		return 0, &InvalidLengthError{
+//			Length: int(n),
+//			Where:  "vector",
+//		}
+//	}
+//	return int(n), nil
+//}
 
 // String decodes string from Buffer.
 func (d *Decoder) String() (string, error) {

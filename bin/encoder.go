@@ -1,13 +1,23 @@
-// Copyright 2024 Teamgram Authors
+// Copyright (c) 2026 The Teamgram Authors (https://teamgram.net).
 //  All rights reserved.
 //
-// Author: Benqi (wubenqi@gmail.com)
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package bin
 
 import (
 	"math"
+	"math/big"
 
 	"github.com/valyala/bytebufferpool"
 )
@@ -81,11 +91,11 @@ func (e *Encoder) PutBytes(v []byte) {
 	e.encodeBytes(v)
 }
 
-// PutVectorHeader serializes vector header with provided length.
-func (e *Encoder) PutVectorHeader(length int) {
-	e.PutClazzID(ClazzID_vector)
-	e.PutInt32(int32(length))
-}
+//// PutVectorHeader serializes vector header with provided length.
+//func (e *Encoder) PutVectorHeader(length int) {
+//	e.PutClazzID(ClazzID_vector)
+//	e.PutInt32(int32(length))
+//}
 
 // PutInt serializes v as signed 32-bit integer.
 //
@@ -94,15 +104,15 @@ func (e *Encoder) PutInt(v int) {
 	e.PutUint32(uint32(v))
 }
 
-// PutBool serializes bare boolean.
-func (e *Encoder) PutBool(v bool) {
-	switch v {
-	case true:
-		e.PutClazzID(ClazzID_boolTrue)
-	case false:
-		e.PutClazzID(ClazzID_boolFalse)
-	}
-}
+//// PutBool serializes bare boolean.
+//func (e *Encoder) PutBool(v bool) {
+//	switch v {
+//	case true:
+//		e.PutClazzID(ClazzID_boolTrue)
+//	case false:
+//		e.PutClazzID(ClazzID_boolFalse)
+//	}
+//}
 
 // PutUint16 serializes unsigned 16-bit integer.
 func (e *Encoder) PutUint16(v uint16) {
@@ -168,6 +178,10 @@ func (e *Encoder) PutInt128(v Int128) {
 // PutInt256 serializes v as 256-bit signed integer.
 func (e *Encoder) PutInt256(v Int256) {
 	_, _ = e.w.Write(v[:])
+}
+
+func (e *Encoder) BigInt(s *big.Int) {
+	e.PutBytes(s.Bytes())
 }
 
 func (e *Encoder) Reset() {

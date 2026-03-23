@@ -1,26 +1,30 @@
-// Copyright 2021 CloudWeGo Authors
+// Copyright (c) 2026 The Teamgram Authors (https://teamgram.net).
+//  All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//   http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 package codec
 
 import (
 	"context"
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/teamgram/proto/v2/bin"
+	"github.com/teamgram/proto/v2/iface"
 
 	"github.com/bytedance/gopkg/lang/dirtmake"
 	"github.com/cloudwego/kitex/pkg/klog"
@@ -52,12 +56,17 @@ func (jc *ZRpcCodec) Encode(ctx context.Context, message remote.Message, out rem
 	default:
 		validData = message.Data()
 	}
-	payload, err := json.Marshal(validData)
-	if err != nil {
-		return perrors.NewProtocolError(fmt.Errorf("json encode, marshal payload failed: %w", err))
-	}
+
+	x := bin.NewEncoder()
+	defer x.End()
+	_ = validData.(iface.TLObject).Encode(x, 0)
+	payload := x.Bytes()
+	//payload, err := json.Marshal(validData)
+	//if err != nil {
+	//	return perrors.NewProtocolError(fmt.Errorf("json encode, marshal payload failed: %w", err))
+	//}
 	if jc.printDebugInfo {
-		klog.Infof("encoded payload: %s\n", payload)
+		klog.Infof("encoded payload: %s\n", hex.EncodeToString(payload))
 	}
 	data := &Meta{
 		ServiceName: message.RPCInfo().Invocation().ServiceName(),
@@ -103,14 +112,14 @@ func (jc *ZRpcCodec) Decode(ctx context.Context, message remote.Message, in remo
 	if err = codec.SetOrCheckSeqID(data.SeqID, message); err != nil {
 		return err
 	}
-	if err = codec.SetOrCheckMethodName(data.MethodName, message); err != nil {
+	if err = codec.SetOrCheckMethodName(ctx, data.MethodName, message); err != nil {
 		return err
 	}
 	if err = codec.NewDataIfNeeded(data.MethodName, message); err != nil {
 		return err
 	}
 	if jc.printDebugInfo {
-		klog.Infof("encoded payload: %s\n", data.Payload)
+		klog.Infof("encoded payload: %s\n", hex.EncodeToString(data.Payload))
 	}
 	if remote.MessageType(data.MsgType) == remote.Exception {
 		var exception Exception
@@ -120,7 +129,12 @@ func (jc *ZRpcCodec) Decode(ctx context.Context, message remote.Message, in remo
 		}
 		return exception
 	}
-	err = json.Unmarshal(data.Payload, message.Data())
+
+	d := bin.NewDecoder(data.Payload)
+	// data2, err = iface.DecodeObject(d)
+	err = message.Data().(iface.TLObject).Decode(d)
+
+	//err = json.Unmarshal(data.Payload, message.Data())
 	if err != nil {
 		return perrors.NewProtocolError(fmt.Errorf("json decode, unmarshal payload failed: %w", err))
 	}
@@ -128,5 +142,5 @@ func (jc *ZRpcCodec) Decode(ctx context.Context, message remote.Message, in remo
 }
 
 func (jc *ZRpcCodec) Name() string {
-	return "JSON"
+	return "ZRPC"
 }
