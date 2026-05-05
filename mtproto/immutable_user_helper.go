@@ -340,6 +340,14 @@ func (m *ImmutableUser) ToUnsafeUser(selfUser *ImmutableUser) *User {
 		BotActiveUsers:               m.BotActiveUsers(),
 	}).To_User()
 
+	if len(m.Usernames()) > 1 {
+		user.Username = nil
+		user.Usernames = m.Usernames()
+	} else {
+		user.Username = MakeFlagsString(m.Username())
+		user.Usernames = nil
+	}
+
 	if m.IsBot() {
 		user.Photo = m.ProfilePhoto()
 		user.Status = nil
@@ -392,14 +400,6 @@ func (m *ImmutableUser) ToUnsafeUser(selfUser *ImmutableUser) *User {
 
 	//// TODO: check stories_unavailable
 	// user.StoriesUnavailable = false
-
-	if len(m.Usernames()) > 1 {
-		user.Username = nil
-		user.Usernames = m.Usernames()
-	} else {
-		user.Username = MakeFlagsString(m.Username())
-		user.Usernames = nil
-	}
 
 	return user
 }
@@ -583,6 +583,14 @@ func (m *ImmutableUser) ToUser(selfUserId int64) *User {
 		BotActiveUsers:               m.BotActiveUsers(),
 	}).To_User()
 
+	if len(m.Usernames()) > 1 {
+		user.Username = nil
+		user.Usernames = m.Usernames()
+	} else {
+		user.Username = MakeFlagsString(m.Username())
+		user.Usernames = nil
+	}
+
 	if m.IsBot() {
 		user.Photo = m.ProfilePhoto()
 		user.Status = nil
@@ -620,14 +628,6 @@ func (m *ImmutableUser) ToUser(selfUserId int64) *User {
 
 	// TODO: check stories_unavailable
 	// user.StoriesUnavailable = false
-
-	if len(m.Usernames()) > 1 {
-		user.Username = nil
-		user.Usernames = m.Usernames()
-	} else {
-		user.Username = MakeFlagsString(m.Username())
-		user.Usernames = nil
-	}
 
 	return user
 }
