@@ -3590,6 +3590,9 @@ const (
 	RPCBots_BotsSetBotInfo_FullMethodName         = "/mtproto.RPCBots/bots_setBotInfo"
 	RPCBots_BotsGetBotInfoDCD914FD_FullMethodName = "/mtproto.RPCBots/bots_getBotInfoDCD914FD"
 	RPCBots_BotsGetAdminedBots_FullMethodName     = "/mtproto.RPCBots/bots_getAdminedBots"
+	RPCBots_BotsCheckUsername_FullMethodName      = "/mtproto.RPCBots/bots_checkUsername"
+	RPCBots_BotsCreateBot_FullMethodName          = "/mtproto.RPCBots/bots_createBot"
+	RPCBots_BotsExportBotToken_FullMethodName     = "/mtproto.RPCBots/bots_exportBotToken"
 	RPCBots_BotsGetBotInfo75EC12E6_FullMethodName = "/mtproto.RPCBots/bots_getBotInfo75EC12E6"
 )
 
@@ -3603,6 +3606,9 @@ type RPCBotsClient interface {
 	BotsSetBotInfo(ctx context.Context, in *TLBotsSetBotInfo, opts ...grpc.CallOption) (*Bool, error)
 	BotsGetBotInfoDCD914FD(ctx context.Context, in *TLBotsGetBotInfoDCD914FD, opts ...grpc.CallOption) (*Bots_BotInfo, error)
 	BotsGetAdminedBots(ctx context.Context, in *TLBotsGetAdminedBots, opts ...grpc.CallOption) (*Vector_User, error)
+	BotsCheckUsername(ctx context.Context, in *TLBotsCheckUsername, opts ...grpc.CallOption) (*Bool, error)
+	BotsCreateBot(ctx context.Context, in *TLBotsCreateBot, opts ...grpc.CallOption) (*User, error)
+	BotsExportBotToken(ctx context.Context, in *TLBotsExportBotToken, opts ...grpc.CallOption) (*Bots_ExportedBotToken, error)
 	BotsGetBotInfo75EC12E6(ctx context.Context, in *TLBotsGetBotInfo75EC12E6, opts ...grpc.CallOption) (*Vector_String, error)
 }
 
@@ -3674,6 +3680,36 @@ func (c *rPCBotsClient) BotsGetAdminedBots(ctx context.Context, in *TLBotsGetAdm
 	return out, nil
 }
 
+func (c *rPCBotsClient) BotsCheckUsername(ctx context.Context, in *TLBotsCheckUsername, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCBots_BotsCheckUsername_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCBotsClient) BotsCreateBot(ctx context.Context, in *TLBotsCreateBot, opts ...grpc.CallOption) (*User, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(User)
+	err := c.cc.Invoke(ctx, RPCBots_BotsCreateBot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCBotsClient) BotsExportBotToken(ctx context.Context, in *TLBotsExportBotToken, opts ...grpc.CallOption) (*Bots_ExportedBotToken, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bots_ExportedBotToken)
+	err := c.cc.Invoke(ctx, RPCBots_BotsExportBotToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCBotsClient) BotsGetBotInfo75EC12E6(ctx context.Context, in *TLBotsGetBotInfo75EC12E6, opts ...grpc.CallOption) (*Vector_String, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Vector_String)
@@ -3694,6 +3730,9 @@ type RPCBotsServer interface {
 	BotsSetBotInfo(context.Context, *TLBotsSetBotInfo) (*Bool, error)
 	BotsGetBotInfoDCD914FD(context.Context, *TLBotsGetBotInfoDCD914FD) (*Bots_BotInfo, error)
 	BotsGetAdminedBots(context.Context, *TLBotsGetAdminedBots) (*Vector_User, error)
+	BotsCheckUsername(context.Context, *TLBotsCheckUsername) (*Bool, error)
+	BotsCreateBot(context.Context, *TLBotsCreateBot) (*User, error)
+	BotsExportBotToken(context.Context, *TLBotsExportBotToken) (*Bots_ExportedBotToken, error)
 	BotsGetBotInfo75EC12E6(context.Context, *TLBotsGetBotInfo75EC12E6) (*Vector_String, error)
 }
 
@@ -3721,6 +3760,15 @@ func (UnimplementedRPCBotsServer) BotsGetBotInfoDCD914FD(context.Context, *TLBot
 }
 func (UnimplementedRPCBotsServer) BotsGetAdminedBots(context.Context, *TLBotsGetAdminedBots) (*Vector_User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsGetAdminedBots not implemented")
+}
+func (UnimplementedRPCBotsServer) BotsCheckUsername(context.Context, *TLBotsCheckUsername) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsCheckUsername not implemented")
+}
+func (UnimplementedRPCBotsServer) BotsCreateBot(context.Context, *TLBotsCreateBot) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsCreateBot not implemented")
+}
+func (UnimplementedRPCBotsServer) BotsExportBotToken(context.Context, *TLBotsExportBotToken) (*Bots_ExportedBotToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsExportBotToken not implemented")
 }
 func (UnimplementedRPCBotsServer) BotsGetBotInfo75EC12E6(context.Context, *TLBotsGetBotInfo75EC12E6) (*Vector_String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsGetBotInfo75EC12E6 not implemented")
@@ -3853,6 +3901,60 @@ func _RPCBots_BotsGetAdminedBots_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCBots_BotsCheckUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsCheckUsername)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCBotsServer).BotsCheckUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCBots_BotsCheckUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCBotsServer).BotsCheckUsername(ctx, req.(*TLBotsCheckUsername))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCBots_BotsCreateBot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsCreateBot)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCBotsServer).BotsCreateBot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCBots_BotsCreateBot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCBotsServer).BotsCreateBot(ctx, req.(*TLBotsCreateBot))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCBots_BotsExportBotToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsExportBotToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCBotsServer).BotsExportBotToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCBots_BotsExportBotToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCBotsServer).BotsExportBotToken(ctx, req.(*TLBotsExportBotToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCBots_BotsGetBotInfo75EC12E6_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLBotsGetBotInfo75EC12E6)
 	if err := dec(in); err != nil {
@@ -3901,6 +4003,18 @@ var RPCBots_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "bots_getAdminedBots",
 			Handler:    _RPCBots_BotsGetAdminedBots_Handler,
+		},
+		{
+			MethodName: "bots_checkUsername",
+			Handler:    _RPCBots_BotsCheckUsername_Handler,
+		},
+		{
+			MethodName: "bots_createBot",
+			Handler:    _RPCBots_BotsCreateBot_Handler,
+		},
+		{
+			MethodName: "bots_exportBotToken",
+			Handler:    _RPCBots_BotsExportBotToken_Handler,
 		},
 		{
 			MethodName: "bots_getBotInfo75EC12E6",
@@ -19893,6 +20007,9 @@ const (
 	RPCMessages_MessagesSearchSentMedia_FullMethodName           = "/mtproto.RPCMessages/messages_searchSentMedia"
 	RPCMessages_MessagesGetOutboxReadDate_FullMethodName         = "/mtproto.RPCMessages/messages_getOutboxReadDate"
 	RPCMessages_MessagesSummarizeText_FullMethodName             = "/mtproto.RPCMessages/messages_summarizeText"
+	RPCMessages_MessagesComposeMessageWithAI_FullMethodName      = "/mtproto.RPCMessages/messages_composeMessageWithAI"
+	RPCMessages_MessagesReportReadMetrics_FullMethodName         = "/mtproto.RPCMessages/messages_reportReadMetrics"
+	RPCMessages_MessagesReportMusicListen_FullMethodName         = "/mtproto.RPCMessages/messages_reportMusicListen"
 	RPCMessages_ChannelsGetSendAs_FullMethodName                 = "/mtproto.RPCMessages/channels_getSendAs"
 	RPCMessages_ChannelsSearchPosts_FullMethodName               = "/mtproto.RPCMessages/channels_searchPosts"
 	RPCMessages_ChannelsCheckSearchPostsFlood_FullMethodName     = "/mtproto.RPCMessages/channels_checkSearchPostsFlood"
@@ -19931,6 +20048,9 @@ type RPCMessagesClient interface {
 	MessagesSearchSentMedia(ctx context.Context, in *TLMessagesSearchSentMedia, opts ...grpc.CallOption) (*Messages_Messages, error)
 	MessagesGetOutboxReadDate(ctx context.Context, in *TLMessagesGetOutboxReadDate, opts ...grpc.CallOption) (*OutboxReadDate, error)
 	MessagesSummarizeText(ctx context.Context, in *TLMessagesSummarizeText, opts ...grpc.CallOption) (*TextWithEntities, error)
+	MessagesComposeMessageWithAI(ctx context.Context, in *TLMessagesComposeMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedMessageWithAI, error)
+	MessagesReportReadMetrics(ctx context.Context, in *TLMessagesReportReadMetrics, opts ...grpc.CallOption) (*Bool, error)
+	MessagesReportMusicListen(ctx context.Context, in *TLMessagesReportMusicListen, opts ...grpc.CallOption) (*Bool, error)
 	ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(ctx context.Context, in *TLChannelsSearchPosts, opts ...grpc.CallOption) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(ctx context.Context, in *TLChannelsCheckSearchPostsFlood, opts ...grpc.CallOption) (*SearchPostsFlood, error)
@@ -20234,6 +20354,36 @@ func (c *rPCMessagesClient) MessagesSummarizeText(ctx context.Context, in *TLMes
 	return out, nil
 }
 
+func (c *rPCMessagesClient) MessagesComposeMessageWithAI(ctx context.Context, in *TLMessagesComposeMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedMessageWithAI, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_ComposedMessageWithAI)
+	err := c.cc.Invoke(ctx, RPCMessages_MessagesComposeMessageWithAI_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMessagesClient) MessagesReportReadMetrics(ctx context.Context, in *TLMessagesReportReadMetrics, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCMessages_MessagesReportReadMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMessagesClient) MessagesReportMusicListen(ctx context.Context, in *TLMessagesReportMusicListen, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCMessages_MessagesReportMusicListen_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCMessagesClient) ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Channels_SendAsPeers)
@@ -20297,6 +20447,9 @@ type RPCMessagesServer interface {
 	MessagesSearchSentMedia(context.Context, *TLMessagesSearchSentMedia) (*Messages_Messages, error)
 	MessagesGetOutboxReadDate(context.Context, *TLMessagesGetOutboxReadDate) (*OutboxReadDate, error)
 	MessagesSummarizeText(context.Context, *TLMessagesSummarizeText) (*TextWithEntities, error)
+	MessagesComposeMessageWithAI(context.Context, *TLMessagesComposeMessageWithAI) (*Messages_ComposedMessageWithAI, error)
+	MessagesReportReadMetrics(context.Context, *TLMessagesReportReadMetrics) (*Bool, error)
+	MessagesReportMusicListen(context.Context, *TLMessagesReportMusicListen) (*Bool, error)
 	ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(context.Context, *TLChannelsSearchPosts) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(context.Context, *TLChannelsCheckSearchPostsFlood) (*SearchPostsFlood, error)
@@ -20395,6 +20548,15 @@ func (UnimplementedRPCMessagesServer) MessagesGetOutboxReadDate(context.Context,
 }
 func (UnimplementedRPCMessagesServer) MessagesSummarizeText(context.Context, *TLMessagesSummarizeText) (*TextWithEntities, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesSummarizeText not implemented")
+}
+func (UnimplementedRPCMessagesServer) MessagesComposeMessageWithAI(context.Context, *TLMessagesComposeMessageWithAI) (*Messages_ComposedMessageWithAI, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesComposeMessageWithAI not implemented")
+}
+func (UnimplementedRPCMessagesServer) MessagesReportReadMetrics(context.Context, *TLMessagesReportReadMetrics) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesReportReadMetrics not implemented")
+}
+func (UnimplementedRPCMessagesServer) MessagesReportMusicListen(context.Context, *TLMessagesReportMusicListen) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesReportMusicListen not implemented")
 }
 func (UnimplementedRPCMessagesServer) ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsGetSendAs not implemented")
@@ -20947,6 +21109,60 @@ func _RPCMessages_MessagesSummarizeText_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMessages_MessagesComposeMessageWithAI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesComposeMessageWithAI)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMessagesServer).MessagesComposeMessageWithAI(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMessages_MessagesComposeMessageWithAI_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMessagesServer).MessagesComposeMessageWithAI(ctx, req.(*TLMessagesComposeMessageWithAI))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMessages_MessagesReportReadMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesReportReadMetrics)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMessagesServer).MessagesReportReadMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMessages_MessagesReportReadMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMessagesServer).MessagesReportReadMetrics(ctx, req.(*TLMessagesReportReadMetrics))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMessages_MessagesReportMusicListen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesReportMusicListen)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMessagesServer).MessagesReportMusicListen(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMessages_MessagesReportMusicListen_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMessagesServer).MessagesReportMusicListen(ctx, req.(*TLMessagesReportMusicListen))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCMessages_ChannelsGetSendAs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLChannelsGetSendAs)
 	if err := dec(in); err != nil {
@@ -21125,6 +21341,18 @@ var RPCMessages_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCMessages_MessagesSummarizeText_Handler,
 		},
 		{
+			MethodName: "messages_composeMessageWithAI",
+			Handler:    _RPCMessages_MessagesComposeMessageWithAI_Handler,
+		},
+		{
+			MethodName: "messages_reportReadMetrics",
+			Handler:    _RPCMessages_MessagesReportReadMetrics_Handler,
+		},
+		{
+			MethodName: "messages_reportMusicListen",
+			Handler:    _RPCMessages_MessagesReportMusicListen_Handler,
+		},
+		{
 			MethodName: "channels_getSendAs",
 			Handler:    _RPCMessages_ChannelsGetSendAs_Handler,
 		},
@@ -21153,6 +21381,8 @@ const (
 	RPCMiniBotApps_BotsAllowSendMessage_FullMethodName                 = "/mtproto.RPCMiniBotApps/bots_allowSendMessage"
 	RPCMiniBotApps_BotsInvokeWebViewCustomMethod_FullMethodName        = "/mtproto.RPCMiniBotApps/bots_invokeWebViewCustomMethod"
 	RPCMiniBotApps_BotsCheckDownloadFileParams_FullMethodName          = "/mtproto.RPCMiniBotApps/bots_checkDownloadFileParams"
+	RPCMiniBotApps_BotsRequestWebViewButton_FullMethodName             = "/mtproto.RPCMiniBotApps/bots_requestWebViewButton"
+	RPCMiniBotApps_BotsGetRequestedWebViewButton_FullMethodName        = "/mtproto.RPCMiniBotApps/bots_getRequestedWebViewButton"
 	RPCMiniBotApps_MessagesRequestSimpleWebView1A46500A_FullMethodName = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView1A46500A"
 	RPCMiniBotApps_MessagesRequestAppWebView8C5A3B3C_FullMethodName    = "/mtproto.RPCMiniBotApps/messages_requestAppWebView8C5A3B3C"
 	RPCMiniBotApps_MessagesRequestSimpleWebView299BEC8E_FullMethodName = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView299BEC8E"
@@ -21174,6 +21404,8 @@ type RPCMiniBotAppsClient interface {
 	BotsAllowSendMessage(ctx context.Context, in *TLBotsAllowSendMessage, opts ...grpc.CallOption) (*Updates, error)
 	BotsInvokeWebViewCustomMethod(ctx context.Context, in *TLBotsInvokeWebViewCustomMethod, opts ...grpc.CallOption) (*DataJSON, error)
 	BotsCheckDownloadFileParams(ctx context.Context, in *TLBotsCheckDownloadFileParams, opts ...grpc.CallOption) (*Bool, error)
+	BotsRequestWebViewButton(ctx context.Context, in *TLBotsRequestWebViewButton, opts ...grpc.CallOption) (*Bots_RequestedButton, error)
+	BotsGetRequestedWebViewButton(ctx context.Context, in *TLBotsGetRequestedWebViewButton, opts ...grpc.CallOption) (*KeyboardButton, error)
 	MessagesRequestSimpleWebView1A46500A(ctx context.Context, in *TLMessagesRequestSimpleWebView1A46500A, opts ...grpc.CallOption) (*SimpleWebViewResult, error)
 	MessagesRequestAppWebView8C5A3B3C(ctx context.Context, in *TLMessagesRequestAppWebView8C5A3B3C, opts ...grpc.CallOption) (*AppWebViewResult, error)
 	MessagesRequestSimpleWebView299BEC8E(ctx context.Context, in *TLMessagesRequestSimpleWebView299BEC8E, opts ...grpc.CallOption) (*SimpleWebViewResult, error)
@@ -21298,6 +21530,26 @@ func (c *rPCMiniBotAppsClient) BotsCheckDownloadFileParams(ctx context.Context, 
 	return out, nil
 }
 
+func (c *rPCMiniBotAppsClient) BotsRequestWebViewButton(ctx context.Context, in *TLBotsRequestWebViewButton, opts ...grpc.CallOption) (*Bots_RequestedButton, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bots_RequestedButton)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_BotsRequestWebViewButton_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) BotsGetRequestedWebViewButton(ctx context.Context, in *TLBotsGetRequestedWebViewButton, opts ...grpc.CallOption) (*KeyboardButton, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(KeyboardButton)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_BotsGetRequestedWebViewButton_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCMiniBotAppsClient) MessagesRequestSimpleWebView1A46500A(ctx context.Context, in *TLMessagesRequestSimpleWebView1A46500A, opts ...grpc.CallOption) (*SimpleWebViewResult, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SimpleWebViewResult)
@@ -21353,6 +21605,8 @@ type RPCMiniBotAppsServer interface {
 	BotsAllowSendMessage(context.Context, *TLBotsAllowSendMessage) (*Updates, error)
 	BotsInvokeWebViewCustomMethod(context.Context, *TLBotsInvokeWebViewCustomMethod) (*DataJSON, error)
 	BotsCheckDownloadFileParams(context.Context, *TLBotsCheckDownloadFileParams) (*Bool, error)
+	BotsRequestWebViewButton(context.Context, *TLBotsRequestWebViewButton) (*Bots_RequestedButton, error)
+	BotsGetRequestedWebViewButton(context.Context, *TLBotsGetRequestedWebViewButton) (*KeyboardButton, error)
 	MessagesRequestSimpleWebView1A46500A(context.Context, *TLMessagesRequestSimpleWebView1A46500A) (*SimpleWebViewResult, error)
 	MessagesRequestAppWebView8C5A3B3C(context.Context, *TLMessagesRequestAppWebView8C5A3B3C) (*AppWebViewResult, error)
 	MessagesRequestSimpleWebView299BEC8E(context.Context, *TLMessagesRequestSimpleWebView299BEC8E) (*SimpleWebViewResult, error)
@@ -21398,6 +21652,12 @@ func (UnimplementedRPCMiniBotAppsServer) BotsInvokeWebViewCustomMethod(context.C
 }
 func (UnimplementedRPCMiniBotAppsServer) BotsCheckDownloadFileParams(context.Context, *TLBotsCheckDownloadFileParams) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsCheckDownloadFileParams not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) BotsRequestWebViewButton(context.Context, *TLBotsRequestWebViewButton) (*Bots_RequestedButton, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsRequestWebViewButton not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) BotsGetRequestedWebViewButton(context.Context, *TLBotsGetRequestedWebViewButton) (*KeyboardButton, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsGetRequestedWebViewButton not implemented")
 }
 func (UnimplementedRPCMiniBotAppsServer) MessagesRequestSimpleWebView1A46500A(context.Context, *TLMessagesRequestSimpleWebView1A46500A) (*SimpleWebViewResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesRequestSimpleWebView1A46500A not implemented")
@@ -21629,6 +21889,42 @@ func _RPCMiniBotApps_BotsCheckDownloadFileParams_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMiniBotApps_BotsRequestWebViewButton_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsRequestWebViewButton)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).BotsRequestWebViewButton(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_BotsRequestWebViewButton_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).BotsRequestWebViewButton(ctx, req.(*TLBotsRequestWebViewButton))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_BotsGetRequestedWebViewButton_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsGetRequestedWebViewButton)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).BotsGetRequestedWebViewButton(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_BotsGetRequestedWebViewButton_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).BotsGetRequestedWebViewButton(ctx, req.(*TLBotsGetRequestedWebViewButton))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCMiniBotApps_MessagesRequestSimpleWebView1A46500A_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLMessagesRequestSimpleWebView1A46500A)
 	if err := dec(in); err != nil {
@@ -21751,6 +22047,14 @@ var RPCMiniBotApps_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "bots_checkDownloadFileParams",
 			Handler:    _RPCMiniBotApps_BotsCheckDownloadFileParams_Handler,
+		},
+		{
+			MethodName: "bots_requestWebViewButton",
+			Handler:    _RPCMiniBotApps_BotsRequestWebViewButton_Handler,
+		},
+		{
+			MethodName: "bots_getRequestedWebViewButton",
+			Handler:    _RPCMiniBotApps_BotsGetRequestedWebViewButton_Handler,
 		},
 		{
 			MethodName: "messages_requestSimpleWebView1A46500A",
@@ -24018,9 +24322,13 @@ var RPCPayments_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCPolls_MessagesSendVote_FullMethodName       = "/mtproto.RPCPolls/messages_sendVote"
-	RPCPolls_MessagesGetPollResults_FullMethodName = "/mtproto.RPCPolls/messages_getPollResults"
-	RPCPolls_MessagesGetPollVotes_FullMethodName   = "/mtproto.RPCPolls/messages_getPollVotes"
+	RPCPolls_MessagesSendVote_FullMethodName           = "/mtproto.RPCPolls/messages_sendVote"
+	RPCPolls_MessagesGetPollResults_FullMethodName     = "/mtproto.RPCPolls/messages_getPollResults"
+	RPCPolls_MessagesGetPollVotes_FullMethodName       = "/mtproto.RPCPolls/messages_getPollVotes"
+	RPCPolls_MessagesAddPollAnswer_FullMethodName      = "/mtproto.RPCPolls/messages_addPollAnswer"
+	RPCPolls_MessagesDeletePollAnswer_FullMethodName   = "/mtproto.RPCPolls/messages_deletePollAnswer"
+	RPCPolls_MessagesGetUnreadPollVotes_FullMethodName = "/mtproto.RPCPolls/messages_getUnreadPollVotes"
+	RPCPolls_MessagesReadPollVotes_FullMethodName      = "/mtproto.RPCPolls/messages_readPollVotes"
 )
 
 // RPCPollsClient is the client API for RPCPolls service.
@@ -24030,6 +24338,10 @@ type RPCPollsClient interface {
 	MessagesSendVote(ctx context.Context, in *TLMessagesSendVote, opts ...grpc.CallOption) (*Updates, error)
 	MessagesGetPollResults(ctx context.Context, in *TLMessagesGetPollResults, opts ...grpc.CallOption) (*Updates, error)
 	MessagesGetPollVotes(ctx context.Context, in *TLMessagesGetPollVotes, opts ...grpc.CallOption) (*Messages_VotesList, error)
+	MessagesAddPollAnswer(ctx context.Context, in *TLMessagesAddPollAnswer, opts ...grpc.CallOption) (*Updates, error)
+	MessagesDeletePollAnswer(ctx context.Context, in *TLMessagesDeletePollAnswer, opts ...grpc.CallOption) (*Updates, error)
+	MessagesGetUnreadPollVotes(ctx context.Context, in *TLMessagesGetUnreadPollVotes, opts ...grpc.CallOption) (*Messages_Messages, error)
+	MessagesReadPollVotes(ctx context.Context, in *TLMessagesReadPollVotes, opts ...grpc.CallOption) (*Messages_AffectedHistory, error)
 }
 
 type rPCPollsClient struct {
@@ -24070,6 +24382,46 @@ func (c *rPCPollsClient) MessagesGetPollVotes(ctx context.Context, in *TLMessage
 	return out, nil
 }
 
+func (c *rPCPollsClient) MessagesAddPollAnswer(ctx context.Context, in *TLMessagesAddPollAnswer, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCPolls_MessagesAddPollAnswer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPollsClient) MessagesDeletePollAnswer(ctx context.Context, in *TLMessagesDeletePollAnswer, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCPolls_MessagesDeletePollAnswer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPollsClient) MessagesGetUnreadPollVotes(ctx context.Context, in *TLMessagesGetUnreadPollVotes, opts ...grpc.CallOption) (*Messages_Messages, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_Messages)
+	err := c.cc.Invoke(ctx, RPCPolls_MessagesGetUnreadPollVotes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPollsClient) MessagesReadPollVotes(ctx context.Context, in *TLMessagesReadPollVotes, opts ...grpc.CallOption) (*Messages_AffectedHistory, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_AffectedHistory)
+	err := c.cc.Invoke(ctx, RPCPolls_MessagesReadPollVotes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCPollsServer is the server API for RPCPolls service.
 // All implementations should embed UnimplementedRPCPollsServer
 // for forward compatibility.
@@ -24077,6 +24429,10 @@ type RPCPollsServer interface {
 	MessagesSendVote(context.Context, *TLMessagesSendVote) (*Updates, error)
 	MessagesGetPollResults(context.Context, *TLMessagesGetPollResults) (*Updates, error)
 	MessagesGetPollVotes(context.Context, *TLMessagesGetPollVotes) (*Messages_VotesList, error)
+	MessagesAddPollAnswer(context.Context, *TLMessagesAddPollAnswer) (*Updates, error)
+	MessagesDeletePollAnswer(context.Context, *TLMessagesDeletePollAnswer) (*Updates, error)
+	MessagesGetUnreadPollVotes(context.Context, *TLMessagesGetUnreadPollVotes) (*Messages_Messages, error)
+	MessagesReadPollVotes(context.Context, *TLMessagesReadPollVotes) (*Messages_AffectedHistory, error)
 }
 
 // UnimplementedRPCPollsServer should be embedded to have
@@ -24094,6 +24450,18 @@ func (UnimplementedRPCPollsServer) MessagesGetPollResults(context.Context, *TLMe
 }
 func (UnimplementedRPCPollsServer) MessagesGetPollVotes(context.Context, *TLMessagesGetPollVotes) (*Messages_VotesList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetPollVotes not implemented")
+}
+func (UnimplementedRPCPollsServer) MessagesAddPollAnswer(context.Context, *TLMessagesAddPollAnswer) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesAddPollAnswer not implemented")
+}
+func (UnimplementedRPCPollsServer) MessagesDeletePollAnswer(context.Context, *TLMessagesDeletePollAnswer) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesDeletePollAnswer not implemented")
+}
+func (UnimplementedRPCPollsServer) MessagesGetUnreadPollVotes(context.Context, *TLMessagesGetUnreadPollVotes) (*Messages_Messages, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetUnreadPollVotes not implemented")
+}
+func (UnimplementedRPCPollsServer) MessagesReadPollVotes(context.Context, *TLMessagesReadPollVotes) (*Messages_AffectedHistory, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesReadPollVotes not implemented")
 }
 func (UnimplementedRPCPollsServer) testEmbeddedByValue() {}
 
@@ -24169,6 +24537,78 @@ func _RPCPolls_MessagesGetPollVotes_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCPolls_MessagesAddPollAnswer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesAddPollAnswer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPollsServer).MessagesAddPollAnswer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPolls_MessagesAddPollAnswer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPollsServer).MessagesAddPollAnswer(ctx, req.(*TLMessagesAddPollAnswer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPolls_MessagesDeletePollAnswer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesDeletePollAnswer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPollsServer).MessagesDeletePollAnswer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPolls_MessagesDeletePollAnswer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPollsServer).MessagesDeletePollAnswer(ctx, req.(*TLMessagesDeletePollAnswer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPolls_MessagesGetUnreadPollVotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesGetUnreadPollVotes)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPollsServer).MessagesGetUnreadPollVotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPolls_MessagesGetUnreadPollVotes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPollsServer).MessagesGetUnreadPollVotes(ctx, req.(*TLMessagesGetUnreadPollVotes))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPolls_MessagesReadPollVotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesReadPollVotes)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPollsServer).MessagesReadPollVotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPolls_MessagesReadPollVotes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPollsServer).MessagesReadPollVotes(ctx, req.(*TLMessagesReadPollVotes))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCPolls_ServiceDesc is the grpc.ServiceDesc for RPCPolls service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -24187,6 +24627,22 @@ var RPCPolls_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_getPollVotes",
 			Handler:    _RPCPolls_MessagesGetPollVotes_Handler,
+		},
+		{
+			MethodName: "messages_addPollAnswer",
+			Handler:    _RPCPolls_MessagesAddPollAnswer_Handler,
+		},
+		{
+			MethodName: "messages_deletePollAnswer",
+			Handler:    _RPCPolls_MessagesDeletePollAnswer_Handler,
+		},
+		{
+			MethodName: "messages_getUnreadPollVotes",
+			Handler:    _RPCPolls_MessagesGetUnreadPollVotes_Handler,
+		},
+		{
+			MethodName: "messages_readPollVotes",
+			Handler:    _RPCPolls_MessagesReadPollVotes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

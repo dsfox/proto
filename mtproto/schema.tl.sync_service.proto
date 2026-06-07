@@ -1944,6 +1944,7 @@ message TL_messages_getPollResults {
   TLConstructor constructor = 1;
   InputPeer peer = 3;
   int32 msg_id = 4;
+  int64 poll_hash = 5;
 }
 
 message TL_messages_getOnlines {
@@ -2330,9 +2331,10 @@ message TL_messages_translateText {
   repeated int32 id = 4;
   repeated TextWithEntities text_FLAGVECTORTEXTWITHENTITIES = 5;
   string to_lang = 6;
-  google.protobuf.Int32Value msg_id = 7;
-  google.protobuf.StringValue text_FLAGSTRING = 8;
-  google.protobuf.StringValue from_lang = 9;
+  google.protobuf.StringValue tone = 7;
+  google.protobuf.Int32Value msg_id = 8;
+  google.protobuf.StringValue text_FLAGSTRING = 9;
+  google.protobuf.StringValue from_lang = 10;
 }
 
 message TL_messages_getUnreadReactions {
@@ -2505,10 +2507,12 @@ message TL_messages_getDefaultHistoryTTL {
 message TL_messages_sendBotRequestedPeer {
   TLConstructor constructor = 1;
   InputPeer peer = 3;
-  int32 msg_id = 4;
-  int32 button_id = 5;
-  repeated InputPeer requested_peers = 6;
-  InputPeer requested_peer = 7;
+  google.protobuf.Int32Value msg_id_FLAGINT32 = 4;
+  google.protobuf.StringValue webapp_req_id = 5;
+  int32 button_id = 6;
+  repeated InputPeer requested_peers = 7;
+  int32 msg_id_INT32 = 8;
+  InputPeer requested_peer = 9;
 }
 
 message TL_messages_getEmojiGroups {
@@ -2927,6 +2931,7 @@ message TL_messages_summarizeText {
   InputPeer peer = 3;
   int32 id = 4;
   google.protobuf.StringValue to_lang = 5;
+  google.protobuf.StringValue tone = 6;
 }
 
 message TL_messages_editChatCreator {
@@ -2957,6 +2962,58 @@ message TL_messages_checkUrlAuthMatchCode {
   TLConstructor constructor = 1;
   string url = 3;
   string match_code = 4;
+}
+
+message TL_messages_composeMessageWithAI {
+  TLConstructor constructor = 1;
+  bool proofread = 3;
+  bool emojify = 4;
+  TextWithEntities text = 5;
+  google.protobuf.StringValue translate_to_lang = 6;
+  google.protobuf.StringValue change_tone = 7;
+}
+
+message TL_messages_reportReadMetrics {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  repeated InputMessageReadMetric metrics = 4;
+}
+
+message TL_messages_reportMusicListen {
+  TLConstructor constructor = 1;
+  InputDocument id = 3;
+  int32 listened_duration = 4;
+}
+
+message TL_messages_addPollAnswer {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  int32 msg_id = 4;
+  PollAnswer answer = 5;
+}
+
+message TL_messages_deletePollAnswer {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  int32 msg_id = 4;
+  bytes option = 5;
+}
+
+message TL_messages_getUnreadPollVotes {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  google.protobuf.Int32Value top_msg_id = 4;
+  int32 offset_id = 5;
+  int32 add_offset = 6;
+  int32 limit = 7;
+  int32 max_id = 8;
+  int32 min_id = 9;
+}
+
+message TL_messages_readPollVotes {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  google.protobuf.Int32Value top_msg_id = 4;
 }
 
 message TL_updates_getState {
@@ -3765,6 +3822,37 @@ message TL_bots_getBotRecommendations {
   InputUser bot = 3;
 }
 
+message TL_bots_checkUsername {
+  TLConstructor constructor = 1;
+  string username = 3;
+}
+
+message TL_bots_createBot {
+  TLConstructor constructor = 1;
+  bool via_deeplink = 3;
+  string name = 4;
+  string username = 5;
+  InputUser manager_id = 6;
+}
+
+message TL_bots_exportBotToken {
+  TLConstructor constructor = 1;
+  InputUser bot = 3;
+  Bool revoke = 4;
+}
+
+message TL_bots_requestWebViewButton {
+  TLConstructor constructor = 1;
+  InputUser user_id = 3;
+  KeyboardButton button = 4;
+}
+
+message TL_bots_getRequestedWebViewButton {
+  TLConstructor constructor = 1;
+  InputUser bot = 3;
+  string webapp_req_id = 4;
+}
+
 message TL_payments_getPaymentForm {
   TLConstructor constructor = 1;
   InputInvoice invoice = 3;
@@ -4096,11 +4184,12 @@ message TL_payments_getResaleStarGifts {
   bool sort_by_price = 3;
   bool sort_by_num = 4;
   bool for_craft = 5;
-  google.protobuf.Int64Value attributes_hash = 6;
-  int64 gift_id = 7;
-  repeated StarGiftAttributeId attributes = 8;
-  string offset = 9;
-  int32 limit = 10;
+  bool stars_only = 6;
+  google.protobuf.Int64Value attributes_hash = 7;
+  int64 gift_id = 8;
+  repeated StarGiftAttributeId attributes = 9;
+  string offset = 10;
+  int32 limit = 11;
 }
 
 message TL_payments_updateStarGiftPrice {
@@ -4749,6 +4838,7 @@ message TL_stories_sendStory {
   InputPeer fwd_from_id = 14;
   google.protobuf.Int32Value fwd_from_story = 15;
   repeated int32 albums = 16;
+  InputDocument music = 17;
 }
 
 message TL_stories_editStory {
@@ -4760,6 +4850,7 @@ message TL_stories_editStory {
   google.protobuf.StringValue caption = 7;
   repeated MessageEntity entities = 8;
   repeated InputPrivacyRule privacy_rules = 9;
+  InputDocument music = 10;
 }
 
 message TL_stories_deleteStories {
@@ -5768,6 +5859,10 @@ service RPCBots {
   rpc bots_getBotInfoDCD914FD(TL_bots_getBotInfoDCD914FD)
       returns (bots_BotInfo) {}
   rpc bots_getAdminedBots(TL_bots_getAdminedBots) returns (Vector_User) {}
+  rpc bots_checkUsername(TL_bots_checkUsername) returns (Bool) {}
+  rpc bots_createBot(TL_bots_createBot) returns (User) {}
+  rpc bots_exportBotToken(TL_bots_exportBotToken)
+      returns (bots_ExportedBotToken) {}
   rpc bots_getBotInfo75EC12E6(TL_bots_getBotInfo75EC12E6)
       returns (Vector_String) {}
 }
@@ -6554,6 +6649,12 @@ service RPCMessages {
       returns (OutboxReadDate) {}
   rpc messages_summarizeText(TL_messages_summarizeText)
       returns (TextWithEntities) {}
+  rpc messages_composeMessageWithAI(TL_messages_composeMessageWithAI)
+      returns (messages_ComposedMessageWithAI) {}
+  rpc messages_reportReadMetrics(TL_messages_reportReadMetrics) returns (Bool) {
+  }
+  rpc messages_reportMusicListen(TL_messages_reportMusicListen) returns (Bool) {
+  }
   rpc channels_getSendAs(TL_channels_getSendAs) returns (channels_SendAsPeers) {
   }
   rpc channels_searchPosts(TL_channels_searchPosts)
@@ -6580,6 +6681,10 @@ service RPCMiniBotApps {
       returns (DataJSON) {}
   rpc bots_checkDownloadFileParams(TL_bots_checkDownloadFileParams)
       returns (Bool) {}
+  rpc bots_requestWebViewButton(TL_bots_requestWebViewButton)
+      returns (bots_RequestedButton) {}
+  rpc bots_getRequestedWebViewButton(TL_bots_getRequestedWebViewButton)
+      returns (KeyboardButton) {}
   rpc messages_requestSimpleWebView1A46500A(
       TL_messages_requestSimpleWebView1A46500A) returns (SimpleWebViewResult) {}
   rpc messages_requestAppWebView8C5A3B3C(TL_messages_requestAppWebView8C5A3B3C)
@@ -6701,6 +6806,13 @@ service RPCPolls {
   rpc messages_getPollResults(TL_messages_getPollResults) returns (Updates) {}
   rpc messages_getPollVotes(TL_messages_getPollVotes)
       returns (messages_VotesList) {}
+  rpc messages_addPollAnswer(TL_messages_addPollAnswer) returns (Updates) {}
+  rpc messages_deletePollAnswer(TL_messages_deletePollAnswer)
+      returns (Updates) {}
+  rpc messages_getUnreadPollVotes(TL_messages_getUnreadPollVotes)
+      returns (messages_Messages) {}
+  rpc messages_readPollVotes(TL_messages_readPollVotes)
+      returns (messages_AffectedHistory) {}
 }
 
 service RPCPredefined {
