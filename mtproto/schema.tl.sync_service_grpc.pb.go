@@ -936,6 +936,334 @@ var RPCAffiliatePrograms_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	RPCAiComposeTone_AicomposeCreateTone_FullMethodName     = "/mtproto.RPCAiComposeTone/aicompose_createTone"
+	RPCAiComposeTone_AicomposeUpdateTone_FullMethodName     = "/mtproto.RPCAiComposeTone/aicompose_updateTone"
+	RPCAiComposeTone_AicomposeSaveTone_FullMethodName       = "/mtproto.RPCAiComposeTone/aicompose_saveTone"
+	RPCAiComposeTone_AicomposeDeleteTone_FullMethodName     = "/mtproto.RPCAiComposeTone/aicompose_deleteTone"
+	RPCAiComposeTone_AicomposeGetTone_FullMethodName        = "/mtproto.RPCAiComposeTone/aicompose_getTone"
+	RPCAiComposeTone_AicomposeGetTones_FullMethodName       = "/mtproto.RPCAiComposeTone/aicompose_getTones"
+	RPCAiComposeTone_AicomposeGetToneExample_FullMethodName = "/mtproto.RPCAiComposeTone/aicompose_getToneExample"
+)
+
+// RPCAiComposeToneClient is the client API for RPCAiComposeTone service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type RPCAiComposeToneClient interface {
+	AicomposeCreateTone(ctx context.Context, in *TLAicomposeCreateTone, opts ...grpc.CallOption) (*AiComposeTone, error)
+	AicomposeUpdateTone(ctx context.Context, in *TLAicomposeUpdateTone, opts ...grpc.CallOption) (*AiComposeTone, error)
+	AicomposeSaveTone(ctx context.Context, in *TLAicomposeSaveTone, opts ...grpc.CallOption) (*Bool, error)
+	AicomposeDeleteTone(ctx context.Context, in *TLAicomposeDeleteTone, opts ...grpc.CallOption) (*Bool, error)
+	AicomposeGetTone(ctx context.Context, in *TLAicomposeGetTone, opts ...grpc.CallOption) (*Aicompose_Tones, error)
+	AicomposeGetTones(ctx context.Context, in *TLAicomposeGetTones, opts ...grpc.CallOption) (*Aicompose_Tones, error)
+	AicomposeGetToneExample(ctx context.Context, in *TLAicomposeGetToneExample, opts ...grpc.CallOption) (*AiComposeToneExample, error)
+}
+
+type rPCAiComposeToneClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewRPCAiComposeToneClient(cc grpc.ClientConnInterface) RPCAiComposeToneClient {
+	return &rPCAiComposeToneClient{cc}
+}
+
+func (c *rPCAiComposeToneClient) AicomposeCreateTone(ctx context.Context, in *TLAicomposeCreateTone, opts ...grpc.CallOption) (*AiComposeTone, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AiComposeTone)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_AicomposeCreateTone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAiComposeToneClient) AicomposeUpdateTone(ctx context.Context, in *TLAicomposeUpdateTone, opts ...grpc.CallOption) (*AiComposeTone, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AiComposeTone)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_AicomposeUpdateTone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAiComposeToneClient) AicomposeSaveTone(ctx context.Context, in *TLAicomposeSaveTone, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_AicomposeSaveTone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAiComposeToneClient) AicomposeDeleteTone(ctx context.Context, in *TLAicomposeDeleteTone, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_AicomposeDeleteTone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAiComposeToneClient) AicomposeGetTone(ctx context.Context, in *TLAicomposeGetTone, opts ...grpc.CallOption) (*Aicompose_Tones, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Aicompose_Tones)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_AicomposeGetTone_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAiComposeToneClient) AicomposeGetTones(ctx context.Context, in *TLAicomposeGetTones, opts ...grpc.CallOption) (*Aicompose_Tones, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Aicompose_Tones)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_AicomposeGetTones_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAiComposeToneClient) AicomposeGetToneExample(ctx context.Context, in *TLAicomposeGetToneExample, opts ...grpc.CallOption) (*AiComposeToneExample, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AiComposeToneExample)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_AicomposeGetToneExample_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// RPCAiComposeToneServer is the server API for RPCAiComposeTone service.
+// All implementations should embed UnimplementedRPCAiComposeToneServer
+// for forward compatibility.
+type RPCAiComposeToneServer interface {
+	AicomposeCreateTone(context.Context, *TLAicomposeCreateTone) (*AiComposeTone, error)
+	AicomposeUpdateTone(context.Context, *TLAicomposeUpdateTone) (*AiComposeTone, error)
+	AicomposeSaveTone(context.Context, *TLAicomposeSaveTone) (*Bool, error)
+	AicomposeDeleteTone(context.Context, *TLAicomposeDeleteTone) (*Bool, error)
+	AicomposeGetTone(context.Context, *TLAicomposeGetTone) (*Aicompose_Tones, error)
+	AicomposeGetTones(context.Context, *TLAicomposeGetTones) (*Aicompose_Tones, error)
+	AicomposeGetToneExample(context.Context, *TLAicomposeGetToneExample) (*AiComposeToneExample, error)
+}
+
+// UnimplementedRPCAiComposeToneServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedRPCAiComposeToneServer struct{}
+
+func (UnimplementedRPCAiComposeToneServer) AicomposeCreateTone(context.Context, *TLAicomposeCreateTone) (*AiComposeTone, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AicomposeCreateTone not implemented")
+}
+func (UnimplementedRPCAiComposeToneServer) AicomposeUpdateTone(context.Context, *TLAicomposeUpdateTone) (*AiComposeTone, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AicomposeUpdateTone not implemented")
+}
+func (UnimplementedRPCAiComposeToneServer) AicomposeSaveTone(context.Context, *TLAicomposeSaveTone) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AicomposeSaveTone not implemented")
+}
+func (UnimplementedRPCAiComposeToneServer) AicomposeDeleteTone(context.Context, *TLAicomposeDeleteTone) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AicomposeDeleteTone not implemented")
+}
+func (UnimplementedRPCAiComposeToneServer) AicomposeGetTone(context.Context, *TLAicomposeGetTone) (*Aicompose_Tones, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AicomposeGetTone not implemented")
+}
+func (UnimplementedRPCAiComposeToneServer) AicomposeGetTones(context.Context, *TLAicomposeGetTones) (*Aicompose_Tones, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AicomposeGetTones not implemented")
+}
+func (UnimplementedRPCAiComposeToneServer) AicomposeGetToneExample(context.Context, *TLAicomposeGetToneExample) (*AiComposeToneExample, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AicomposeGetToneExample not implemented")
+}
+func (UnimplementedRPCAiComposeToneServer) testEmbeddedByValue() {}
+
+// UnsafeRPCAiComposeToneServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RPCAiComposeToneServer will
+// result in compilation errors.
+type UnsafeRPCAiComposeToneServer interface {
+	mustEmbedUnimplementedRPCAiComposeToneServer()
+}
+
+func RegisterRPCAiComposeToneServer(s grpc.ServiceRegistrar, srv RPCAiComposeToneServer) {
+	// If the following call pancis, it indicates UnimplementedRPCAiComposeToneServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&RPCAiComposeTone_ServiceDesc, srv)
+}
+
+func _RPCAiComposeTone_AicomposeCreateTone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAicomposeCreateTone)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).AicomposeCreateTone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_AicomposeCreateTone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).AicomposeCreateTone(ctx, req.(*TLAicomposeCreateTone))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAiComposeTone_AicomposeUpdateTone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAicomposeUpdateTone)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).AicomposeUpdateTone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_AicomposeUpdateTone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).AicomposeUpdateTone(ctx, req.(*TLAicomposeUpdateTone))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAiComposeTone_AicomposeSaveTone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAicomposeSaveTone)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).AicomposeSaveTone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_AicomposeSaveTone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).AicomposeSaveTone(ctx, req.(*TLAicomposeSaveTone))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAiComposeTone_AicomposeDeleteTone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAicomposeDeleteTone)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).AicomposeDeleteTone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_AicomposeDeleteTone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).AicomposeDeleteTone(ctx, req.(*TLAicomposeDeleteTone))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAiComposeTone_AicomposeGetTone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAicomposeGetTone)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).AicomposeGetTone(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_AicomposeGetTone_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).AicomposeGetTone(ctx, req.(*TLAicomposeGetTone))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAiComposeTone_AicomposeGetTones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAicomposeGetTones)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).AicomposeGetTones(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_AicomposeGetTones_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).AicomposeGetTones(ctx, req.(*TLAicomposeGetTones))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAiComposeTone_AicomposeGetToneExample_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAicomposeGetToneExample)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).AicomposeGetToneExample(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_AicomposeGetToneExample_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).AicomposeGetToneExample(ctx, req.(*TLAicomposeGetToneExample))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// RPCAiComposeTone_ServiceDesc is the grpc.ServiceDesc for RPCAiComposeTone service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var RPCAiComposeTone_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "mtproto.RPCAiComposeTone",
+	HandlerType: (*RPCAiComposeToneServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "aicompose_createTone",
+			Handler:    _RPCAiComposeTone_AicomposeCreateTone_Handler,
+		},
+		{
+			MethodName: "aicompose_updateTone",
+			Handler:    _RPCAiComposeTone_AicomposeUpdateTone_Handler,
+		},
+		{
+			MethodName: "aicompose_saveTone",
+			Handler:    _RPCAiComposeTone_AicomposeSaveTone_Handler,
+		},
+		{
+			MethodName: "aicompose_deleteTone",
+			Handler:    _RPCAiComposeTone_AicomposeDeleteTone_Handler,
+		},
+		{
+			MethodName: "aicompose_getTone",
+			Handler:    _RPCAiComposeTone_AicomposeGetTone_Handler,
+		},
+		{
+			MethodName: "aicompose_getTones",
+			Handler:    _RPCAiComposeTone_AicomposeGetTones_Handler,
+		},
+		{
+			MethodName: "aicompose_getToneExample",
+			Handler:    _RPCAiComposeTone_AicomposeGetToneExample_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "schema.tl.sync_service.proto",
+}
+
+const (
 	RPCAntiSpam_ChannelsToggleAntiSpam_FullMethodName              = "/mtproto.RPCAntiSpam/channels_toggleAntiSpam"
 	RPCAntiSpam_ChannelsReportAntiSpamFalsePositive_FullMethodName = "/mtproto.RPCAntiSpam/channels_reportAntiSpamFalsePositive"
 )
@@ -3593,6 +3921,8 @@ const (
 	RPCBots_BotsCheckUsername_FullMethodName      = "/mtproto.RPCBots/bots_checkUsername"
 	RPCBots_BotsCreateBot_FullMethodName          = "/mtproto.RPCBots/bots_createBot"
 	RPCBots_BotsExportBotToken_FullMethodName     = "/mtproto.RPCBots/bots_exportBotToken"
+	RPCBots_BotsGetAccessSettings_FullMethodName  = "/mtproto.RPCBots/bots_getAccessSettings"
+	RPCBots_BotsEditAccessSettings_FullMethodName = "/mtproto.RPCBots/bots_editAccessSettings"
 	RPCBots_BotsGetBotInfo75EC12E6_FullMethodName = "/mtproto.RPCBots/bots_getBotInfo75EC12E6"
 )
 
@@ -3609,6 +3939,8 @@ type RPCBotsClient interface {
 	BotsCheckUsername(ctx context.Context, in *TLBotsCheckUsername, opts ...grpc.CallOption) (*Bool, error)
 	BotsCreateBot(ctx context.Context, in *TLBotsCreateBot, opts ...grpc.CallOption) (*User, error)
 	BotsExportBotToken(ctx context.Context, in *TLBotsExportBotToken, opts ...grpc.CallOption) (*Bots_ExportedBotToken, error)
+	BotsGetAccessSettings(ctx context.Context, in *TLBotsGetAccessSettings, opts ...grpc.CallOption) (*Bots_AccessSettings, error)
+	BotsEditAccessSettings(ctx context.Context, in *TLBotsEditAccessSettings, opts ...grpc.CallOption) (*Bool, error)
 	BotsGetBotInfo75EC12E6(ctx context.Context, in *TLBotsGetBotInfo75EC12E6, opts ...grpc.CallOption) (*Vector_String, error)
 }
 
@@ -3710,6 +4042,26 @@ func (c *rPCBotsClient) BotsExportBotToken(ctx context.Context, in *TLBotsExport
 	return out, nil
 }
 
+func (c *rPCBotsClient) BotsGetAccessSettings(ctx context.Context, in *TLBotsGetAccessSettings, opts ...grpc.CallOption) (*Bots_AccessSettings, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bots_AccessSettings)
+	err := c.cc.Invoke(ctx, RPCBots_BotsGetAccessSettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCBotsClient) BotsEditAccessSettings(ctx context.Context, in *TLBotsEditAccessSettings, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCBots_BotsEditAccessSettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCBotsClient) BotsGetBotInfo75EC12E6(ctx context.Context, in *TLBotsGetBotInfo75EC12E6, opts ...grpc.CallOption) (*Vector_String, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Vector_String)
@@ -3733,6 +4085,8 @@ type RPCBotsServer interface {
 	BotsCheckUsername(context.Context, *TLBotsCheckUsername) (*Bool, error)
 	BotsCreateBot(context.Context, *TLBotsCreateBot) (*User, error)
 	BotsExportBotToken(context.Context, *TLBotsExportBotToken) (*Bots_ExportedBotToken, error)
+	BotsGetAccessSettings(context.Context, *TLBotsGetAccessSettings) (*Bots_AccessSettings, error)
+	BotsEditAccessSettings(context.Context, *TLBotsEditAccessSettings) (*Bool, error)
 	BotsGetBotInfo75EC12E6(context.Context, *TLBotsGetBotInfo75EC12E6) (*Vector_String, error)
 }
 
@@ -3769,6 +4123,12 @@ func (UnimplementedRPCBotsServer) BotsCreateBot(context.Context, *TLBotsCreateBo
 }
 func (UnimplementedRPCBotsServer) BotsExportBotToken(context.Context, *TLBotsExportBotToken) (*Bots_ExportedBotToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsExportBotToken not implemented")
+}
+func (UnimplementedRPCBotsServer) BotsGetAccessSettings(context.Context, *TLBotsGetAccessSettings) (*Bots_AccessSettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsGetAccessSettings not implemented")
+}
+func (UnimplementedRPCBotsServer) BotsEditAccessSettings(context.Context, *TLBotsEditAccessSettings) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsEditAccessSettings not implemented")
 }
 func (UnimplementedRPCBotsServer) BotsGetBotInfo75EC12E6(context.Context, *TLBotsGetBotInfo75EC12E6) (*Vector_String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsGetBotInfo75EC12E6 not implemented")
@@ -3955,6 +4315,42 @@ func _RPCBots_BotsExportBotToken_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCBots_BotsGetAccessSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsGetAccessSettings)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCBotsServer).BotsGetAccessSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCBots_BotsGetAccessSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCBotsServer).BotsGetAccessSettings(ctx, req.(*TLBotsGetAccessSettings))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCBots_BotsEditAccessSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsEditAccessSettings)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCBotsServer).BotsEditAccessSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCBots_BotsEditAccessSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCBotsServer).BotsEditAccessSettings(ctx, req.(*TLBotsEditAccessSettings))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCBots_BotsGetBotInfo75EC12E6_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLBotsGetBotInfo75EC12E6)
 	if err := dec(in); err != nil {
@@ -4015,6 +4411,14 @@ var RPCBots_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "bots_exportBotToken",
 			Handler:    _RPCBots_BotsExportBotToken_Handler,
+		},
+		{
+			MethodName: "bots_getAccessSettings",
+			Handler:    _RPCBots_BotsGetAccessSettings_Handler,
+		},
+		{
+			MethodName: "bots_editAccessSettings",
+			Handler:    _RPCBots_BotsEditAccessSettings_Handler,
 		},
 		{
 			MethodName: "bots_getBotInfo75EC12E6",
@@ -5610,6 +6014,7 @@ var RPCChannelRecommendations_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	RPCChannels_MessagesGetPersonalChannelHistory_FullMethodName  = "/mtproto.RPCChannels/messages_getPersonalChannelHistory"
 	RPCChannels_ChannelsReadHistory_FullMethodName                = "/mtproto.RPCChannels/channels_readHistory"
 	RPCChannels_ChannelsDeleteMessages_FullMethodName             = "/mtproto.RPCChannels/channels_deleteMessages"
 	RPCChannels_ChannelsGetMessages_FullMethodName                = "/mtproto.RPCChannels/channels_getMessages"
@@ -5651,6 +6056,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCChannelsClient interface {
+	MessagesGetPersonalChannelHistory(ctx context.Context, in *TLMessagesGetPersonalChannelHistory, opts ...grpc.CallOption) (*Messages_Messages, error)
 	ChannelsReadHistory(ctx context.Context, in *TLChannelsReadHistory, opts ...grpc.CallOption) (*Bool, error)
 	ChannelsDeleteMessages(ctx context.Context, in *TLChannelsDeleteMessages, opts ...grpc.CallOption) (*Messages_AffectedMessages, error)
 	ChannelsGetMessages(ctx context.Context, in *TLChannelsGetMessages, opts ...grpc.CallOption) (*Messages_Messages, error)
@@ -5694,6 +6100,16 @@ type rPCChannelsClient struct {
 
 func NewRPCChannelsClient(cc grpc.ClientConnInterface) RPCChannelsClient {
 	return &rPCChannelsClient{cc}
+}
+
+func (c *rPCChannelsClient) MessagesGetPersonalChannelHistory(ctx context.Context, in *TLMessagesGetPersonalChannelHistory, opts ...grpc.CallOption) (*Messages_Messages, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_Messages)
+	err := c.cc.Invoke(ctx, RPCChannels_MessagesGetPersonalChannelHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *rPCChannelsClient) ChannelsReadHistory(ctx context.Context, in *TLChannelsReadHistory, opts ...grpc.CallOption) (*Bool, error) {
@@ -6050,6 +6466,7 @@ func (c *rPCChannelsClient) ChannelsDeleteHistoryAF369D42(ctx context.Context, i
 // All implementations should embed UnimplementedRPCChannelsServer
 // for forward compatibility.
 type RPCChannelsServer interface {
+	MessagesGetPersonalChannelHistory(context.Context, *TLMessagesGetPersonalChannelHistory) (*Messages_Messages, error)
 	ChannelsReadHistory(context.Context, *TLChannelsReadHistory) (*Bool, error)
 	ChannelsDeleteMessages(context.Context, *TLChannelsDeleteMessages) (*Messages_AffectedMessages, error)
 	ChannelsGetMessages(context.Context, *TLChannelsGetMessages) (*Messages_Messages, error)
@@ -6094,6 +6511,9 @@ type RPCChannelsServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRPCChannelsServer struct{}
 
+func (UnimplementedRPCChannelsServer) MessagesGetPersonalChannelHistory(context.Context, *TLMessagesGetPersonalChannelHistory) (*Messages_Messages, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetPersonalChannelHistory not implemented")
+}
 func (UnimplementedRPCChannelsServer) ChannelsReadHistory(context.Context, *TLChannelsReadHistory) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsReadHistory not implemented")
 }
@@ -6217,6 +6637,24 @@ func RegisterRPCChannelsServer(s grpc.ServiceRegistrar, srv RPCChannelsServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&RPCChannels_ServiceDesc, srv)
+}
+
+func _RPCChannels_MessagesGetPersonalChannelHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesGetPersonalChannelHistory)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCChannelsServer).MessagesGetPersonalChannelHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCChannels_MessagesGetPersonalChannelHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCChannelsServer).MessagesGetPersonalChannelHistory(ctx, req.(*TLMessagesGetPersonalChannelHistory))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _RPCChannels_ChannelsReadHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -6856,6 +7294,10 @@ var RPCChannels_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "mtproto.RPCChannels",
 	HandlerType: (*RPCChannelsServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "messages_getPersonalChannelHistory",
+			Handler:    _RPCChannels_MessagesGetPersonalChannelHistory_Handler,
+		},
 		{
 			MethodName: "channels_readHistory",
 			Handler:    _RPCChannels_ChannelsReadHistory_Handler,
@@ -18542,13 +18984,14 @@ var RPCImportedChats_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCInlineBot_MessagesGetInlineBotResults_FullMethodName  = "/mtproto.RPCInlineBot/messages_getInlineBotResults"
-	RPCInlineBot_MessagesSetInlineBotResults_FullMethodName  = "/mtproto.RPCInlineBot/messages_setInlineBotResults"
-	RPCInlineBot_MessagesSendInlineBotResult_FullMethodName  = "/mtproto.RPCInlineBot/messages_sendInlineBotResult"
-	RPCInlineBot_MessagesEditInlineBotMessage_FullMethodName = "/mtproto.RPCInlineBot/messages_editInlineBotMessage"
-	RPCInlineBot_MessagesGetBotCallbackAnswer_FullMethodName = "/mtproto.RPCInlineBot/messages_getBotCallbackAnswer"
-	RPCInlineBot_MessagesSetBotCallbackAnswer_FullMethodName = "/mtproto.RPCInlineBot/messages_setBotCallbackAnswer"
-	RPCInlineBot_MessagesSendBotRequestedPeer_FullMethodName = "/mtproto.RPCInlineBot/messages_sendBotRequestedPeer"
+	RPCInlineBot_MessagesGetInlineBotResults_FullMethodName   = "/mtproto.RPCInlineBot/messages_getInlineBotResults"
+	RPCInlineBot_MessagesSetInlineBotResults_FullMethodName   = "/mtproto.RPCInlineBot/messages_setInlineBotResults"
+	RPCInlineBot_MessagesSendInlineBotResult_FullMethodName   = "/mtproto.RPCInlineBot/messages_sendInlineBotResult"
+	RPCInlineBot_MessagesEditInlineBotMessage_FullMethodName  = "/mtproto.RPCInlineBot/messages_editInlineBotMessage"
+	RPCInlineBot_MessagesGetBotCallbackAnswer_FullMethodName  = "/mtproto.RPCInlineBot/messages_getBotCallbackAnswer"
+	RPCInlineBot_MessagesSetBotCallbackAnswer_FullMethodName  = "/mtproto.RPCInlineBot/messages_setBotCallbackAnswer"
+	RPCInlineBot_MessagesSendBotRequestedPeer_FullMethodName  = "/mtproto.RPCInlineBot/messages_sendBotRequestedPeer"
+	RPCInlineBot_MessagesSetBotGuestChatResult_FullMethodName = "/mtproto.RPCInlineBot/messages_setBotGuestChatResult"
 )
 
 // RPCInlineBotClient is the client API for RPCInlineBot service.
@@ -18562,6 +19005,7 @@ type RPCInlineBotClient interface {
 	MessagesGetBotCallbackAnswer(ctx context.Context, in *TLMessagesGetBotCallbackAnswer, opts ...grpc.CallOption) (*Messages_BotCallbackAnswer, error)
 	MessagesSetBotCallbackAnswer(ctx context.Context, in *TLMessagesSetBotCallbackAnswer, opts ...grpc.CallOption) (*Bool, error)
 	MessagesSendBotRequestedPeer(ctx context.Context, in *TLMessagesSendBotRequestedPeer, opts ...grpc.CallOption) (*Updates, error)
+	MessagesSetBotGuestChatResult(ctx context.Context, in *TLMessagesSetBotGuestChatResult, opts ...grpc.CallOption) (*InputBotInlineMessageID, error)
 }
 
 type rPCInlineBotClient struct {
@@ -18642,6 +19086,16 @@ func (c *rPCInlineBotClient) MessagesSendBotRequestedPeer(ctx context.Context, i
 	return out, nil
 }
 
+func (c *rPCInlineBotClient) MessagesSetBotGuestChatResult(ctx context.Context, in *TLMessagesSetBotGuestChatResult, opts ...grpc.CallOption) (*InputBotInlineMessageID, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InputBotInlineMessageID)
+	err := c.cc.Invoke(ctx, RPCInlineBot_MessagesSetBotGuestChatResult_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCInlineBotServer is the server API for RPCInlineBot service.
 // All implementations should embed UnimplementedRPCInlineBotServer
 // for forward compatibility.
@@ -18653,6 +19107,7 @@ type RPCInlineBotServer interface {
 	MessagesGetBotCallbackAnswer(context.Context, *TLMessagesGetBotCallbackAnswer) (*Messages_BotCallbackAnswer, error)
 	MessagesSetBotCallbackAnswer(context.Context, *TLMessagesSetBotCallbackAnswer) (*Bool, error)
 	MessagesSendBotRequestedPeer(context.Context, *TLMessagesSendBotRequestedPeer) (*Updates, error)
+	MessagesSetBotGuestChatResult(context.Context, *TLMessagesSetBotGuestChatResult) (*InputBotInlineMessageID, error)
 }
 
 // UnimplementedRPCInlineBotServer should be embedded to have
@@ -18682,6 +19137,9 @@ func (UnimplementedRPCInlineBotServer) MessagesSetBotCallbackAnswer(context.Cont
 }
 func (UnimplementedRPCInlineBotServer) MessagesSendBotRequestedPeer(context.Context, *TLMessagesSendBotRequestedPeer) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesSendBotRequestedPeer not implemented")
+}
+func (UnimplementedRPCInlineBotServer) MessagesSetBotGuestChatResult(context.Context, *TLMessagesSetBotGuestChatResult) (*InputBotInlineMessageID, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesSetBotGuestChatResult not implemented")
 }
 func (UnimplementedRPCInlineBotServer) testEmbeddedByValue() {}
 
@@ -18829,6 +19287,24 @@ func _RPCInlineBot_MessagesSendBotRequestedPeer_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCInlineBot_MessagesSetBotGuestChatResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesSetBotGuestChatResult)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCInlineBotServer).MessagesSetBotGuestChatResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCInlineBot_MessagesSetBotGuestChatResult_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCInlineBotServer).MessagesSetBotGuestChatResult(ctx, req.(*TLMessagesSetBotGuestChatResult))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCInlineBot_ServiceDesc is the grpc.ServiceDesc for RPCInlineBot service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -18863,6 +19339,10 @@ var RPCInlineBot_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_sendBotRequestedPeer",
 			Handler:    _RPCInlineBot_MessagesSendBotRequestedPeer_Handler,
+		},
+		{
+			MethodName: "messages_setBotGuestChatResult",
+			Handler:    _RPCInlineBot_MessagesSetBotGuestChatResult_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -26324,21 +26804,23 @@ var RPCReactionNotification_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCReactions_MessagesSendReaction_FullMethodName              = "/mtproto.RPCReactions/messages_sendReaction"
-	RPCReactions_MessagesGetMessagesReactions_FullMethodName      = "/mtproto.RPCReactions/messages_getMessagesReactions"
-	RPCReactions_MessagesGetMessageReactionsList_FullMethodName   = "/mtproto.RPCReactions/messages_getMessageReactionsList"
-	RPCReactions_MessagesSetChatAvailableReactions_FullMethodName = "/mtproto.RPCReactions/messages_setChatAvailableReactions"
-	RPCReactions_MessagesGetAvailableReactions_FullMethodName     = "/mtproto.RPCReactions/messages_getAvailableReactions"
-	RPCReactions_MessagesSetDefaultReaction_FullMethodName        = "/mtproto.RPCReactions/messages_setDefaultReaction"
-	RPCReactions_MessagesGetUnreadReactions_FullMethodName        = "/mtproto.RPCReactions/messages_getUnreadReactions"
-	RPCReactions_MessagesReadReactions_FullMethodName             = "/mtproto.RPCReactions/messages_readReactions"
-	RPCReactions_MessagesReportReaction_FullMethodName            = "/mtproto.RPCReactions/messages_reportReaction"
-	RPCReactions_MessagesGetTopReactions_FullMethodName           = "/mtproto.RPCReactions/messages_getTopReactions"
-	RPCReactions_MessagesGetRecentReactions_FullMethodName        = "/mtproto.RPCReactions/messages_getRecentReactions"
-	RPCReactions_MessagesClearRecentReactions_FullMethodName      = "/mtproto.RPCReactions/messages_clearRecentReactions"
-	RPCReactions_MessagesSendPaidReaction_FullMethodName          = "/mtproto.RPCReactions/messages_sendPaidReaction"
-	RPCReactions_MessagesTogglePaidReactionPrivacy_FullMethodName = "/mtproto.RPCReactions/messages_togglePaidReactionPrivacy"
-	RPCReactions_MessagesGetPaidReactionPrivacy_FullMethodName    = "/mtproto.RPCReactions/messages_getPaidReactionPrivacy"
+	RPCReactions_MessagesSendReaction_FullMethodName               = "/mtproto.RPCReactions/messages_sendReaction"
+	RPCReactions_MessagesGetMessagesReactions_FullMethodName       = "/mtproto.RPCReactions/messages_getMessagesReactions"
+	RPCReactions_MessagesGetMessageReactionsList_FullMethodName    = "/mtproto.RPCReactions/messages_getMessageReactionsList"
+	RPCReactions_MessagesSetChatAvailableReactions_FullMethodName  = "/mtproto.RPCReactions/messages_setChatAvailableReactions"
+	RPCReactions_MessagesGetAvailableReactions_FullMethodName      = "/mtproto.RPCReactions/messages_getAvailableReactions"
+	RPCReactions_MessagesSetDefaultReaction_FullMethodName         = "/mtproto.RPCReactions/messages_setDefaultReaction"
+	RPCReactions_MessagesGetUnreadReactions_FullMethodName         = "/mtproto.RPCReactions/messages_getUnreadReactions"
+	RPCReactions_MessagesReadReactions_FullMethodName              = "/mtproto.RPCReactions/messages_readReactions"
+	RPCReactions_MessagesReportReaction_FullMethodName             = "/mtproto.RPCReactions/messages_reportReaction"
+	RPCReactions_MessagesGetTopReactions_FullMethodName            = "/mtproto.RPCReactions/messages_getTopReactions"
+	RPCReactions_MessagesGetRecentReactions_FullMethodName         = "/mtproto.RPCReactions/messages_getRecentReactions"
+	RPCReactions_MessagesClearRecentReactions_FullMethodName       = "/mtproto.RPCReactions/messages_clearRecentReactions"
+	RPCReactions_MessagesSendPaidReaction_FullMethodName           = "/mtproto.RPCReactions/messages_sendPaidReaction"
+	RPCReactions_MessagesTogglePaidReactionPrivacy_FullMethodName  = "/mtproto.RPCReactions/messages_togglePaidReactionPrivacy"
+	RPCReactions_MessagesGetPaidReactionPrivacy_FullMethodName     = "/mtproto.RPCReactions/messages_getPaidReactionPrivacy"
+	RPCReactions_MessagesDeleteParticipantReactions_FullMethodName = "/mtproto.RPCReactions/messages_deleteParticipantReactions"
+	RPCReactions_MessagesDeleteParticipantReaction_FullMethodName  = "/mtproto.RPCReactions/messages_deleteParticipantReaction"
 )
 
 // RPCReactionsClient is the client API for RPCReactions service.
@@ -26360,6 +26842,8 @@ type RPCReactionsClient interface {
 	MessagesSendPaidReaction(ctx context.Context, in *TLMessagesSendPaidReaction, opts ...grpc.CallOption) (*Updates, error)
 	MessagesTogglePaidReactionPrivacy(ctx context.Context, in *TLMessagesTogglePaidReactionPrivacy, opts ...grpc.CallOption) (*Bool, error)
 	MessagesGetPaidReactionPrivacy(ctx context.Context, in *TLMessagesGetPaidReactionPrivacy, opts ...grpc.CallOption) (*Updates, error)
+	MessagesDeleteParticipantReactions(ctx context.Context, in *TLMessagesDeleteParticipantReactions, opts ...grpc.CallOption) (*Bool, error)
+	MessagesDeleteParticipantReaction(ctx context.Context, in *TLMessagesDeleteParticipantReaction, opts ...grpc.CallOption) (*Updates, error)
 }
 
 type rPCReactionsClient struct {
@@ -26520,6 +27004,26 @@ func (c *rPCReactionsClient) MessagesGetPaidReactionPrivacy(ctx context.Context,
 	return out, nil
 }
 
+func (c *rPCReactionsClient) MessagesDeleteParticipantReactions(ctx context.Context, in *TLMessagesDeleteParticipantReactions, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCReactions_MessagesDeleteParticipantReactions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCReactionsClient) MessagesDeleteParticipantReaction(ctx context.Context, in *TLMessagesDeleteParticipantReaction, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCReactions_MessagesDeleteParticipantReaction_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCReactionsServer is the server API for RPCReactions service.
 // All implementations should embed UnimplementedRPCReactionsServer
 // for forward compatibility.
@@ -26539,6 +27043,8 @@ type RPCReactionsServer interface {
 	MessagesSendPaidReaction(context.Context, *TLMessagesSendPaidReaction) (*Updates, error)
 	MessagesTogglePaidReactionPrivacy(context.Context, *TLMessagesTogglePaidReactionPrivacy) (*Bool, error)
 	MessagesGetPaidReactionPrivacy(context.Context, *TLMessagesGetPaidReactionPrivacy) (*Updates, error)
+	MessagesDeleteParticipantReactions(context.Context, *TLMessagesDeleteParticipantReactions) (*Bool, error)
+	MessagesDeleteParticipantReaction(context.Context, *TLMessagesDeleteParticipantReaction) (*Updates, error)
 }
 
 // UnimplementedRPCReactionsServer should be embedded to have
@@ -26592,6 +27098,12 @@ func (UnimplementedRPCReactionsServer) MessagesTogglePaidReactionPrivacy(context
 }
 func (UnimplementedRPCReactionsServer) MessagesGetPaidReactionPrivacy(context.Context, *TLMessagesGetPaidReactionPrivacy) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetPaidReactionPrivacy not implemented")
+}
+func (UnimplementedRPCReactionsServer) MessagesDeleteParticipantReactions(context.Context, *TLMessagesDeleteParticipantReactions) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesDeleteParticipantReactions not implemented")
+}
+func (UnimplementedRPCReactionsServer) MessagesDeleteParticipantReaction(context.Context, *TLMessagesDeleteParticipantReaction) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesDeleteParticipantReaction not implemented")
 }
 func (UnimplementedRPCReactionsServer) testEmbeddedByValue() {}
 
@@ -26883,6 +27395,42 @@ func _RPCReactions_MessagesGetPaidReactionPrivacy_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCReactions_MessagesDeleteParticipantReactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesDeleteParticipantReactions)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCReactionsServer).MessagesDeleteParticipantReactions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCReactions_MessagesDeleteParticipantReactions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCReactionsServer).MessagesDeleteParticipantReactions(ctx, req.(*TLMessagesDeleteParticipantReactions))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCReactions_MessagesDeleteParticipantReaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesDeleteParticipantReaction)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCReactionsServer).MessagesDeleteParticipantReaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCReactions_MessagesDeleteParticipantReaction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCReactionsServer).MessagesDeleteParticipantReaction(ctx, req.(*TLMessagesDeleteParticipantReaction))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCReactions_ServiceDesc is the grpc.ServiceDesc for RPCReactions service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -26949,6 +27497,14 @@ var RPCReactions_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_getPaidReactionPrivacy",
 			Handler:    _RPCReactions_MessagesGetPaidReactionPrivacy_Handler,
+		},
+		{
+			MethodName: "messages_deleteParticipantReactions",
+			Handler:    _RPCReactions_MessagesDeleteParticipantReactions_Handler,
+		},
+		{
+			MethodName: "messages_deleteParticipantReaction",
+			Handler:    _RPCReactions_MessagesDeleteParticipantReaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -30495,6 +31051,7 @@ const (
 	RPCStatistics_StatsGetMessageStats_FullMethodName                  = "/mtproto.RPCStatistics/stats_getMessageStats"
 	RPCStatistics_StatsGetStoryStats_FullMethodName                    = "/mtproto.RPCStatistics/stats_getStoryStats"
 	RPCStatistics_StatsGetStoryPublicForwards_FullMethodName           = "/mtproto.RPCStatistics/stats_getStoryPublicForwards"
+	RPCStatistics_StatsGetPollStats_FullMethodName                     = "/mtproto.RPCStatistics/stats_getPollStats"
 	RPCStatistics_StatsGetMessagePublicForwards5630281B_FullMethodName = "/mtproto.RPCStatistics/stats_getMessagePublicForwards5630281B"
 )
 
@@ -30509,6 +31066,7 @@ type RPCStatisticsClient interface {
 	StatsGetMessageStats(ctx context.Context, in *TLStatsGetMessageStats, opts ...grpc.CallOption) (*Stats_MessageStats, error)
 	StatsGetStoryStats(ctx context.Context, in *TLStatsGetStoryStats, opts ...grpc.CallOption) (*Stats_StoryStats, error)
 	StatsGetStoryPublicForwards(ctx context.Context, in *TLStatsGetStoryPublicForwards, opts ...grpc.CallOption) (*Stats_PublicForwards, error)
+	StatsGetPollStats(ctx context.Context, in *TLStatsGetPollStats, opts ...grpc.CallOption) (*Stats_PollStats, error)
 	StatsGetMessagePublicForwards5630281B(ctx context.Context, in *TLStatsGetMessagePublicForwards5630281B, opts ...grpc.CallOption) (*Messages_Messages, error)
 }
 
@@ -30590,6 +31148,16 @@ func (c *rPCStatisticsClient) StatsGetStoryPublicForwards(ctx context.Context, i
 	return out, nil
 }
 
+func (c *rPCStatisticsClient) StatsGetPollStats(ctx context.Context, in *TLStatsGetPollStats, opts ...grpc.CallOption) (*Stats_PollStats, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Stats_PollStats)
+	err := c.cc.Invoke(ctx, RPCStatistics_StatsGetPollStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCStatisticsClient) StatsGetMessagePublicForwards5630281B(ctx context.Context, in *TLStatsGetMessagePublicForwards5630281B, opts ...grpc.CallOption) (*Messages_Messages, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Messages_Messages)
@@ -30611,6 +31179,7 @@ type RPCStatisticsServer interface {
 	StatsGetMessageStats(context.Context, *TLStatsGetMessageStats) (*Stats_MessageStats, error)
 	StatsGetStoryStats(context.Context, *TLStatsGetStoryStats) (*Stats_StoryStats, error)
 	StatsGetStoryPublicForwards(context.Context, *TLStatsGetStoryPublicForwards) (*Stats_PublicForwards, error)
+	StatsGetPollStats(context.Context, *TLStatsGetPollStats) (*Stats_PollStats, error)
 	StatsGetMessagePublicForwards5630281B(context.Context, *TLStatsGetMessagePublicForwards5630281B) (*Messages_Messages, error)
 }
 
@@ -30641,6 +31210,9 @@ func (UnimplementedRPCStatisticsServer) StatsGetStoryStats(context.Context, *TLS
 }
 func (UnimplementedRPCStatisticsServer) StatsGetStoryPublicForwards(context.Context, *TLStatsGetStoryPublicForwards) (*Stats_PublicForwards, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StatsGetStoryPublicForwards not implemented")
+}
+func (UnimplementedRPCStatisticsServer) StatsGetPollStats(context.Context, *TLStatsGetPollStats) (*Stats_PollStats, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StatsGetPollStats not implemented")
 }
 func (UnimplementedRPCStatisticsServer) StatsGetMessagePublicForwards5630281B(context.Context, *TLStatsGetMessagePublicForwards5630281B) (*Messages_Messages, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StatsGetMessagePublicForwards5630281B not implemented")
@@ -30791,6 +31363,24 @@ func _RPCStatistics_StatsGetStoryPublicForwards_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCStatistics_StatsGetPollStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLStatsGetPollStats)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCStatisticsServer).StatsGetPollStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCStatistics_StatsGetPollStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCStatisticsServer).StatsGetPollStats(ctx, req.(*TLStatsGetPollStats))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCStatistics_StatsGetMessagePublicForwards5630281B_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLStatsGetMessagePublicForwards5630281B)
 	if err := dec(in); err != nil {
@@ -30843,6 +31433,10 @@ var RPCStatistics_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "stats_getStoryPublicForwards",
 			Handler:    _RPCStatistics_StatsGetStoryPublicForwards_Handler,
+		},
+		{
+			MethodName: "stats_getPollStats",
+			Handler:    _RPCStatistics_StatsGetPollStats_Handler,
 		},
 		{
 			MethodName: "stats_getMessagePublicForwards5630281B",

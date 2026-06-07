@@ -32,6 +32,52 @@ message TL_accountDaysTTL {
   AccountDaysTTL data2 = 1;
 }
 
+// AiComposeTone <--
+//  + TL_aiComposeTone
+//  + TL_aiComposeToneDefault
+//
+message AiComposeTone {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  bool creator = 3;
+  int64 id = 4;
+  int64 access_hash = 5;
+  string slug = 6;
+  string title = 7;
+  google.protobuf.Int64Value emoji_id_FLAGINT64 = 8;
+  google.protobuf.StringValue prompt = 9;
+  google.protobuf.Int32Value installs_count = 10;
+  google.protobuf.Int64Value author_id = 11;
+  AiComposeToneExample example_english = 12;
+  string tone = 13;
+  int64 emoji_id_INT64 = 14;
+}
+
+// TL_aiComposeTone
+message TL_aiComposeTone {
+  AiComposeTone data2 = 1;
+}
+
+// TL_aiComposeToneDefault
+message TL_aiComposeToneDefault {
+  AiComposeTone data2 = 1;
+}
+
+// AiComposeToneExample <--
+//  + TL_aiComposeToneExample
+//
+message AiComposeToneExample {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  TextWithEntities from = 3;
+  TextWithEntities to = 4;
+}
+
+// TL_aiComposeToneExample
+message TL_aiComposeToneExample {
+  AiComposeToneExample data2 = 1;
+}
+
 // AppWebViewResult <--
 //  + TL_appWebViewResultUrl
 //
@@ -1896,7 +1942,8 @@ message ChatBannedRights {
   bool send_docs = 21;
   bool send_plain = 22;
   bool edit_rank = 23;
-  int32 until_date = 24;
+  bool send_reactions = 24;
+  int32 until_date = 25;
 }
 
 // TL_chatBannedRights
@@ -3720,6 +3767,35 @@ message TL_inlineQueryPeerTypeBroadcast {
 // TL_inlineQueryPeerTypeBotPM
 message TL_inlineQueryPeerTypeBotPM {
   InlineQueryPeerType data2 = 1;
+}
+
+// InputAiComposeTone <--
+//  + TL_inputAiComposeToneDefault
+//  + TL_inputAiComposeToneID
+//  + TL_inputAiComposeToneSlug
+//
+message InputAiComposeTone {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  string tone = 3;
+  int64 id = 4;
+  int64 access_hash = 5;
+  string slug = 6;
+}
+
+// TL_inputAiComposeToneDefault
+message TL_inputAiComposeToneDefault {
+  InputAiComposeTone data2 = 1;
+}
+
+// TL_inputAiComposeToneID
+message TL_inputAiComposeToneID {
+  InputAiComposeTone data2 = 1;
+}
+
+// TL_inputAiComposeToneSlug
+message TL_inputAiComposeToneSlug {
+  InputAiComposeTone data2 = 1;
 }
 
 // InputAppEvent <--
@@ -5610,6 +5686,7 @@ message TL_inputStickeredMediaDocument {
 //  + TL_inputStorePaymentStarsGift
 //  + TL_inputStorePaymentStarsGiveaway
 //  + TL_inputStorePaymentAuthCode
+//  + TL_inputStorePaymentAuthCode
 //  + TL_inputStorePaymentStarsTopup
 //  + TL_inputStorePaymentPremiumGiftCode
 //  + TL_inputStorePaymentStars
@@ -5638,6 +5715,7 @@ message InputStorePaymentPurpose {
   int32 users_INT32 = 20;
   string phone_number = 21;
   string phone_code_hash = 22;
+  int32 premium_days = 23;
 }
 
 // TL_inputStorePaymentPremiumSubscription
@@ -6342,6 +6420,7 @@ message TL_mediaAreaCoordinates {
 //  + TL_message
 //  + TL_message
 //  + TL_message
+//  + TL_message
 //  + TL_messageService
 //  + TL_message
 //  + TL_message
@@ -6380,31 +6459,32 @@ message Message {
   MessageFwdHeader fwd_from = 24;
   google.protobuf.Int64Value via_bot_id = 25;
   google.protobuf.Int64Value via_business_bot_id = 26;
-  MessageReplyHeader reply_to = 27;
-  int32 date = 28;
-  string message = 29;
-  MessageMedia media = 30;
-  ReplyMarkup reply_markup = 31;
-  repeated MessageEntity entities = 32;
-  google.protobuf.Int32Value views = 33;
-  google.protobuf.Int32Value forwards = 34;
-  MessageReplies replies = 35;
-  google.protobuf.Int32Value edit_date = 36;
-  google.protobuf.StringValue post_author = 37;
-  google.protobuf.Int64Value grouped_id = 38;
-  MessageReactions reactions = 39;
-  repeated RestrictionReason restriction_reason = 40;
-  google.protobuf.Int32Value ttl_period = 41;
-  google.protobuf.Int32Value quick_reply_shortcut_id = 42;
-  google.protobuf.Int64Value effect = 43;
-  FactCheck factcheck = 44;
-  google.protobuf.Int32Value report_delivery_until_date = 45;
-  google.protobuf.Int64Value paid_message_stars = 46;
-  SuggestedPost suggested_post = 47;
-  google.protobuf.Int32Value schedule_repeat_period = 48;
-  google.protobuf.StringValue summary_from_language = 49;
-  bool reactions_are_possible = 50;
-  MessageAction action = 51;
+  Peer guestchat_via_from = 27;
+  MessageReplyHeader reply_to = 28;
+  int32 date = 29;
+  string message = 30;
+  MessageMedia media = 31;
+  ReplyMarkup reply_markup = 32;
+  repeated MessageEntity entities = 33;
+  google.protobuf.Int32Value views = 34;
+  google.protobuf.Int32Value forwards = 35;
+  MessageReplies replies = 36;
+  google.protobuf.Int32Value edit_date = 37;
+  google.protobuf.StringValue post_author = 38;
+  google.protobuf.Int64Value grouped_id = 39;
+  MessageReactions reactions = 40;
+  repeated RestrictionReason restriction_reason = 41;
+  google.protobuf.Int32Value ttl_period = 42;
+  google.protobuf.Int32Value quick_reply_shortcut_id = 43;
+  google.protobuf.Int64Value effect = 44;
+  FactCheck factcheck = 45;
+  google.protobuf.Int32Value report_delivery_until_date = 46;
+  google.protobuf.Int64Value paid_message_stars = 47;
+  SuggestedPost suggested_post = 48;
+  google.protobuf.Int32Value schedule_repeat_period = 49;
+  google.protobuf.StringValue summary_from_language = 50;
+  bool reactions_are_possible = 51;
+  MessageAction action = 52;
 }
 
 // TL_messageEmpty
@@ -8981,6 +9061,7 @@ message TL_photoPathSize {
 //  + TL_poll
 //  + TL_poll
 //  + TL_poll
+//  + TL_poll
 //
 message Poll {
   string predicate_name = 1;
@@ -8995,12 +9076,14 @@ message Poll {
   bool shuffle_answers = 10;
   bool hide_results_until_close = 11;
   bool creator = 12;
-  TextWithEntities question_TEXTWITHENTITIES = 13;
-  repeated PollAnswer answers = 14;
-  google.protobuf.Int32Value close_period = 15;
-  google.protobuf.Int32Value close_date = 16;
-  int64 hash = 17;
-  string question_STRING = 18;
+  bool subscribers_only = 13;
+  TextWithEntities question_TEXTWITHENTITIES = 14;
+  repeated PollAnswer answers = 15;
+  google.protobuf.Int32Value close_period = 16;
+  google.protobuf.Int32Value close_date = 17;
+  repeated string countries_iso2 = 18;
+  int64 hash = 19;
+  string question_STRING = 20;
   string question = 100;
 }
 
@@ -9068,13 +9151,14 @@ message PollResults {
   TLConstructor constructor = 2;
   bool min = 3;
   bool has_unread_votes = 4;
-  repeated PollAnswerVoters results = 5;
-  google.protobuf.Int32Value total_voters = 6;
-  repeated Peer recent_voters_FLAGVECTORPEER = 7;
-  google.protobuf.StringValue solution = 8;
-  repeated MessageEntity solution_entities = 9;
-  MessageMedia solution_media = 10;
-  repeated int64 recent_voters_FLAGVECTORINT64 = 11;
+  bool can_view_stats = 5;
+  repeated PollAnswerVoters results = 6;
+  google.protobuf.Int32Value total_voters = 7;
+  repeated Peer recent_voters_FLAGVECTORPEER = 8;
+  google.protobuf.StringValue solution = 9;
+  repeated MessageEntity solution_entities = 10;
+  MessageMedia solution_media = 11;
+  repeated int64 recent_voters_FLAGVECTORINT64 = 12;
 }
 
 // TL_pollResults
@@ -12139,6 +12223,7 @@ message TL_topPeer {
 //  + TL_topPeerCategoryForwardUsers
 //  + TL_topPeerCategoryForwardChats
 //  + TL_topPeerCategoryBotsApp
+//  + TL_topPeerCategoryBotsGuestChat
 //
 message TopPeerCategory {
   string predicate_name = 1;
@@ -12187,6 +12272,11 @@ message TL_topPeerCategoryForwardChats {
 
 // TL_topPeerCategoryBotsApp
 message TL_topPeerCategoryBotsApp {
+  TopPeerCategory data2 = 1;
+}
+
+// TL_topPeerCategoryBotsGuestChat
+message TL_topPeerCategoryBotsGuestChat {
   TopPeerCategory data2 = 1;
 }
 
@@ -12361,6 +12451,8 @@ message TL_topPeerCategoryPeers {
 //  + TL_updateStarGiftCraftFail
 //  + TL_updateChatParticipantRank
 //  + TL_updateManagedBot
+//  + TL_updateBotGuestChatQuery
+//  + TL_updateAiComposeTones
 //  + TL_updateMessagePoll
 //  + TL_updateMessagePollVote
 //  + TL_updateGroupCall
@@ -12570,20 +12662,21 @@ message Update {
   StarGiftAuctionUserState user_state = 171;
   messages_EmojiGameInfo info_MESSAGES_EMOJIGAMEINFO = 172;
   string rank = 173;
-  google.protobuf.Int64Value chat_id_FLAGINT64 = 174;
-  TextWithEntities message_TEXTWITHENTITIES = 175;
-  BroadcastRevenueBalances balances = 176;
-  Bool private_BOOL = 177;
-  int64 balance_INT64 = 178;
-  string invoice_slug = 179;
-  int32 until_date = 180;
-  MessageExtendedMedia extended_media_MESSAGEEXTENDEDMEDIA = 181;
-  Bool blocked_BOOL = 182;
-  UserProfilePhoto photo = 183;
-  Bool previous = 184;
-  google.protobuf.Int32Value topic_id_FLAGINT32 = 185;
-  string username = 186;
-  BizDataRaw biz_data = 187;
+  repeated Message reference_messages = 174;
+  google.protobuf.Int64Value chat_id_FLAGINT64 = 175;
+  TextWithEntities message_TEXTWITHENTITIES = 176;
+  BroadcastRevenueBalances balances = 177;
+  Bool private_BOOL = 178;
+  int64 balance_INT64 = 179;
+  string invoice_slug = 180;
+  int32 until_date = 181;
+  MessageExtendedMedia extended_media_MESSAGEEXTENDEDMEDIA = 182;
+  Bool blocked_BOOL = 183;
+  UserProfilePhoto photo = 184;
+  Bool previous = 185;
+  google.protobuf.Int32Value topic_id_FLAGINT32 = 186;
+  string username = 187;
+  BizDataRaw biz_data = 188;
 }
 
 // TL_updateNewMessage
@@ -13356,6 +13449,16 @@ message TL_updateManagedBot {
   Update data2 = 1;
 }
 
+// TL_updateBotGuestChatQuery
+message TL_updateBotGuestChatQuery {
+  Update data2 = 1;
+}
+
+// TL_updateAiComposeTones
+message TL_updateAiComposeTones {
+  Update data2 = 1;
+}
+
 // TL_updateChannelPinnedTopic
 message TL_updateChannelPinnedTopic {
   Update data2 = 1;
@@ -13574,28 +13677,29 @@ message User {
   bool bot_forum_view = 29;
   bool bot_forum_can_manage_topics = 30;
   bool bot_can_manage_bots = 31;
-  google.protobuf.Int64Value access_hash = 32;
-  google.protobuf.StringValue first_name = 33;
-  google.protobuf.StringValue last_name = 34;
-  google.protobuf.StringValue username = 35;
-  google.protobuf.StringValue phone = 36;
-  UserProfilePhoto photo = 37;
-  UserStatus status = 38;
-  google.protobuf.Int32Value bot_info_version = 39;
-  repeated RestrictionReason restriction_reason = 40;
-  google.protobuf.StringValue bot_inline_placeholder = 41;
-  google.protobuf.StringValue lang_code = 42;
-  EmojiStatus emoji_status = 43;
-  repeated Username usernames = 44;
-  RecentStory stories_max_id_FLAGRECENTSTORY = 45;
-  PeerColor color_FLAGPEERCOLOR = 46;
-  PeerColor profile_color = 47;
-  google.protobuf.Int32Value bot_active_users = 48;
-  google.protobuf.Int64Value bot_verification_icon = 49;
-  google.protobuf.Int64Value send_paid_messages_stars = 50;
-  google.protobuf.Int32Value stories_max_id_FLAGINT32 = 51;
-  google.protobuf.Int32Value color_FLAGINT32 = 52;
-  google.protobuf.Int64Value background_emoji_id = 53;
+  bool bot_guestchat = 32;
+  google.protobuf.Int64Value access_hash = 33;
+  google.protobuf.StringValue first_name = 34;
+  google.protobuf.StringValue last_name = 35;
+  google.protobuf.StringValue username = 36;
+  google.protobuf.StringValue phone = 37;
+  UserProfilePhoto photo = 38;
+  UserStatus status = 39;
+  google.protobuf.Int32Value bot_info_version = 40;
+  repeated RestrictionReason restriction_reason = 41;
+  google.protobuf.StringValue bot_inline_placeholder = 42;
+  google.protobuf.StringValue lang_code = 43;
+  EmojiStatus emoji_status = 44;
+  repeated Username usernames = 45;
+  RecentStory stories_max_id_FLAGRECENTSTORY = 46;
+  PeerColor color_FLAGPEERCOLOR = 47;
+  PeerColor profile_color = 48;
+  google.protobuf.Int32Value bot_active_users = 49;
+  google.protobuf.Int64Value bot_verification_icon = 50;
+  google.protobuf.Int64Value send_paid_messages_stars = 51;
+  google.protobuf.Int32Value stories_max_id_FLAGINT32 = 52;
+  google.protobuf.Int32Value color_FLAGINT32 = 53;
+  google.protobuf.Int64Value background_emoji_id = 54;
   google.protobuf.Int32Value color = 100;
 }
 
@@ -14087,6 +14191,7 @@ message TL_webPageNotModified {
 //  + TL_webPageAttributeUniqueStarGift
 //  + TL_webPageAttributeStarGiftCollection
 //  + TL_webPageAttributeStarGiftAuction
+//  + TL_webPageAttributeAiComposeTone
 //  + TL_webPageAttributeStarGiftAuction
 //  + TL_webPageAttributeStory
 //
@@ -14104,10 +14209,11 @@ message WebPageAttribute {
   StarGift gift = 11;
   repeated Document icons = 12;
   int32 end_date = 13;
-  int32 center_color = 14;
-  int32 edge_color = 15;
-  int32 text_color_INT32 = 16;
-  int64 user_id = 17;
+  int64 emoji_id = 14;
+  int32 center_color = 15;
+  int32 edge_color = 16;
+  int32 text_color_INT32 = 17;
+  int64 user_id = 18;
 }
 
 // TL_webPageAttributeTheme
@@ -14137,6 +14243,11 @@ message TL_webPageAttributeStarGiftCollection {
 
 // TL_webPageAttributeStarGiftAuction
 message TL_webPageAttributeStarGiftAuction {
+  WebPageAttribute data2 = 1;
+}
+
+// TL_webPageAttributeAiComposeTone
+message TL_webPageAttributeAiComposeTone {
   WebPageAttribute data2 = 1;
 }
 
@@ -14680,6 +14791,28 @@ message TL_account_webAuthorizations {
   account_WebAuthorizations data2 = 1;
 }
 
+// aicompose_Tones <--
+//  + TL_aicompose_tonesNotModified
+//  + TL_aicompose_tones
+//
+message aicompose_Tones {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  int64 hash = 3;
+  repeated AiComposeTone tones = 4;
+  repeated User users = 5;
+}
+
+// TL_aicompose_tonesNotModified
+message TL_aicompose_tonesNotModified {
+  aicompose_Tones data2 = 1;
+}
+
+// TL_aicompose_tones
+message TL_aicompose_tones {
+  aicompose_Tones data2 = 1;
+}
+
 // auth_Authorization <--
 //  + TL_auth_authorization
 //  + TL_auth_authorizationSignUpRequired
@@ -14835,6 +14968,7 @@ message TL_auth_passwordRecovery {
 //  + TL_auth_sentCodePaymentRequired
 //  + TL_auth_sentCodePaymentRequired
 //  + TL_auth_sentCodePaymentRequired
+//  + TL_auth_sentCodePaymentRequired
 //
 message auth_SentCode {
   string predicate_name = 1;
@@ -14847,8 +14981,9 @@ message auth_SentCode {
   string store_product = 8;
   string support_email_address = 9;
   string support_email_subject = 10;
-  string currency = 11;
-  int64 amount = 12;
+  int32 premium_days = 11;
+  string currency = 12;
+  int64 amount = 13;
 }
 
 // TL_auth_sentCode
@@ -14956,6 +15091,21 @@ message TL_auth_sentCodeTypeSmsWord {
 // TL_auth_sentCodeTypeSmsPhrase
 message TL_auth_sentCodeTypeSmsPhrase {
   auth_SentCodeType data2 = 1;
+}
+
+// bots_AccessSettings <--
+//  + TL_bots_accessSettings
+//
+message bots_AccessSettings {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  bool restricted = 3;
+  repeated User add_users = 4;
+}
+
+// TL_bots_accessSettings
+message TL_bots_accessSettings {
+  bots_AccessSettings data2 = 1;
 }
 
 // bots_BotInfo <--
@@ -18005,6 +18155,20 @@ message stats_MessageStats {
 // TL_stats_messageStats
 message TL_stats_messageStats {
   stats_MessageStats data2 = 1;
+}
+
+// stats_PollStats <--
+//  + TL_stats_pollStats
+//
+message stats_PollStats {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  StatsGraph votes_graph = 3;
+}
+
+// TL_stats_pollStats
+message TL_stats_pollStats {
+  stats_PollStats data2 = 1;
 }
 
 // stats_PublicForwards <--

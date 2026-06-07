@@ -1065,9 +1065,10 @@ message TL_contacts_getTopPeers {
   bool groups = 9;
   bool channels = 10;
   bool bots_app = 11;
-  int32 offset = 12;
-  int32 limit = 13;
-  int64 hash = 14;
+  bool bots_guestchat = 12;
+  int32 offset = 13;
+  int32 limit = 14;
+  int64 hash = 15;
 }
 
 message TL_contacts_resetTopPeerRating {
@@ -2970,7 +2971,8 @@ message TL_messages_composeMessageWithAI {
   bool emojify = 4;
   TextWithEntities text = 5;
   google.protobuf.StringValue translate_to_lang = 6;
-  google.protobuf.StringValue change_tone = 7;
+  InputAiComposeTone tone = 7;
+  google.protobuf.StringValue change_tone = 8;
 }
 
 message TL_messages_reportReadMetrics {
@@ -3014,6 +3016,34 @@ message TL_messages_readPollVotes {
   TLConstructor constructor = 1;
   InputPeer peer = 3;
   google.protobuf.Int32Value top_msg_id = 4;
+}
+
+message TL_messages_setBotGuestChatResult {
+  TLConstructor constructor = 1;
+  int64 query_id = 3;
+  InputBotInlineResult result = 4;
+}
+
+message TL_messages_deleteParticipantReactions {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  InputPeer participant = 4;
+}
+
+message TL_messages_deleteParticipantReaction {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  int32 msg_id = 4;
+  InputPeer participant = 5;
+}
+
+message TL_messages_getPersonalChannelHistory {
+  TLConstructor constructor = 1;
+  InputUser user_id = 3;
+  int32 limit = 4;
+  int32 max_id = 5;
+  int32 min_id = 6;
+  int64 hash = 7;
 }
 
 message TL_updates_getState {
@@ -3851,6 +3881,18 @@ message TL_bots_getRequestedWebViewButton {
   TLConstructor constructor = 1;
   InputUser bot = 3;
   string webapp_req_id = 4;
+}
+
+message TL_bots_getAccessSettings {
+  TLConstructor constructor = 1;
+  InputUser bot = 3;
+}
+
+message TL_bots_editAccessSettings {
+  TLConstructor constructor = 1;
+  bool restricted = 3;
+  InputUser bot = 4;
+  repeated InputUser add_users = 5;
 }
 
 message TL_payments_getPaymentForm {
@@ -4753,6 +4795,13 @@ message TL_stats_getStoryPublicForwards {
   int32 limit = 6;
 }
 
+message TL_stats_getPollStats {
+  TLConstructor constructor = 1;
+  bool dark = 3;
+  InputPeer peer = 4;
+  int32 msg_id = 5;
+}
+
 message TL_chatlists_exportChatlistInvite {
   TLConstructor constructor = 1;
   InputChatlist chatlist = 3;
@@ -5134,6 +5183,50 @@ message TL_smsjobs_finishJob {
 message TL_fragment_getCollectibleInfo {
   TLConstructor constructor = 1;
   InputCollectible collectible = 3;
+}
+
+message TL_aicompose_createTone {
+  TLConstructor constructor = 1;
+  bool display_author = 3;
+  int64 emoji_id = 4;
+  string title = 5;
+  string prompt = 6;
+}
+
+message TL_aicompose_updateTone {
+  TLConstructor constructor = 1;
+  InputAiComposeTone tone = 3;
+  Bool display_author = 4;
+  google.protobuf.Int64Value emoji_id = 5;
+  google.protobuf.StringValue title = 6;
+  google.protobuf.StringValue prompt = 7;
+}
+
+message TL_aicompose_saveTone {
+  TLConstructor constructor = 1;
+  InputAiComposeTone tone = 3;
+  Bool unsave = 4;
+}
+
+message TL_aicompose_deleteTone {
+  TLConstructor constructor = 1;
+  InputAiComposeTone tone = 3;
+}
+
+message TL_aicompose_getTone {
+  TLConstructor constructor = 1;
+  InputAiComposeTone tone = 3;
+}
+
+message TL_aicompose_getTones {
+  TLConstructor constructor = 1;
+  int64 hash = 3;
+}
+
+message TL_aicompose_getToneExample {
+  TLConstructor constructor = 1;
+  InputAiComposeTone tone = 3;
+  int32 num = 4;
 }
 
 message TL_channels_editCreator {
@@ -5735,6 +5828,17 @@ service RPCAffiliatePrograms {
       returns (payments_ConnectedStarRefBots) {}
 }
 
+service RPCAiComposeTone {
+  rpc aicompose_createTone(TL_aicompose_createTone) returns (AiComposeTone) {}
+  rpc aicompose_updateTone(TL_aicompose_updateTone) returns (AiComposeTone) {}
+  rpc aicompose_saveTone(TL_aicompose_saveTone) returns (Bool) {}
+  rpc aicompose_deleteTone(TL_aicompose_deleteTone) returns (Bool) {}
+  rpc aicompose_getTone(TL_aicompose_getTone) returns (aicompose_Tones) {}
+  rpc aicompose_getTones(TL_aicompose_getTones) returns (aicompose_Tones) {}
+  rpc aicompose_getToneExample(TL_aicompose_getToneExample)
+      returns (AiComposeToneExample) {}
+}
+
 service RPCAntiSpam {
   rpc channels_toggleAntiSpam(TL_channels_toggleAntiSpam) returns (Updates) {}
   rpc channels_reportAntiSpamFalsePositive(
@@ -5863,6 +5967,9 @@ service RPCBots {
   rpc bots_createBot(TL_bots_createBot) returns (User) {}
   rpc bots_exportBotToken(TL_bots_exportBotToken)
       returns (bots_ExportedBotToken) {}
+  rpc bots_getAccessSettings(TL_bots_getAccessSettings)
+      returns (bots_AccessSettings) {}
+  rpc bots_editAccessSettings(TL_bots_editAccessSettings) returns (Bool) {}
   rpc bots_getBotInfo75EC12E6(TL_bots_getBotInfo75EC12E6)
       returns (Vector_String) {}
 }
@@ -5951,6 +6058,8 @@ service RPCChannelRecommendations {
 }
 
 service RPCChannels {
+  rpc messages_getPersonalChannelHistory(TL_messages_getPersonalChannelHistory)
+      returns (messages_Messages) {}
   rpc channels_readHistory(TL_channels_readHistory) returns (Bool) {}
   rpc channels_deleteMessages(TL_channels_deleteMessages)
       returns (messages_AffectedMessages) {}
@@ -6546,6 +6655,8 @@ service RPCInlineBot {
       returns (Bool) {}
   rpc messages_sendBotRequestedPeer(TL_messages_sendBotRequestedPeer)
       returns (Updates) {}
+  rpc messages_setBotGuestChatResult(TL_messages_setBotGuestChatResult)
+      returns (InputBotInlineMessageID) {}
 }
 
 service RPCInternalBot {
@@ -6926,6 +7037,10 @@ service RPCReactions {
       returns (Bool) {}
   rpc messages_getPaidReactionPrivacy(TL_messages_getPaidReactionPrivacy)
       returns (Updates) {}
+  rpc messages_deleteParticipantReactions(
+      TL_messages_deleteParticipantReactions) returns (Bool) {}
+  rpc messages_deleteParticipantReaction(TL_messages_deleteParticipantReaction)
+      returns (Updates) {}
 }
 
 service RPCReports {
@@ -7112,6 +7227,7 @@ service RPCStatistics {
   rpc stats_getStoryStats(TL_stats_getStoryStats) returns (stats_StoryStats) {}
   rpc stats_getStoryPublicForwards(TL_stats_getStoryPublicForwards)
       returns (stats_PublicForwards) {}
+  rpc stats_getPollStats(TL_stats_getPollStats) returns (stats_PollStats) {}
   rpc stats_getMessagePublicForwards5630281B(
       TL_stats_getMessagePublicForwards5630281B) returns (messages_Messages) {}
 }
