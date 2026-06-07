@@ -936,19 +936,21 @@ var RPCAffiliatePrograms_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCAiComposeTone_AicomposeCreateTone_FullMethodName     = "/mtproto.RPCAiComposeTone/aicompose_createTone"
-	RPCAiComposeTone_AicomposeUpdateTone_FullMethodName     = "/mtproto.RPCAiComposeTone/aicompose_updateTone"
-	RPCAiComposeTone_AicomposeSaveTone_FullMethodName       = "/mtproto.RPCAiComposeTone/aicompose_saveTone"
-	RPCAiComposeTone_AicomposeDeleteTone_FullMethodName     = "/mtproto.RPCAiComposeTone/aicompose_deleteTone"
-	RPCAiComposeTone_AicomposeGetTone_FullMethodName        = "/mtproto.RPCAiComposeTone/aicompose_getTone"
-	RPCAiComposeTone_AicomposeGetTones_FullMethodName       = "/mtproto.RPCAiComposeTone/aicompose_getTones"
-	RPCAiComposeTone_AicomposeGetToneExample_FullMethodName = "/mtproto.RPCAiComposeTone/aicompose_getToneExample"
+	RPCAiComposeTone_MessagesComposeMessageWithAI_FullMethodName = "/mtproto.RPCAiComposeTone/messages_composeMessageWithAI"
+	RPCAiComposeTone_AicomposeCreateTone_FullMethodName          = "/mtproto.RPCAiComposeTone/aicompose_createTone"
+	RPCAiComposeTone_AicomposeUpdateTone_FullMethodName          = "/mtproto.RPCAiComposeTone/aicompose_updateTone"
+	RPCAiComposeTone_AicomposeSaveTone_FullMethodName            = "/mtproto.RPCAiComposeTone/aicompose_saveTone"
+	RPCAiComposeTone_AicomposeDeleteTone_FullMethodName          = "/mtproto.RPCAiComposeTone/aicompose_deleteTone"
+	RPCAiComposeTone_AicomposeGetTone_FullMethodName             = "/mtproto.RPCAiComposeTone/aicompose_getTone"
+	RPCAiComposeTone_AicomposeGetTones_FullMethodName            = "/mtproto.RPCAiComposeTone/aicompose_getTones"
+	RPCAiComposeTone_AicomposeGetToneExample_FullMethodName      = "/mtproto.RPCAiComposeTone/aicompose_getToneExample"
 )
 
 // RPCAiComposeToneClient is the client API for RPCAiComposeTone service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCAiComposeToneClient interface {
+	MessagesComposeMessageWithAI(ctx context.Context, in *TLMessagesComposeMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedMessageWithAI, error)
 	AicomposeCreateTone(ctx context.Context, in *TLAicomposeCreateTone, opts ...grpc.CallOption) (*AiComposeTone, error)
 	AicomposeUpdateTone(ctx context.Context, in *TLAicomposeUpdateTone, opts ...grpc.CallOption) (*AiComposeTone, error)
 	AicomposeSaveTone(ctx context.Context, in *TLAicomposeSaveTone, opts ...grpc.CallOption) (*Bool, error)
@@ -964,6 +966,16 @@ type rPCAiComposeToneClient struct {
 
 func NewRPCAiComposeToneClient(cc grpc.ClientConnInterface) RPCAiComposeToneClient {
 	return &rPCAiComposeToneClient{cc}
+}
+
+func (c *rPCAiComposeToneClient) MessagesComposeMessageWithAI(ctx context.Context, in *TLMessagesComposeMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedMessageWithAI, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_ComposedMessageWithAI)
+	err := c.cc.Invoke(ctx, RPCAiComposeTone_MessagesComposeMessageWithAI_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *rPCAiComposeToneClient) AicomposeCreateTone(ctx context.Context, in *TLAicomposeCreateTone, opts ...grpc.CallOption) (*AiComposeTone, error) {
@@ -1040,6 +1052,7 @@ func (c *rPCAiComposeToneClient) AicomposeGetToneExample(ctx context.Context, in
 // All implementations should embed UnimplementedRPCAiComposeToneServer
 // for forward compatibility.
 type RPCAiComposeToneServer interface {
+	MessagesComposeMessageWithAI(context.Context, *TLMessagesComposeMessageWithAI) (*Messages_ComposedMessageWithAI, error)
 	AicomposeCreateTone(context.Context, *TLAicomposeCreateTone) (*AiComposeTone, error)
 	AicomposeUpdateTone(context.Context, *TLAicomposeUpdateTone) (*AiComposeTone, error)
 	AicomposeSaveTone(context.Context, *TLAicomposeSaveTone) (*Bool, error)
@@ -1056,6 +1069,9 @@ type RPCAiComposeToneServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRPCAiComposeToneServer struct{}
 
+func (UnimplementedRPCAiComposeToneServer) MessagesComposeMessageWithAI(context.Context, *TLMessagesComposeMessageWithAI) (*Messages_ComposedMessageWithAI, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesComposeMessageWithAI not implemented")
+}
 func (UnimplementedRPCAiComposeToneServer) AicomposeCreateTone(context.Context, *TLAicomposeCreateTone) (*AiComposeTone, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AicomposeCreateTone not implemented")
 }
@@ -1095,6 +1111,24 @@ func RegisterRPCAiComposeToneServer(s grpc.ServiceRegistrar, srv RPCAiComposeTon
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&RPCAiComposeTone_ServiceDesc, srv)
+}
+
+func _RPCAiComposeTone_MessagesComposeMessageWithAI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesComposeMessageWithAI)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAiComposeToneServer).MessagesComposeMessageWithAI(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAiComposeTone_MessagesComposeMessageWithAI_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAiComposeToneServer).MessagesComposeMessageWithAI(ctx, req.(*TLMessagesComposeMessageWithAI))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _RPCAiComposeTone_AicomposeCreateTone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1230,6 +1264,10 @@ var RPCAiComposeTone_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "mtproto.RPCAiComposeTone",
 	HandlerType: (*RPCAiComposeToneServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "messages_composeMessageWithAI",
+			Handler:    _RPCAiComposeTone_MessagesComposeMessageWithAI_Handler,
+		},
 		{
 			MethodName: "aicompose_createTone",
 			Handler:    _RPCAiComposeTone_AicomposeCreateTone_Handler,
@@ -20487,9 +20525,6 @@ const (
 	RPCMessages_MessagesSearchSentMedia_FullMethodName           = "/mtproto.RPCMessages/messages_searchSentMedia"
 	RPCMessages_MessagesGetOutboxReadDate_FullMethodName         = "/mtproto.RPCMessages/messages_getOutboxReadDate"
 	RPCMessages_MessagesSummarizeText_FullMethodName             = "/mtproto.RPCMessages/messages_summarizeText"
-	RPCMessages_MessagesComposeMessageWithAI_FullMethodName      = "/mtproto.RPCMessages/messages_composeMessageWithAI"
-	RPCMessages_MessagesReportReadMetrics_FullMethodName         = "/mtproto.RPCMessages/messages_reportReadMetrics"
-	RPCMessages_MessagesReportMusicListen_FullMethodName         = "/mtproto.RPCMessages/messages_reportMusicListen"
 	RPCMessages_ChannelsGetSendAs_FullMethodName                 = "/mtproto.RPCMessages/channels_getSendAs"
 	RPCMessages_ChannelsSearchPosts_FullMethodName               = "/mtproto.RPCMessages/channels_searchPosts"
 	RPCMessages_ChannelsCheckSearchPostsFlood_FullMethodName     = "/mtproto.RPCMessages/channels_checkSearchPostsFlood"
@@ -20528,9 +20563,6 @@ type RPCMessagesClient interface {
 	MessagesSearchSentMedia(ctx context.Context, in *TLMessagesSearchSentMedia, opts ...grpc.CallOption) (*Messages_Messages, error)
 	MessagesGetOutboxReadDate(ctx context.Context, in *TLMessagesGetOutboxReadDate, opts ...grpc.CallOption) (*OutboxReadDate, error)
 	MessagesSummarizeText(ctx context.Context, in *TLMessagesSummarizeText, opts ...grpc.CallOption) (*TextWithEntities, error)
-	MessagesComposeMessageWithAI(ctx context.Context, in *TLMessagesComposeMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedMessageWithAI, error)
-	MessagesReportReadMetrics(ctx context.Context, in *TLMessagesReportReadMetrics, opts ...grpc.CallOption) (*Bool, error)
-	MessagesReportMusicListen(ctx context.Context, in *TLMessagesReportMusicListen, opts ...grpc.CallOption) (*Bool, error)
 	ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(ctx context.Context, in *TLChannelsSearchPosts, opts ...grpc.CallOption) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(ctx context.Context, in *TLChannelsCheckSearchPostsFlood, opts ...grpc.CallOption) (*SearchPostsFlood, error)
@@ -20834,36 +20866,6 @@ func (c *rPCMessagesClient) MessagesSummarizeText(ctx context.Context, in *TLMes
 	return out, nil
 }
 
-func (c *rPCMessagesClient) MessagesComposeMessageWithAI(ctx context.Context, in *TLMessagesComposeMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedMessageWithAI, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Messages_ComposedMessageWithAI)
-	err := c.cc.Invoke(ctx, RPCMessages_MessagesComposeMessageWithAI_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *rPCMessagesClient) MessagesReportReadMetrics(ctx context.Context, in *TLMessagesReportReadMetrics, opts ...grpc.CallOption) (*Bool, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Bool)
-	err := c.cc.Invoke(ctx, RPCMessages_MessagesReportReadMetrics_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *rPCMessagesClient) MessagesReportMusicListen(ctx context.Context, in *TLMessagesReportMusicListen, opts ...grpc.CallOption) (*Bool, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Bool)
-	err := c.cc.Invoke(ctx, RPCMessages_MessagesReportMusicListen_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *rPCMessagesClient) ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Channels_SendAsPeers)
@@ -20927,9 +20929,6 @@ type RPCMessagesServer interface {
 	MessagesSearchSentMedia(context.Context, *TLMessagesSearchSentMedia) (*Messages_Messages, error)
 	MessagesGetOutboxReadDate(context.Context, *TLMessagesGetOutboxReadDate) (*OutboxReadDate, error)
 	MessagesSummarizeText(context.Context, *TLMessagesSummarizeText) (*TextWithEntities, error)
-	MessagesComposeMessageWithAI(context.Context, *TLMessagesComposeMessageWithAI) (*Messages_ComposedMessageWithAI, error)
-	MessagesReportReadMetrics(context.Context, *TLMessagesReportReadMetrics) (*Bool, error)
-	MessagesReportMusicListen(context.Context, *TLMessagesReportMusicListen) (*Bool, error)
 	ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(context.Context, *TLChannelsSearchPosts) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(context.Context, *TLChannelsCheckSearchPostsFlood) (*SearchPostsFlood, error)
@@ -21028,15 +21027,6 @@ func (UnimplementedRPCMessagesServer) MessagesGetOutboxReadDate(context.Context,
 }
 func (UnimplementedRPCMessagesServer) MessagesSummarizeText(context.Context, *TLMessagesSummarizeText) (*TextWithEntities, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesSummarizeText not implemented")
-}
-func (UnimplementedRPCMessagesServer) MessagesComposeMessageWithAI(context.Context, *TLMessagesComposeMessageWithAI) (*Messages_ComposedMessageWithAI, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MessagesComposeMessageWithAI not implemented")
-}
-func (UnimplementedRPCMessagesServer) MessagesReportReadMetrics(context.Context, *TLMessagesReportReadMetrics) (*Bool, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MessagesReportReadMetrics not implemented")
-}
-func (UnimplementedRPCMessagesServer) MessagesReportMusicListen(context.Context, *TLMessagesReportMusicListen) (*Bool, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MessagesReportMusicListen not implemented")
 }
 func (UnimplementedRPCMessagesServer) ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsGetSendAs not implemented")
@@ -21589,60 +21579,6 @@ func _RPCMessages_MessagesSummarizeText_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RPCMessages_MessagesComposeMessageWithAI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TLMessagesComposeMessageWithAI)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RPCMessagesServer).MessagesComposeMessageWithAI(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: RPCMessages_MessagesComposeMessageWithAI_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCMessagesServer).MessagesComposeMessageWithAI(ctx, req.(*TLMessagesComposeMessageWithAI))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RPCMessages_MessagesReportReadMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TLMessagesReportReadMetrics)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RPCMessagesServer).MessagesReportReadMetrics(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: RPCMessages_MessagesReportReadMetrics_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCMessagesServer).MessagesReportReadMetrics(ctx, req.(*TLMessagesReportReadMetrics))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _RPCMessages_MessagesReportMusicListen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TLMessagesReportMusicListen)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(RPCMessagesServer).MessagesReportMusicListen(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: RPCMessages_MessagesReportMusicListen_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCMessagesServer).MessagesReportMusicListen(ctx, req.(*TLMessagesReportMusicListen))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _RPCMessages_ChannelsGetSendAs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLChannelsGetSendAs)
 	if err := dec(in); err != nil {
@@ -21819,18 +21755,6 @@ var RPCMessages_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_summarizeText",
 			Handler:    _RPCMessages_MessagesSummarizeText_Handler,
-		},
-		{
-			MethodName: "messages_composeMessageWithAI",
-			Handler:    _RPCMessages_MessagesComposeMessageWithAI_Handler,
-		},
-		{
-			MethodName: "messages_reportReadMetrics",
-			Handler:    _RPCMessages_MessagesReportReadMetrics_Handler,
-		},
-		{
-			MethodName: "messages_reportMusicListen",
-			Handler:    _RPCMessages_MessagesReportMusicListen_Handler,
 		},
 		{
 			MethodName: "channels_getSendAs",
@@ -27517,6 +27441,8 @@ const (
 	RPCReports_MessagesReportSpam_FullMethodName          = "/mtproto.RPCReports/messages_reportSpam"
 	RPCReports_MessagesReportFC78AF9B_FullMethodName      = "/mtproto.RPCReports/messages_reportFC78AF9B"
 	RPCReports_MessagesReportEncryptedSpam_FullMethodName = "/mtproto.RPCReports/messages_reportEncryptedSpam"
+	RPCReports_MessagesReportReadMetrics_FullMethodName   = "/mtproto.RPCReports/messages_reportReadMetrics"
+	RPCReports_MessagesReportMusicListen_FullMethodName   = "/mtproto.RPCReports/messages_reportMusicListen"
 	RPCReports_ChannelsReportSpam_FullMethodName          = "/mtproto.RPCReports/channels_reportSpam"
 	RPCReports_MessagesReport8953AB4E_FullMethodName      = "/mtproto.RPCReports/messages_report8953AB4E"
 )
@@ -27530,6 +27456,8 @@ type RPCReportsClient interface {
 	MessagesReportSpam(ctx context.Context, in *TLMessagesReportSpam, opts ...grpc.CallOption) (*Bool, error)
 	MessagesReportFC78AF9B(ctx context.Context, in *TLMessagesReportFC78AF9B, opts ...grpc.CallOption) (*ReportResult, error)
 	MessagesReportEncryptedSpam(ctx context.Context, in *TLMessagesReportEncryptedSpam, opts ...grpc.CallOption) (*Bool, error)
+	MessagesReportReadMetrics(ctx context.Context, in *TLMessagesReportReadMetrics, opts ...grpc.CallOption) (*Bool, error)
+	MessagesReportMusicListen(ctx context.Context, in *TLMessagesReportMusicListen, opts ...grpc.CallOption) (*Bool, error)
 	ChannelsReportSpam(ctx context.Context, in *TLChannelsReportSpam, opts ...grpc.CallOption) (*Bool, error)
 	MessagesReport8953AB4E(ctx context.Context, in *TLMessagesReport8953AB4E, opts ...grpc.CallOption) (*Bool, error)
 }
@@ -27592,6 +27520,26 @@ func (c *rPCReportsClient) MessagesReportEncryptedSpam(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *rPCReportsClient) MessagesReportReadMetrics(ctx context.Context, in *TLMessagesReportReadMetrics, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCReports_MessagesReportReadMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCReportsClient) MessagesReportMusicListen(ctx context.Context, in *TLMessagesReportMusicListen, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCReports_MessagesReportMusicListen_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCReportsClient) ChannelsReportSpam(ctx context.Context, in *TLChannelsReportSpam, opts ...grpc.CallOption) (*Bool, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Bool)
@@ -27621,6 +27569,8 @@ type RPCReportsServer interface {
 	MessagesReportSpam(context.Context, *TLMessagesReportSpam) (*Bool, error)
 	MessagesReportFC78AF9B(context.Context, *TLMessagesReportFC78AF9B) (*ReportResult, error)
 	MessagesReportEncryptedSpam(context.Context, *TLMessagesReportEncryptedSpam) (*Bool, error)
+	MessagesReportReadMetrics(context.Context, *TLMessagesReportReadMetrics) (*Bool, error)
+	MessagesReportMusicListen(context.Context, *TLMessagesReportMusicListen) (*Bool, error)
 	ChannelsReportSpam(context.Context, *TLChannelsReportSpam) (*Bool, error)
 	MessagesReport8953AB4E(context.Context, *TLMessagesReport8953AB4E) (*Bool, error)
 }
@@ -27646,6 +27596,12 @@ func (UnimplementedRPCReportsServer) MessagesReportFC78AF9B(context.Context, *TL
 }
 func (UnimplementedRPCReportsServer) MessagesReportEncryptedSpam(context.Context, *TLMessagesReportEncryptedSpam) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesReportEncryptedSpam not implemented")
+}
+func (UnimplementedRPCReportsServer) MessagesReportReadMetrics(context.Context, *TLMessagesReportReadMetrics) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesReportReadMetrics not implemented")
+}
+func (UnimplementedRPCReportsServer) MessagesReportMusicListen(context.Context, *TLMessagesReportMusicListen) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesReportMusicListen not implemented")
 }
 func (UnimplementedRPCReportsServer) ChannelsReportSpam(context.Context, *TLChannelsReportSpam) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsReportSpam not implemented")
@@ -27763,6 +27719,42 @@ func _RPCReports_MessagesReportEncryptedSpam_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCReports_MessagesReportReadMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesReportReadMetrics)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCReportsServer).MessagesReportReadMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCReports_MessagesReportReadMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCReportsServer).MessagesReportReadMetrics(ctx, req.(*TLMessagesReportReadMetrics))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCReports_MessagesReportMusicListen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesReportMusicListen)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCReportsServer).MessagesReportMusicListen(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCReports_MessagesReportMusicListen_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCReportsServer).MessagesReportMusicListen(ctx, req.(*TLMessagesReportMusicListen))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCReports_ChannelsReportSpam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLChannelsReportSpam)
 	if err := dec(in); err != nil {
@@ -27825,6 +27817,14 @@ var RPCReports_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_reportEncryptedSpam",
 			Handler:    _RPCReports_MessagesReportEncryptedSpam_Handler,
+		},
+		{
+			MethodName: "messages_reportReadMetrics",
+			Handler:    _RPCReports_MessagesReportReadMetrics_Handler,
+		},
+		{
+			MethodName: "messages_reportMusicListen",
+			Handler:    _RPCReports_MessagesReportMusicListen_Handler,
 		},
 		{
 			MethodName: "channels_reportSpam",

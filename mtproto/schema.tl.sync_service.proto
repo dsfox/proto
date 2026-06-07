@@ -5829,6 +5829,8 @@ service RPCAffiliatePrograms {
 }
 
 service RPCAiComposeTone {
+  rpc messages_composeMessageWithAI(TL_messages_composeMessageWithAI)
+      returns (messages_ComposedMessageWithAI) {}
   rpc aicompose_createTone(TL_aicompose_createTone) returns (AiComposeTone) {}
   rpc aicompose_updateTone(TL_aicompose_updateTone) returns (AiComposeTone) {}
   rpc aicompose_saveTone(TL_aicompose_saveTone) returns (Bool) {}
@@ -6760,12 +6762,6 @@ service RPCMessages {
       returns (OutboxReadDate) {}
   rpc messages_summarizeText(TL_messages_summarizeText)
       returns (TextWithEntities) {}
-  rpc messages_composeMessageWithAI(TL_messages_composeMessageWithAI)
-      returns (messages_ComposedMessageWithAI) {}
-  rpc messages_reportReadMetrics(TL_messages_reportReadMetrics) returns (Bool) {
-  }
-  rpc messages_reportMusicListen(TL_messages_reportMusicListen) returns (Bool) {
-  }
   rpc channels_getSendAs(TL_channels_getSendAs) returns (channels_SendAsPeers) {
   }
   rpc channels_searchPosts(TL_channels_searchPosts)
@@ -7052,6 +7048,10 @@ service RPCReports {
       returns (ReportResult) {}
   rpc messages_reportEncryptedSpam(TL_messages_reportEncryptedSpam)
       returns (Bool) {}
+  rpc messages_reportReadMetrics(TL_messages_reportReadMetrics) returns (Bool) {
+  }
+  rpc messages_reportMusicListen(TL_messages_reportMusicListen) returns (Bool) {
+  }
   rpc channels_reportSpam(TL_channels_reportSpam) returns (Bool) {}
   rpc messages_report8953AB4E(TL_messages_report8953AB4E) returns (Bool) {}
 }
