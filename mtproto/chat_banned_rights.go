@@ -73,7 +73,7 @@ func MakeDefaultBannedRights() *ChatBannedRights {
 		SendVoices:      false,
 		SendDocs:        false,
 		SendPlain:       false,
-		EditRank:        false,
+		EditRank:        true,
 		SendReactions:   false,
 		UntilDate:       math.MaxInt32,
 	}).To_ChatBannedRights()
