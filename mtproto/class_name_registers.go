@@ -175421,7 +175421,7 @@ var clazzNameRegisters2 = map[string]map[int]int32{
 
 	},
 	Predicate_immutableChatParticipant: {
-		0: -100771298, // 0xf9fe5a1e
+		0: -1824564343, // 0x933f5b89
 
 	},
 	Predicate_immutableChat: {
@@ -178627,7 +178627,7 @@ var clazzIdNameRegisters2 = map[int32]string{
 	1069231812:  Predicate_userData,                                           // 0x3fbb2ec4
 	972235212:   Predicate_immutableUser,                                      // 0x39f321cc
 	917538818:   Predicate_mutableUsers,                                       // 0x36b08802
-	-100771298:  Predicate_immutableChatParticipant,                           // 0xf9fe5a1e
+	-1824564343: Predicate_immutableChatParticipant,                           // 0x933f5b89
 	-1557334680: Predicate_immutableChat,                                      // 0xa32cf568
 	-34609042:   Predicate_mutableChat,                                        // 0xfdefe86e
 	2018609336:  Predicate_initConnection,                                     // 785188b8

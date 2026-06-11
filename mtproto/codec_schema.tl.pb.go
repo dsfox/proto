@@ -73876,7 +73876,7 @@ func (m *ImmutableChatParticipant) CalcByteSize(layer int32) int {
 func (m *ImmutableChatParticipant) Decode(dBuf *DecodeBuf) error {
 	m.Constructor = TLConstructor(dBuf.Int())
 	switch uint32(m.Constructor) {
-	case 0xf9fe5a1e:
+	case 0x933f5b89:
 		m2 := MakeTLImmutableChatParticipant(m)
 		m2.Decode(dBuf)
 
@@ -73954,6 +73954,9 @@ func (m *TLImmutableChatParticipant) GetDate() int64  { return m.Data2.Date }
 func (m *TLImmutableChatParticipant) SetIsBot(v bool) { m.Data2.IsBot = v }
 func (m *TLImmutableChatParticipant) GetIsBot() bool  { return m.Data2.IsBot }
 
+func (m *TLImmutableChatParticipant) SetRank(v string) { m.Data2.Rank = v }
+func (m *TLImmutableChatParticipant) GetRank() string  { return m.Data2.Rank }
+
 func (m *TLImmutableChatParticipant) GetPredicateName() string {
 	return Predicate_immutableChatParticipant
 }
@@ -73961,8 +73964,8 @@ func (m *TLImmutableChatParticipant) GetPredicateName() string {
 func (m *TLImmutableChatParticipant) Encode(x *EncodeBuf, layer int32) error {
 	clazzId := GetClazzID(Predicate_immutableChatParticipant, int(layer))
 	switch uint32(clazzId) {
-	case 0xf9fe5a1e:
-		x.UInt(0xf9fe5a1e)
+	case 0x933f5b89:
+		x.UInt(0x933f5b89)
 
 		// set flags
 		var getFlags = func() uint32 {
@@ -73991,6 +73994,7 @@ func (m *TLImmutableChatParticipant) Encode(x *EncodeBuf, layer int32) error {
 		x.Long(m.GetLeftAt())
 		m.GetAdminRights().Encode(x, layer)
 		x.Long(m.GetDate())
+		x.String(m.GetRank())
 
 		return nil
 
@@ -74005,7 +74009,7 @@ func (m *TLImmutableChatParticipant) CalcByteSize(layer int32) int {
 
 func (m *TLImmutableChatParticipant) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
-	case 0xf9fe5a1e:
+	case 0x933f5b89:
 		var flags = dBuf.UInt()
 		_ = flags
 		m.SetId(dBuf.Long())
@@ -74028,6 +74032,7 @@ func (m *TLImmutableChatParticipant) Decode(dBuf *DecodeBuf) error {
 		if (flags & (1 << 0)) != 0 {
 			m.SetIsBot(true)
 		}
+		m.SetRank(dBuf.String())
 		return dBuf.GetError()
 
 	default:

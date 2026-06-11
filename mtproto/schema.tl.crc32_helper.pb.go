@@ -2120,7 +2120,7 @@ const (
 	CRC32_userData                                                    TLConstructor = 1069231812  // 0x3fbb2ec4
 	CRC32_immutableUser                                               TLConstructor = 972235212   // 0x39f321cc
 	CRC32_mutableUsers                                                TLConstructor = 917538818   // 0x36b08802
-	CRC32_immutableChatParticipant                                    TLConstructor = -100771298  // 0xf9fe5a1e
+	CRC32_immutableChatParticipant                                    TLConstructor = -1824564343 // 0x933f5b89
 	CRC32_immutableChat                                               TLConstructor = -1557334680 // 0xa32cf568
 	CRC32_mutableChat                                                 TLConstructor = -34609042   // 0xfdefe86e
 	CRC32_invokeAfterMsg                                              TLConstructor = -878758099  // cb9f372d

@@ -191,18 +191,21 @@ func (m *ImmutableChatParticipant) ToChatParticipant() *ChatParticipant {
 	case ChatMemberCreator:
 		return MakeTLChatParticipantCreator(&ChatParticipant{
 			UserId: m.UserId,
+			Rank:   MakeFlagsString(m.Rank),
 		}).To_ChatParticipant()
 	case ChatMemberAdmin:
 		return MakeTLChatParticipantAdmin(&ChatParticipant{
 			UserId:    m.UserId,
 			InviterId: m.InviterUserId,
 			Date:      int32(m.InvitedAt),
+			Rank:      MakeFlagsString(m.Rank),
 		}).To_ChatParticipant()
 	default:
 		return MakeTLChatParticipant(&ChatParticipant{
 			UserId:    m.UserId,
 			InviterId: m.InviterUserId,
 			Date:      int32(m.InvitedAt),
+			Rank:      MakeFlagsString(m.Rank),
 		}).To_ChatParticipant()
 	}
 }

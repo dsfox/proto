@@ -3656,6 +3656,7 @@ message ImmutableChatParticipant {
   ChatAdminRights admin_rights = 14;
   int64 date = 15;
   bool is_bot = 16;
+  string rank = 17;
 }
 
 // TL_immutableChatParticipant
