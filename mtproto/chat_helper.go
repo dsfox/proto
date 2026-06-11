@@ -61,19 +61,22 @@ func SplitChatAndChannelIdList(idList []int64) (chatIdList, channelIdList []int6
 func MakeChatMessageService(fromId int64, chatType int32, chatId int64, slient bool, action *MessageAction) *Message {
 	message := MakeTLMessageService(&Message{
 		// TODO(@benqi): fill it
-		Out:         true,
-		Mentioned:   false,
-		MediaUnread: false,
-		Silent:      slient,
-		Post:        false,
-		Legacy:      false,
-		Id:          0,
-		FromId:      MakePeerUser(fromId),
-		PeerId:      MakePeerUtil(chatType, chatId).ToPeer(),
-		ReplyTo:     nil,
-		Date:        int32(time.Now().Unix()),
-		Action:      action,
-		TtlPeriod:   nil,
+		Out:                  true,
+		Mentioned:            false,
+		MediaUnread:          false,
+		ReactionsArePossible: false,
+		Silent:               slient,
+		Post:                 false,
+		Legacy:               false,
+		Id:                   0,
+		FromId:               MakePeerUser(fromId),
+		PeerId:               MakePeerUtil(chatType, chatId).ToPeer(),
+		SavedPeerId:          nil,
+		ReplyTo:              nil,
+		Date:                 int32(time.Now().Unix()),
+		Action:               action,
+		Reactions:            nil,
+		TtlPeriod:            nil,
 	})
 	return message.To_Message()
 }

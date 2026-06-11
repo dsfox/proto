@@ -43,6 +43,8 @@ const (
 	BANNED_SEND_VOICES      = 1 << 23
 	BANNED_SEND_DOCS        = 1 << 24
 	BANNED_SEND_PLAIN       = 1 << 25
+	BANNED_EDIT_RANK        = 1 << 26
+	BANNED_SEND_REACTIONS   = 1 << 27
 )
 
 type (
@@ -71,6 +73,8 @@ func MakeDefaultBannedRights() *ChatBannedRights {
 		SendVoices:      false,
 		SendDocs:        false,
 		SendPlain:       false,
+		EditRank:        false,
+		SendReactions:   false,
 		UntilDate:       math.MaxInt32,
 	}).To_ChatBannedRights()
 }
@@ -101,6 +105,8 @@ func (m BannedRights) ToChatBannedRights() *ChatBannedRights {
 		SendVoices:      (m & BANNED_SEND_VOICES) != 0,
 		SendDocs:        (m & BANNED_SEND_DOCS) != 0,
 		SendPlain:       (m & BANNED_SEND_PLAIN) != 0,
+		EditRank:        (m & BANNED_EDIT_RANK) != 0,
+		SendReactions:   (m & BANNED_SEND_REACTIONS) != 0,
 		UntilDate:       int32(m >> 32),
 	}).To_ChatBannedRights()
 }
@@ -125,7 +131,9 @@ func (m *ChatBannedRights) hasRights() bool {
 		m.SendAudios ||
 		m.SendVoices ||
 		m.SendDocs ||
-		m.SendPlain
+		m.SendPlain ||
+		m.EditRank ||
+		m.SendReactions
 }
 
 func (m *ChatBannedRights) NoBanRights() bool {
@@ -224,6 +232,14 @@ func (m *ChatBannedRights) CanSendPlain(date int32) bool {
 	return !m.GetSendPlain() || date >= m.UntilDate
 }
 
+func (m *ChatBannedRights) CanEditRank(date int32) bool {
+	return !m.GetEditRank() || date >= m.UntilDate
+}
+
+func (m *ChatBannedRights) CanSendReactions(date int32) bool {
+	return !m.GetSendReactions() || date >= m.UntilDate
+}
+
 func (m *ChatAdminRights) DisallowChannel() bool {
 	// return m.CanPostMessages() || m.CanEditMessages()
 	return false
@@ -293,6 +309,12 @@ func (m *ChatBannedRights) ToBannedRights() BannedRights {
 	}
 	if m.GetSendPlain() {
 		rights |= BANNED_SEND_PLAIN
+	}
+	if m.GetEditRank() {
+		rights |= BANNED_EDIT_RANK
+	}
+	if m.GetSendReactions() {
+		rights |= BANNED_SEND_REACTIONS
 	}
 
 	untilDate := m.GetUntilDate()

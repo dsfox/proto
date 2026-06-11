@@ -19,21 +19,23 @@
 package mtproto
 
 const (
-	ADMIN_CHANGE_INFO     int32 = 1 << 0
-	ADMIN_POST_MESSAGES   int32 = 1 << 1
-	ADMIN_EDIT_MESSAGES   int32 = 1 << 2
-	ADMIN_DELETE_MESSAGES int32 = 1 << 3
-	ADMIN_BAN_USERS       int32 = 1 << 4
-	ADMIN_INVITE_USERS    int32 = 1 << 5
-	ADMIN_PIN_MESSAGES    int32 = 1 << 7
-	ADMIN_ADD_ADMINS      int32 = 1 << 9
-	ADMIN_ANONYMOUS       int32 = 1 << 10
-	ADMIN_MANAGE_CALL     int32 = 1 << 11
-	ADMIN_OTHER           int32 = 1 << 12
-	ADMIN_MANAGE_TOPICS   int32 = 1 << 13
-	ADMIN_POST_STORIES    int32 = 1 << 14
-	ADMIN_EDIT_STORIES    int32 = 1 << 15
-	ADMIN_DELETE_STORIES  int32 = 1 << 16
+	ADMIN_CHANGE_INFO            int32 = 1 << 0
+	ADMIN_POST_MESSAGES          int32 = 1 << 1
+	ADMIN_EDIT_MESSAGES          int32 = 1 << 2
+	ADMIN_DELETE_MESSAGES        int32 = 1 << 3
+	ADMIN_BAN_USERS              int32 = 1 << 4
+	ADMIN_INVITE_USERS           int32 = 1 << 5
+	ADMIN_PIN_MESSAGES           int32 = 1 << 7
+	ADMIN_ADD_ADMINS             int32 = 1 << 9
+	ADMIN_ANONYMOUS              int32 = 1 << 10
+	ADMIN_MANAGE_CALL            int32 = 1 << 11
+	ADMIN_OTHER                  int32 = 1 << 12
+	ADMIN_MANAGE_TOPICS          int32 = 1 << 13
+	ADMIN_POST_STORIES           int32 = 1 << 14
+	ADMIN_EDIT_STORIES           int32 = 1 << 15
+	ADMIN_DELETE_STORIES         int32 = 1 << 16
+	ADMIN_MANAGE_DIRECT_MESSAGES int32 = 1 << 17
+	ADMIN_MANAGE_RANKS           int32 = 1 << 18
 )
 
 type AdminRights int32
@@ -86,6 +88,12 @@ func MakeChatAdminRightsHelper(adminRights *ChatAdminRights) AdminRights {
 	if adminRights.GetDeleteStories() {
 		rights |= ADMIN_DELETE_STORIES
 	}
+	if adminRights.GetManageDirectMessages() {
+		rights |= ADMIN_MANAGE_DIRECT_MESSAGES
+	}
+	if adminRights.GetManageRanks() {
+		rights |= ADMIN_MANAGE_RANKS
+	}
 
 	return AdminRights(rights)
 }
@@ -95,21 +103,23 @@ func (m AdminRights) ToChatAdminRights() *ChatAdminRights {
 		return nil
 	} else {
 		return MakeTLChatAdminRights(&ChatAdminRights{
-			ChangeInfo:     int32(m)&ADMIN_CHANGE_INFO != 0,
-			PostMessages:   int32(m)&ADMIN_POST_MESSAGES != 0,
-			EditMessages:   int32(m)&ADMIN_EDIT_MESSAGES != 0,
-			DeleteMessages: int32(m)&ADMIN_DELETE_MESSAGES != 0,
-			BanUsers:       int32(m)&ADMIN_BAN_USERS != 0,
-			InviteUsers:    int32(m)&ADMIN_INVITE_USERS != 0,
-			PinMessages:    int32(m)&ADMIN_PIN_MESSAGES != 0,
-			AddAdmins:      int32(m)&ADMIN_ADD_ADMINS != 0,
-			Anonymous:      int32(m)&ADMIN_ANONYMOUS != 0,
-			ManageCall:     int32(m)&ADMIN_MANAGE_CALL != 0,
-			Other:          int32(m)&ADMIN_OTHER != 0,
-			ManageTopics:   int32(m)&ADMIN_MANAGE_TOPICS != 0,
-			PostStories:    int32(m)&ADMIN_POST_STORIES != 0,
-			EditStories:    int32(m)&ADMIN_EDIT_STORIES != 0,
-			DeleteStories:  int32(m)&ADMIN_DELETE_STORIES != 0,
+			ChangeInfo:           int32(m)&ADMIN_CHANGE_INFO != 0,
+			PostMessages:         int32(m)&ADMIN_POST_MESSAGES != 0,
+			EditMessages:         int32(m)&ADMIN_EDIT_MESSAGES != 0,
+			DeleteMessages:       int32(m)&ADMIN_DELETE_MESSAGES != 0,
+			BanUsers:             int32(m)&ADMIN_BAN_USERS != 0,
+			InviteUsers:          int32(m)&ADMIN_INVITE_USERS != 0,
+			PinMessages:          int32(m)&ADMIN_PIN_MESSAGES != 0,
+			AddAdmins:            int32(m)&ADMIN_ADD_ADMINS != 0,
+			Anonymous:            int32(m)&ADMIN_ANONYMOUS != 0,
+			ManageCall:           int32(m)&ADMIN_MANAGE_CALL != 0,
+			Other:                int32(m)&ADMIN_OTHER != 0,
+			ManageTopics:         int32(m)&ADMIN_MANAGE_TOPICS != 0,
+			PostStories:          int32(m)&ADMIN_POST_STORIES != 0,
+			EditStories:          int32(m)&ADMIN_EDIT_STORIES != 0,
+			DeleteStories:        int32(m)&ADMIN_DELETE_STORIES != 0,
+			ManageDirectMessages: int32(m)&ADMIN_MANAGE_DIRECT_MESSAGES != 0,
+			ManageRanks:          int32(m)&ADMIN_MANAGE_RANKS != 0,
 		}).To_ChatAdminRights()
 	}
 }
@@ -178,6 +188,14 @@ func (m AdminRights) CanDeleteStories() bool {
 	return int32(m)&ADMIN_DELETE_STORIES != 0
 }
 
+func (m AdminRights) CanManageDirectMessages() bool {
+	return int32(m)&ADMIN_MANAGE_DIRECT_MESSAGES != 0
+}
+
+func (m AdminRights) CanManageRanks() bool {
+	return int32(m)&ADMIN_MANAGE_RANKS != 0
+}
+
 // DisallowMegagroup
 // ////////////////////////////////////////////////////////////////////////////////////////
 func (m AdminRights) DisallowMegagroup() bool {
@@ -190,21 +208,23 @@ func (m AdminRights) DisallowChat() bool {
 
 func MakeDefaultChatAdminRights() *ChatAdminRights {
 	return MakeTLChatAdminRights(&ChatAdminRights{
-		ChangeInfo:     true,
-		PostMessages:   false,
-		EditMessages:   false,
-		DeleteMessages: true,
-		BanUsers:       true,
-		InviteUsers:    true,
-		PinMessages:    true,
-		AddAdmins:      false,
-		Anonymous:      false,
-		ManageCall:     true,
-		Other:          true,
-		ManageTopics:   false,
-		PostStories:    false,
-		EditStories:    false,
-		DeleteStories:  false,
+		ChangeInfo:           true,
+		PostMessages:         false,
+		EditMessages:         false,
+		DeleteMessages:       true,
+		BanUsers:             true,
+		InviteUsers:          true,
+		PinMessages:          true,
+		AddAdmins:            false,
+		Anonymous:            false,
+		ManageCall:           true,
+		Other:                true,
+		ManageTopics:         false,
+		PostStories:          false,
+		EditStories:          false,
+		DeleteStories:        false,
+		ManageDirectMessages: false,
+		ManageRanks:          false,
 	}).To_ChatAdminRights()
 }
 
@@ -270,6 +290,14 @@ func (m *ChatAdminRights) CanEditStories() bool {
 
 func (m *ChatAdminRights) CanDeleteStories() bool {
 	return m.GetDeleteStories()
+}
+
+func (m *ChatAdminRights) CanManageDirectMessages() bool {
+	return m.GetManageDirectMessages()
+}
+
+func (m *ChatAdminRights) CanManageRanks() bool {
+	return m.GetManageRanks()
 }
 
 // DisallowMegagroup
