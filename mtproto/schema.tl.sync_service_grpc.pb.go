@@ -20677,6 +20677,7 @@ const (
 	RPCMessages_MessagesSearchSentMedia_FullMethodName           = "/mtproto.RPCMessages/messages_searchSentMedia"
 	RPCMessages_MessagesGetOutboxReadDate_FullMethodName         = "/mtproto.RPCMessages/messages_getOutboxReadDate"
 	RPCMessages_MessagesSummarizeText_FullMethodName             = "/mtproto.RPCMessages/messages_summarizeText"
+	RPCMessages_MessagesGetRichMessage_FullMethodName            = "/mtproto.RPCMessages/messages_getRichMessage"
 	RPCMessages_ChannelsGetSendAs_FullMethodName                 = "/mtproto.RPCMessages/channels_getSendAs"
 	RPCMessages_ChannelsSearchPosts_FullMethodName               = "/mtproto.RPCMessages/channels_searchPosts"
 	RPCMessages_ChannelsCheckSearchPostsFlood_FullMethodName     = "/mtproto.RPCMessages/channels_checkSearchPostsFlood"
@@ -20715,6 +20716,7 @@ type RPCMessagesClient interface {
 	MessagesSearchSentMedia(ctx context.Context, in *TLMessagesSearchSentMedia, opts ...grpc.CallOption) (*Messages_Messages, error)
 	MessagesGetOutboxReadDate(ctx context.Context, in *TLMessagesGetOutboxReadDate, opts ...grpc.CallOption) (*OutboxReadDate, error)
 	MessagesSummarizeText(ctx context.Context, in *TLMessagesSummarizeText, opts ...grpc.CallOption) (*TextWithEntities, error)
+	MessagesGetRichMessage(ctx context.Context, in *TLMessagesGetRichMessage, opts ...grpc.CallOption) (*Messages_Messages, error)
 	ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(ctx context.Context, in *TLChannelsSearchPosts, opts ...grpc.CallOption) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(ctx context.Context, in *TLChannelsCheckSearchPostsFlood, opts ...grpc.CallOption) (*SearchPostsFlood, error)
@@ -21018,6 +21020,16 @@ func (c *rPCMessagesClient) MessagesSummarizeText(ctx context.Context, in *TLMes
 	return out, nil
 }
 
+func (c *rPCMessagesClient) MessagesGetRichMessage(ctx context.Context, in *TLMessagesGetRichMessage, opts ...grpc.CallOption) (*Messages_Messages, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_Messages)
+	err := c.cc.Invoke(ctx, RPCMessages_MessagesGetRichMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCMessagesClient) ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Channels_SendAsPeers)
@@ -21081,6 +21093,7 @@ type RPCMessagesServer interface {
 	MessagesSearchSentMedia(context.Context, *TLMessagesSearchSentMedia) (*Messages_Messages, error)
 	MessagesGetOutboxReadDate(context.Context, *TLMessagesGetOutboxReadDate) (*OutboxReadDate, error)
 	MessagesSummarizeText(context.Context, *TLMessagesSummarizeText) (*TextWithEntities, error)
+	MessagesGetRichMessage(context.Context, *TLMessagesGetRichMessage) (*Messages_Messages, error)
 	ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(context.Context, *TLChannelsSearchPosts) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(context.Context, *TLChannelsCheckSearchPostsFlood) (*SearchPostsFlood, error)
@@ -21179,6 +21192,9 @@ func (UnimplementedRPCMessagesServer) MessagesGetOutboxReadDate(context.Context,
 }
 func (UnimplementedRPCMessagesServer) MessagesSummarizeText(context.Context, *TLMessagesSummarizeText) (*TextWithEntities, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesSummarizeText not implemented")
+}
+func (UnimplementedRPCMessagesServer) MessagesGetRichMessage(context.Context, *TLMessagesGetRichMessage) (*Messages_Messages, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetRichMessage not implemented")
 }
 func (UnimplementedRPCMessagesServer) ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsGetSendAs not implemented")
@@ -21731,6 +21747,24 @@ func _RPCMessages_MessagesSummarizeText_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMessages_MessagesGetRichMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesGetRichMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMessagesServer).MessagesGetRichMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMessages_MessagesGetRichMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMessagesServer).MessagesGetRichMessage(ctx, req.(*TLMessagesGetRichMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCMessages_ChannelsGetSendAs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLChannelsGetSendAs)
 	if err := dec(in); err != nil {
@@ -21907,6 +21941,10 @@ var RPCMessages_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_summarizeText",
 			Handler:    _RPCMessages_MessagesSummarizeText_Handler,
+		},
+		{
+			MethodName: "messages_getRichMessage",
+			Handler:    _RPCMessages_MessagesGetRichMessage_Handler,
 		},
 		{
 			MethodName: "channels_getSendAs",
@@ -38720,10 +38758,11 @@ var RPCWallpapers_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCWebBrowser_AccountGetWebBrowserSettings_FullMethodName              = "/mtproto.RPCWebBrowser/account_getWebBrowserSettings"
-	RPCWebBrowser_AccountUpdateWebBrowserSettings_FullMethodName           = "/mtproto.RPCWebBrowser/account_updateWebBrowserSettings"
-	RPCWebBrowser_AccountToggleWebBrowserSettingsException_FullMethodName  = "/mtproto.RPCWebBrowser/account_toggleWebBrowserSettingsException"
-	RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_FullMethodName = "/mtproto.RPCWebBrowser/account_deleteWebBrowserSettingsExceptions"
+	RPCWebBrowser_AccountGetWebBrowserSettings_FullMethodName                     = "/mtproto.RPCWebBrowser/account_getWebBrowserSettings"
+	RPCWebBrowser_AccountUpdateWebBrowserSettings_FullMethodName                  = "/mtproto.RPCWebBrowser/account_updateWebBrowserSettings"
+	RPCWebBrowser_AccountToggleWebBrowserSettingsException60ED4229_FullMethodName = "/mtproto.RPCWebBrowser/account_toggleWebBrowserSettingsException60ED4229"
+	RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_FullMethodName        = "/mtproto.RPCWebBrowser/account_deleteWebBrowserSettingsExceptions"
+	RPCWebBrowser_AccountToggleWebBrowserSettingsException2D0A0571_FullMethodName = "/mtproto.RPCWebBrowser/account_toggleWebBrowserSettingsException2D0A0571"
 )
 
 // RPCWebBrowserClient is the client API for RPCWebBrowser service.
@@ -38732,8 +38771,9 @@ const (
 type RPCWebBrowserClient interface {
 	AccountGetWebBrowserSettings(ctx context.Context, in *TLAccountGetWebBrowserSettings, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error)
 	AccountUpdateWebBrowserSettings(ctx context.Context, in *TLAccountUpdateWebBrowserSettings, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error)
-	AccountToggleWebBrowserSettingsException(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException, opts ...grpc.CallOption) (*Bool, error)
+	AccountToggleWebBrowserSettingsException60ED4229(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException60ED4229, opts ...grpc.CallOption) (*Updates, error)
 	AccountDeleteWebBrowserSettingsExceptions(ctx context.Context, in *TLAccountDeleteWebBrowserSettingsExceptions, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error)
+	AccountToggleWebBrowserSettingsException2D0A0571(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException2D0A0571, opts ...grpc.CallOption) (*Bool, error)
 }
 
 type rPCWebBrowserClient struct {
@@ -38764,10 +38804,10 @@ func (c *rPCWebBrowserClient) AccountUpdateWebBrowserSettings(ctx context.Contex
 	return out, nil
 }
 
-func (c *rPCWebBrowserClient) AccountToggleWebBrowserSettingsException(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException, opts ...grpc.CallOption) (*Bool, error) {
+func (c *rPCWebBrowserClient) AccountToggleWebBrowserSettingsException60ED4229(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException60ED4229, opts ...grpc.CallOption) (*Updates, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Bool)
-	err := c.cc.Invoke(ctx, RPCWebBrowser_AccountToggleWebBrowserSettingsException_FullMethodName, in, out, cOpts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCWebBrowser_AccountToggleWebBrowserSettingsException60ED4229_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -38784,14 +38824,25 @@ func (c *rPCWebBrowserClient) AccountDeleteWebBrowserSettingsExceptions(ctx cont
 	return out, nil
 }
 
+func (c *rPCWebBrowserClient) AccountToggleWebBrowserSettingsException2D0A0571(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException2D0A0571, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCWebBrowser_AccountToggleWebBrowserSettingsException2D0A0571_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCWebBrowserServer is the server API for RPCWebBrowser service.
 // All implementations should embed UnimplementedRPCWebBrowserServer
 // for forward compatibility.
 type RPCWebBrowserServer interface {
 	AccountGetWebBrowserSettings(context.Context, *TLAccountGetWebBrowserSettings) (*Account_WebBrowserSettings, error)
 	AccountUpdateWebBrowserSettings(context.Context, *TLAccountUpdateWebBrowserSettings) (*Account_WebBrowserSettings, error)
-	AccountToggleWebBrowserSettingsException(context.Context, *TLAccountToggleWebBrowserSettingsException) (*Bool, error)
+	AccountToggleWebBrowserSettingsException60ED4229(context.Context, *TLAccountToggleWebBrowserSettingsException60ED4229) (*Updates, error)
 	AccountDeleteWebBrowserSettingsExceptions(context.Context, *TLAccountDeleteWebBrowserSettingsExceptions) (*Account_WebBrowserSettings, error)
+	AccountToggleWebBrowserSettingsException2D0A0571(context.Context, *TLAccountToggleWebBrowserSettingsException2D0A0571) (*Bool, error)
 }
 
 // UnimplementedRPCWebBrowserServer should be embedded to have
@@ -38807,11 +38858,14 @@ func (UnimplementedRPCWebBrowserServer) AccountGetWebBrowserSettings(context.Con
 func (UnimplementedRPCWebBrowserServer) AccountUpdateWebBrowserSettings(context.Context, *TLAccountUpdateWebBrowserSettings) (*Account_WebBrowserSettings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountUpdateWebBrowserSettings not implemented")
 }
-func (UnimplementedRPCWebBrowserServer) AccountToggleWebBrowserSettingsException(context.Context, *TLAccountToggleWebBrowserSettingsException) (*Bool, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AccountToggleWebBrowserSettingsException not implemented")
+func (UnimplementedRPCWebBrowserServer) AccountToggleWebBrowserSettingsException60ED4229(context.Context, *TLAccountToggleWebBrowserSettingsException60ED4229) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountToggleWebBrowserSettingsException60ED4229 not implemented")
 }
 func (UnimplementedRPCWebBrowserServer) AccountDeleteWebBrowserSettingsExceptions(context.Context, *TLAccountDeleteWebBrowserSettingsExceptions) (*Account_WebBrowserSettings, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountDeleteWebBrowserSettingsExceptions not implemented")
+}
+func (UnimplementedRPCWebBrowserServer) AccountToggleWebBrowserSettingsException2D0A0571(context.Context, *TLAccountToggleWebBrowserSettingsException2D0A0571) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountToggleWebBrowserSettingsException2D0A0571 not implemented")
 }
 func (UnimplementedRPCWebBrowserServer) testEmbeddedByValue() {}
 
@@ -38869,20 +38923,20 @@ func _RPCWebBrowser_AccountUpdateWebBrowserSettings_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RPCWebBrowser_AccountToggleWebBrowserSettingsException_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TLAccountToggleWebBrowserSettingsException)
+func _RPCWebBrowser_AccountToggleWebBrowserSettingsException60ED4229_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAccountToggleWebBrowserSettingsException60ED4229)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException(ctx, in)
+		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException60ED4229(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RPCWebBrowser_AccountToggleWebBrowserSettingsException_FullMethodName,
+		FullMethod: RPCWebBrowser_AccountToggleWebBrowserSettingsException60ED4229_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException(ctx, req.(*TLAccountToggleWebBrowserSettingsException))
+		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException60ED4229(ctx, req.(*TLAccountToggleWebBrowserSettingsException60ED4229))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -38905,6 +38959,24 @@ func _RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_Handler(srv interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCWebBrowser_AccountToggleWebBrowserSettingsException2D0A0571_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAccountToggleWebBrowserSettingsException2D0A0571)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException2D0A0571(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCWebBrowser_AccountToggleWebBrowserSettingsException2D0A0571_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException2D0A0571(ctx, req.(*TLAccountToggleWebBrowserSettingsException2D0A0571))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCWebBrowser_ServiceDesc is the grpc.ServiceDesc for RPCWebBrowser service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -38921,12 +38993,16 @@ var RPCWebBrowser_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCWebBrowser_AccountUpdateWebBrowserSettings_Handler,
 		},
 		{
-			MethodName: "account_toggleWebBrowserSettingsException",
-			Handler:    _RPCWebBrowser_AccountToggleWebBrowserSettingsException_Handler,
+			MethodName: "account_toggleWebBrowserSettingsException60ED4229",
+			Handler:    _RPCWebBrowser_AccountToggleWebBrowserSettingsException60ED4229_Handler,
 		},
 		{
 			MethodName: "account_deleteWebBrowserSettingsExceptions",
 			Handler:    _RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_Handler,
+		},
+		{
+			MethodName: "account_toggleWebBrowserSettingsException2D0A0571",
+			Handler:    _RPCWebBrowser_AccountToggleWebBrowserSettingsException2D0A0571_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
