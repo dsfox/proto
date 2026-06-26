@@ -288,6 +288,7 @@ const (
 	RPCAccount_AccountResetAuthorization_FullMethodName   = "/mtproto.RPCAccount/account_resetAuthorization"
 	RPCAccount_AccountSendConfirmPhoneCode_FullMethodName = "/mtproto.RPCAccount/account_sendConfirmPhoneCode"
 	RPCAccount_AccountConfirmPhone_FullMethodName         = "/mtproto.RPCAccount/account_confirmPhone"
+	RPCAccount_AccountConfirmBotConnection_FullMethodName = "/mtproto.RPCAccount/account_confirmBotConnection"
 )
 
 // RPCAccountClient is the client API for RPCAccount service.
@@ -302,6 +303,7 @@ type RPCAccountClient interface {
 	AccountResetAuthorization(ctx context.Context, in *TLAccountResetAuthorization, opts ...grpc.CallOption) (*Bool, error)
 	AccountSendConfirmPhoneCode(ctx context.Context, in *TLAccountSendConfirmPhoneCode, opts ...grpc.CallOption) (*Auth_SentCode, error)
 	AccountConfirmPhone(ctx context.Context, in *TLAccountConfirmPhone, opts ...grpc.CallOption) (*Bool, error)
+	AccountConfirmBotConnection(ctx context.Context, in *TLAccountConfirmBotConnection, opts ...grpc.CallOption) (*Bool, error)
 }
 
 type rPCAccountClient struct {
@@ -392,6 +394,16 @@ func (c *rPCAccountClient) AccountConfirmPhone(ctx context.Context, in *TLAccoun
 	return out, nil
 }
 
+func (c *rPCAccountClient) AccountConfirmBotConnection(ctx context.Context, in *TLAccountConfirmBotConnection, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCAccount_AccountConfirmBotConnection_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCAccountServer is the server API for RPCAccount service.
 // All implementations should embed UnimplementedRPCAccountServer
 // for forward compatibility.
@@ -404,6 +416,7 @@ type RPCAccountServer interface {
 	AccountResetAuthorization(context.Context, *TLAccountResetAuthorization) (*Bool, error)
 	AccountSendConfirmPhoneCode(context.Context, *TLAccountSendConfirmPhoneCode) (*Auth_SentCode, error)
 	AccountConfirmPhone(context.Context, *TLAccountConfirmPhone) (*Bool, error)
+	AccountConfirmBotConnection(context.Context, *TLAccountConfirmBotConnection) (*Bool, error)
 }
 
 // UnimplementedRPCAccountServer should be embedded to have
@@ -436,6 +449,9 @@ func (UnimplementedRPCAccountServer) AccountSendConfirmPhoneCode(context.Context
 }
 func (UnimplementedRPCAccountServer) AccountConfirmPhone(context.Context, *TLAccountConfirmPhone) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AccountConfirmPhone not implemented")
+}
+func (UnimplementedRPCAccountServer) AccountConfirmBotConnection(context.Context, *TLAccountConfirmBotConnection) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountConfirmBotConnection not implemented")
 }
 func (UnimplementedRPCAccountServer) testEmbeddedByValue() {}
 
@@ -601,6 +617,24 @@ func _RPCAccount_AccountConfirmPhone_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCAccount_AccountConfirmBotConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAccountConfirmBotConnection)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAccountServer).AccountConfirmBotConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAccount_AccountConfirmBotConnection_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAccountServer).AccountConfirmBotConnection(ctx, req.(*TLAccountConfirmBotConnection))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCAccount_ServiceDesc is the grpc.ServiceDesc for RPCAccount service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -639,6 +673,10 @@ var RPCAccount_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "account_confirmPhone",
 			Handler:    _RPCAccount_AccountConfirmPhone_Handler,
+		},
+		{
+			MethodName: "account_confirmBotConnection",
+			Handler:    _RPCAccount_AccountConfirmBotConnection_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -3961,6 +3999,7 @@ const (
 	RPCBots_BotsExportBotToken_FullMethodName     = "/mtproto.RPCBots/bots_exportBotToken"
 	RPCBots_BotsGetAccessSettings_FullMethodName  = "/mtproto.RPCBots/bots_getAccessSettings"
 	RPCBots_BotsEditAccessSettings_FullMethodName = "/mtproto.RPCBots/bots_editAccessSettings"
+	RPCBots_BotsSetJoinChatResults_FullMethodName = "/mtproto.RPCBots/bots_setJoinChatResults"
 	RPCBots_BotsGetBotInfo75EC12E6_FullMethodName = "/mtproto.RPCBots/bots_getBotInfo75EC12E6"
 )
 
@@ -3979,6 +4018,7 @@ type RPCBotsClient interface {
 	BotsExportBotToken(ctx context.Context, in *TLBotsExportBotToken, opts ...grpc.CallOption) (*Bots_ExportedBotToken, error)
 	BotsGetAccessSettings(ctx context.Context, in *TLBotsGetAccessSettings, opts ...grpc.CallOption) (*Bots_AccessSettings, error)
 	BotsEditAccessSettings(ctx context.Context, in *TLBotsEditAccessSettings, opts ...grpc.CallOption) (*Bool, error)
+	BotsSetJoinChatResults(ctx context.Context, in *TLBotsSetJoinChatResults, opts ...grpc.CallOption) (*Bool, error)
 	BotsGetBotInfo75EC12E6(ctx context.Context, in *TLBotsGetBotInfo75EC12E6, opts ...grpc.CallOption) (*Vector_String, error)
 }
 
@@ -4100,6 +4140,16 @@ func (c *rPCBotsClient) BotsEditAccessSettings(ctx context.Context, in *TLBotsEd
 	return out, nil
 }
 
+func (c *rPCBotsClient) BotsSetJoinChatResults(ctx context.Context, in *TLBotsSetJoinChatResults, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCBots_BotsSetJoinChatResults_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCBotsClient) BotsGetBotInfo75EC12E6(ctx context.Context, in *TLBotsGetBotInfo75EC12E6, opts ...grpc.CallOption) (*Vector_String, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Vector_String)
@@ -4125,6 +4175,7 @@ type RPCBotsServer interface {
 	BotsExportBotToken(context.Context, *TLBotsExportBotToken) (*Bots_ExportedBotToken, error)
 	BotsGetAccessSettings(context.Context, *TLBotsGetAccessSettings) (*Bots_AccessSettings, error)
 	BotsEditAccessSettings(context.Context, *TLBotsEditAccessSettings) (*Bool, error)
+	BotsSetJoinChatResults(context.Context, *TLBotsSetJoinChatResults) (*Bool, error)
 	BotsGetBotInfo75EC12E6(context.Context, *TLBotsGetBotInfo75EC12E6) (*Vector_String, error)
 }
 
@@ -4167,6 +4218,9 @@ func (UnimplementedRPCBotsServer) BotsGetAccessSettings(context.Context, *TLBots
 }
 func (UnimplementedRPCBotsServer) BotsEditAccessSettings(context.Context, *TLBotsEditAccessSettings) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsEditAccessSettings not implemented")
+}
+func (UnimplementedRPCBotsServer) BotsSetJoinChatResults(context.Context, *TLBotsSetJoinChatResults) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsSetJoinChatResults not implemented")
 }
 func (UnimplementedRPCBotsServer) BotsGetBotInfo75EC12E6(context.Context, *TLBotsGetBotInfo75EC12E6) (*Vector_String, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsGetBotInfo75EC12E6 not implemented")
@@ -4389,6 +4443,24 @@ func _RPCBots_BotsEditAccessSettings_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCBots_BotsSetJoinChatResults_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsSetJoinChatResults)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCBotsServer).BotsSetJoinChatResults(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCBots_BotsSetJoinChatResults_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCBotsServer).BotsSetJoinChatResults(ctx, req.(*TLBotsSetJoinChatResults))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCBots_BotsGetBotInfo75EC12E6_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLBotsGetBotInfo75EC12E6)
 	if err := dec(in); err != nil {
@@ -4457,6 +4529,10 @@ var RPCBots_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "bots_editAccessSettings",
 			Handler:    _RPCBots_BotsEditAccessSettings_Handler,
+		},
+		{
+			MethodName: "bots_setJoinChatResults",
+			Handler:    _RPCBots_BotsSetJoinChatResults_Handler,
 		},
 		{
 			MethodName: "bots_getBotInfo75EC12E6",
@@ -6064,7 +6140,7 @@ const (
 	RPCChannels_ChannelsEditAdmin_FullMethodName                  = "/mtproto.RPCChannels/channels_editAdmin"
 	RPCChannels_ChannelsEditTitle_FullMethodName                  = "/mtproto.RPCChannels/channels_editTitle"
 	RPCChannels_ChannelsEditPhoto_FullMethodName                  = "/mtproto.RPCChannels/channels_editPhoto"
-	RPCChannels_ChannelsJoinChannel_FullMethodName                = "/mtproto.RPCChannels/channels_joinChannel"
+	RPCChannels_ChannelsJoinChannel7F6A1E22_FullMethodName        = "/mtproto.RPCChannels/channels_joinChannel7F6A1E22"
 	RPCChannels_ChannelsLeaveChannel_FullMethodName               = "/mtproto.RPCChannels/channels_leaveChannel"
 	RPCChannels_ChannelsInviteToChannelC9E33D54_FullMethodName    = "/mtproto.RPCChannels/channels_inviteToChannelC9E33D54"
 	RPCChannels_ChannelsDeleteChannel_FullMethodName              = "/mtproto.RPCChannels/channels_deleteChannel"
@@ -6084,6 +6160,7 @@ const (
 	RPCChannels_ChannelsGetInactiveChannels_FullMethodName        = "/mtproto.RPCChannels/channels_getInactiveChannels"
 	RPCChannels_ChannelsDeleteParticipantHistory_FullMethodName   = "/mtproto.RPCChannels/channels_deleteParticipantHistory"
 	RPCChannels_ChannelsToggleParticipantsHidden_FullMethodName   = "/mtproto.RPCChannels/channels_toggleParticipantsHidden"
+	RPCChannels_ChannelsJoinChannel24B524C5_FullMethodName        = "/mtproto.RPCChannels/channels_joinChannel24B524C5"
 	RPCChannels_ChannelsEditCreator_FullMethodName                = "/mtproto.RPCChannels/channels_editCreator"
 	RPCChannels_ChannelsGetFutureCreatorAfterLeave_FullMethodName = "/mtproto.RPCChannels/channels_getFutureCreatorAfterLeave"
 	RPCChannels_ChannelsInviteToChannel199F3A6C_FullMethodName    = "/mtproto.RPCChannels/channels_inviteToChannel199F3A6C"
@@ -6106,7 +6183,7 @@ type RPCChannelsClient interface {
 	ChannelsEditAdmin(ctx context.Context, in *TLChannelsEditAdmin, opts ...grpc.CallOption) (*Updates, error)
 	ChannelsEditTitle(ctx context.Context, in *TLChannelsEditTitle, opts ...grpc.CallOption) (*Updates, error)
 	ChannelsEditPhoto(ctx context.Context, in *TLChannelsEditPhoto, opts ...grpc.CallOption) (*Updates, error)
-	ChannelsJoinChannel(ctx context.Context, in *TLChannelsJoinChannel, opts ...grpc.CallOption) (*Updates, error)
+	ChannelsJoinChannel7F6A1E22(ctx context.Context, in *TLChannelsJoinChannel7F6A1E22, opts ...grpc.CallOption) (*Messages_ChatInviteJoinResult, error)
 	ChannelsLeaveChannel(ctx context.Context, in *TLChannelsLeaveChannel, opts ...grpc.CallOption) (*Updates, error)
 	ChannelsInviteToChannelC9E33D54(ctx context.Context, in *TLChannelsInviteToChannelC9E33D54, opts ...grpc.CallOption) (*Messages_InvitedUsers, error)
 	ChannelsDeleteChannel(ctx context.Context, in *TLChannelsDeleteChannel, opts ...grpc.CallOption) (*Updates, error)
@@ -6126,6 +6203,7 @@ type RPCChannelsClient interface {
 	ChannelsGetInactiveChannels(ctx context.Context, in *TLChannelsGetInactiveChannels, opts ...grpc.CallOption) (*Messages_InactiveChats, error)
 	ChannelsDeleteParticipantHistory(ctx context.Context, in *TLChannelsDeleteParticipantHistory, opts ...grpc.CallOption) (*Messages_AffectedHistory, error)
 	ChannelsToggleParticipantsHidden(ctx context.Context, in *TLChannelsToggleParticipantsHidden, opts ...grpc.CallOption) (*Updates, error)
+	ChannelsJoinChannel24B524C5(ctx context.Context, in *TLChannelsJoinChannel24B524C5, opts ...grpc.CallOption) (*Updates, error)
 	ChannelsEditCreator(ctx context.Context, in *TLChannelsEditCreator, opts ...grpc.CallOption) (*Updates, error)
 	ChannelsGetFutureCreatorAfterLeave(ctx context.Context, in *TLChannelsGetFutureCreatorAfterLeave, opts ...grpc.CallOption) (*User, error)
 	ChannelsInviteToChannel199F3A6C(ctx context.Context, in *TLChannelsInviteToChannel199F3A6C, opts ...grpc.CallOption) (*Updates, error)
@@ -6260,10 +6338,10 @@ func (c *rPCChannelsClient) ChannelsEditPhoto(ctx context.Context, in *TLChannel
 	return out, nil
 }
 
-func (c *rPCChannelsClient) ChannelsJoinChannel(ctx context.Context, in *TLChannelsJoinChannel, opts ...grpc.CallOption) (*Updates, error) {
+func (c *rPCChannelsClient) ChannelsJoinChannel7F6A1E22(ctx context.Context, in *TLChannelsJoinChannel7F6A1E22, opts ...grpc.CallOption) (*Messages_ChatInviteJoinResult, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Updates)
-	err := c.cc.Invoke(ctx, RPCChannels_ChannelsJoinChannel_FullMethodName, in, out, cOpts...)
+	out := new(Messages_ChatInviteJoinResult)
+	err := c.cc.Invoke(ctx, RPCChannels_ChannelsJoinChannel7F6A1E22_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -6460,6 +6538,16 @@ func (c *rPCChannelsClient) ChannelsToggleParticipantsHidden(ctx context.Context
 	return out, nil
 }
 
+func (c *rPCChannelsClient) ChannelsJoinChannel24B524C5(ctx context.Context, in *TLChannelsJoinChannel24B524C5, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCChannels_ChannelsJoinChannel24B524C5_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCChannelsClient) ChannelsEditCreator(ctx context.Context, in *TLChannelsEditCreator, opts ...grpc.CallOption) (*Updates, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Updates)
@@ -6516,7 +6604,7 @@ type RPCChannelsServer interface {
 	ChannelsEditAdmin(context.Context, *TLChannelsEditAdmin) (*Updates, error)
 	ChannelsEditTitle(context.Context, *TLChannelsEditTitle) (*Updates, error)
 	ChannelsEditPhoto(context.Context, *TLChannelsEditPhoto) (*Updates, error)
-	ChannelsJoinChannel(context.Context, *TLChannelsJoinChannel) (*Updates, error)
+	ChannelsJoinChannel7F6A1E22(context.Context, *TLChannelsJoinChannel7F6A1E22) (*Messages_ChatInviteJoinResult, error)
 	ChannelsLeaveChannel(context.Context, *TLChannelsLeaveChannel) (*Updates, error)
 	ChannelsInviteToChannelC9E33D54(context.Context, *TLChannelsInviteToChannelC9E33D54) (*Messages_InvitedUsers, error)
 	ChannelsDeleteChannel(context.Context, *TLChannelsDeleteChannel) (*Updates, error)
@@ -6536,6 +6624,7 @@ type RPCChannelsServer interface {
 	ChannelsGetInactiveChannels(context.Context, *TLChannelsGetInactiveChannels) (*Messages_InactiveChats, error)
 	ChannelsDeleteParticipantHistory(context.Context, *TLChannelsDeleteParticipantHistory) (*Messages_AffectedHistory, error)
 	ChannelsToggleParticipantsHidden(context.Context, *TLChannelsToggleParticipantsHidden) (*Updates, error)
+	ChannelsJoinChannel24B524C5(context.Context, *TLChannelsJoinChannel24B524C5) (*Updates, error)
 	ChannelsEditCreator(context.Context, *TLChannelsEditCreator) (*Updates, error)
 	ChannelsGetFutureCreatorAfterLeave(context.Context, *TLChannelsGetFutureCreatorAfterLeave) (*User, error)
 	ChannelsInviteToChannel199F3A6C(context.Context, *TLChannelsInviteToChannel199F3A6C) (*Updates, error)
@@ -6585,8 +6674,8 @@ func (UnimplementedRPCChannelsServer) ChannelsEditTitle(context.Context, *TLChan
 func (UnimplementedRPCChannelsServer) ChannelsEditPhoto(context.Context, *TLChannelsEditPhoto) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsEditPhoto not implemented")
 }
-func (UnimplementedRPCChannelsServer) ChannelsJoinChannel(context.Context, *TLChannelsJoinChannel) (*Updates, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChannelsJoinChannel not implemented")
+func (UnimplementedRPCChannelsServer) ChannelsJoinChannel7F6A1E22(context.Context, *TLChannelsJoinChannel7F6A1E22) (*Messages_ChatInviteJoinResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChannelsJoinChannel7F6A1E22 not implemented")
 }
 func (UnimplementedRPCChannelsServer) ChannelsLeaveChannel(context.Context, *TLChannelsLeaveChannel) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsLeaveChannel not implemented")
@@ -6644,6 +6733,9 @@ func (UnimplementedRPCChannelsServer) ChannelsDeleteParticipantHistory(context.C
 }
 func (UnimplementedRPCChannelsServer) ChannelsToggleParticipantsHidden(context.Context, *TLChannelsToggleParticipantsHidden) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsToggleParticipantsHidden not implemented")
+}
+func (UnimplementedRPCChannelsServer) ChannelsJoinChannel24B524C5(context.Context, *TLChannelsJoinChannel24B524C5) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChannelsJoinChannel24B524C5 not implemented")
 }
 func (UnimplementedRPCChannelsServer) ChannelsEditCreator(context.Context, *TLChannelsEditCreator) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsEditCreator not implemented")
@@ -6893,20 +6985,20 @@ func _RPCChannels_ChannelsEditPhoto_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RPCChannels_ChannelsJoinChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TLChannelsJoinChannel)
+func _RPCChannels_ChannelsJoinChannel7F6A1E22_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLChannelsJoinChannel7F6A1E22)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RPCChannelsServer).ChannelsJoinChannel(ctx, in)
+		return srv.(RPCChannelsServer).ChannelsJoinChannel7F6A1E22(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RPCChannels_ChannelsJoinChannel_FullMethodName,
+		FullMethod: RPCChannels_ChannelsJoinChannel7F6A1E22_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCChannelsServer).ChannelsJoinChannel(ctx, req.(*TLChannelsJoinChannel))
+		return srv.(RPCChannelsServer).ChannelsJoinChannel7F6A1E22(ctx, req.(*TLChannelsJoinChannel7F6A1E22))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -7253,6 +7345,24 @@ func _RPCChannels_ChannelsToggleParticipantsHidden_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCChannels_ChannelsJoinChannel24B524C5_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLChannelsJoinChannel24B524C5)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCChannelsServer).ChannelsJoinChannel24B524C5(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCChannels_ChannelsJoinChannel24B524C5_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCChannelsServer).ChannelsJoinChannel24B524C5(ctx, req.(*TLChannelsJoinChannel24B524C5))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCChannels_ChannelsEditCreator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLChannelsEditCreator)
 	if err := dec(in); err != nil {
@@ -7381,8 +7491,8 @@ var RPCChannels_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCChannels_ChannelsEditPhoto_Handler,
 		},
 		{
-			MethodName: "channels_joinChannel",
-			Handler:    _RPCChannels_ChannelsJoinChannel_Handler,
+			MethodName: "channels_joinChannel7F6A1E22",
+			Handler:    _RPCChannels_ChannelsJoinChannel7F6A1E22_Handler,
 		},
 		{
 			MethodName: "channels_leaveChannel",
@@ -7461,6 +7571,10 @@ var RPCChannels_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCChannels_ChannelsToggleParticipantsHidden_Handler,
 		},
 		{
+			MethodName: "channels_joinChannel24B524C5",
+			Handler:    _RPCChannels_ChannelsJoinChannel24B524C5_Handler,
+		},
+		{
 			MethodName: "channels_editCreator",
 			Handler:    _RPCChannels_ChannelsEditCreator_Handler,
 		},
@@ -7484,7 +7598,7 @@ var RPCChannels_ServiceDesc = grpc.ServiceDesc{
 const (
 	RPCChatInvites_MessagesExportChatInvite_FullMethodName                 = "/mtproto.RPCChatInvites/messages_exportChatInvite"
 	RPCChatInvites_MessagesCheckChatInvite_FullMethodName                  = "/mtproto.RPCChatInvites/messages_checkChatInvite"
-	RPCChatInvites_MessagesImportChatInvite_FullMethodName                 = "/mtproto.RPCChatInvites/messages_importChatInvite"
+	RPCChatInvites_MessagesImportChatInviteDE91436E_FullMethodName         = "/mtproto.RPCChatInvites/messages_importChatInviteDE91436E"
 	RPCChatInvites_MessagesGetExportedChatInvites_FullMethodName           = "/mtproto.RPCChatInvites/messages_getExportedChatInvites"
 	RPCChatInvites_MessagesGetExportedChatInvite_FullMethodName            = "/mtproto.RPCChatInvites/messages_getExportedChatInvite"
 	RPCChatInvites_MessagesEditExportedChatInvite_FullMethodName           = "/mtproto.RPCChatInvites/messages_editExportedChatInvite"
@@ -7496,6 +7610,7 @@ const (
 	RPCChatInvites_MessagesHideAllChatJoinRequests_FullMethodName          = "/mtproto.RPCChatInvites/messages_hideAllChatJoinRequests"
 	RPCChatInvites_ChannelsToggleJoinToSend_FullMethodName                 = "/mtproto.RPCChatInvites/channels_toggleJoinToSend"
 	RPCChatInvites_ChannelsToggleJoinRequest_FullMethodName                = "/mtproto.RPCChatInvites/channels_toggleJoinRequest"
+	RPCChatInvites_MessagesImportChatInvite6C50051C_FullMethodName         = "/mtproto.RPCChatInvites/messages_importChatInvite6C50051C"
 )
 
 // RPCChatInvitesClient is the client API for RPCChatInvites service.
@@ -7504,7 +7619,7 @@ const (
 type RPCChatInvitesClient interface {
 	MessagesExportChatInvite(ctx context.Context, in *TLMessagesExportChatInvite, opts ...grpc.CallOption) (*ExportedChatInvite, error)
 	MessagesCheckChatInvite(ctx context.Context, in *TLMessagesCheckChatInvite, opts ...grpc.CallOption) (*ChatInvite, error)
-	MessagesImportChatInvite(ctx context.Context, in *TLMessagesImportChatInvite, opts ...grpc.CallOption) (*Updates, error)
+	MessagesImportChatInviteDE91436E(ctx context.Context, in *TLMessagesImportChatInviteDE91436E, opts ...grpc.CallOption) (*Messages_ChatInviteJoinResult, error)
 	MessagesGetExportedChatInvites(ctx context.Context, in *TLMessagesGetExportedChatInvites, opts ...grpc.CallOption) (*Messages_ExportedChatInvites, error)
 	MessagesGetExportedChatInvite(ctx context.Context, in *TLMessagesGetExportedChatInvite, opts ...grpc.CallOption) (*Messages_ExportedChatInvite, error)
 	MessagesEditExportedChatInvite(ctx context.Context, in *TLMessagesEditExportedChatInvite, opts ...grpc.CallOption) (*Messages_ExportedChatInvite, error)
@@ -7516,6 +7631,7 @@ type RPCChatInvitesClient interface {
 	MessagesHideAllChatJoinRequests(ctx context.Context, in *TLMessagesHideAllChatJoinRequests, opts ...grpc.CallOption) (*Updates, error)
 	ChannelsToggleJoinToSend(ctx context.Context, in *TLChannelsToggleJoinToSend, opts ...grpc.CallOption) (*Updates, error)
 	ChannelsToggleJoinRequest(ctx context.Context, in *TLChannelsToggleJoinRequest, opts ...grpc.CallOption) (*Updates, error)
+	MessagesImportChatInvite6C50051C(ctx context.Context, in *TLMessagesImportChatInvite6C50051C, opts ...grpc.CallOption) (*Updates, error)
 }
 
 type rPCChatInvitesClient struct {
@@ -7546,10 +7662,10 @@ func (c *rPCChatInvitesClient) MessagesCheckChatInvite(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *rPCChatInvitesClient) MessagesImportChatInvite(ctx context.Context, in *TLMessagesImportChatInvite, opts ...grpc.CallOption) (*Updates, error) {
+func (c *rPCChatInvitesClient) MessagesImportChatInviteDE91436E(ctx context.Context, in *TLMessagesImportChatInviteDE91436E, opts ...grpc.CallOption) (*Messages_ChatInviteJoinResult, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Updates)
-	err := c.cc.Invoke(ctx, RPCChatInvites_MessagesImportChatInvite_FullMethodName, in, out, cOpts...)
+	out := new(Messages_ChatInviteJoinResult)
+	err := c.cc.Invoke(ctx, RPCChatInvites_MessagesImportChatInviteDE91436E_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -7666,13 +7782,23 @@ func (c *rPCChatInvitesClient) ChannelsToggleJoinRequest(ctx context.Context, in
 	return out, nil
 }
 
+func (c *rPCChatInvitesClient) MessagesImportChatInvite6C50051C(ctx context.Context, in *TLMessagesImportChatInvite6C50051C, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCChatInvites_MessagesImportChatInvite6C50051C_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCChatInvitesServer is the server API for RPCChatInvites service.
 // All implementations should embed UnimplementedRPCChatInvitesServer
 // for forward compatibility.
 type RPCChatInvitesServer interface {
 	MessagesExportChatInvite(context.Context, *TLMessagesExportChatInvite) (*ExportedChatInvite, error)
 	MessagesCheckChatInvite(context.Context, *TLMessagesCheckChatInvite) (*ChatInvite, error)
-	MessagesImportChatInvite(context.Context, *TLMessagesImportChatInvite) (*Updates, error)
+	MessagesImportChatInviteDE91436E(context.Context, *TLMessagesImportChatInviteDE91436E) (*Messages_ChatInviteJoinResult, error)
 	MessagesGetExportedChatInvites(context.Context, *TLMessagesGetExportedChatInvites) (*Messages_ExportedChatInvites, error)
 	MessagesGetExportedChatInvite(context.Context, *TLMessagesGetExportedChatInvite) (*Messages_ExportedChatInvite, error)
 	MessagesEditExportedChatInvite(context.Context, *TLMessagesEditExportedChatInvite) (*Messages_ExportedChatInvite, error)
@@ -7684,6 +7810,7 @@ type RPCChatInvitesServer interface {
 	MessagesHideAllChatJoinRequests(context.Context, *TLMessagesHideAllChatJoinRequests) (*Updates, error)
 	ChannelsToggleJoinToSend(context.Context, *TLChannelsToggleJoinToSend) (*Updates, error)
 	ChannelsToggleJoinRequest(context.Context, *TLChannelsToggleJoinRequest) (*Updates, error)
+	MessagesImportChatInvite6C50051C(context.Context, *TLMessagesImportChatInvite6C50051C) (*Updates, error)
 }
 
 // UnimplementedRPCChatInvitesServer should be embedded to have
@@ -7699,8 +7826,8 @@ func (UnimplementedRPCChatInvitesServer) MessagesExportChatInvite(context.Contex
 func (UnimplementedRPCChatInvitesServer) MessagesCheckChatInvite(context.Context, *TLMessagesCheckChatInvite) (*ChatInvite, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesCheckChatInvite not implemented")
 }
-func (UnimplementedRPCChatInvitesServer) MessagesImportChatInvite(context.Context, *TLMessagesImportChatInvite) (*Updates, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MessagesImportChatInvite not implemented")
+func (UnimplementedRPCChatInvitesServer) MessagesImportChatInviteDE91436E(context.Context, *TLMessagesImportChatInviteDE91436E) (*Messages_ChatInviteJoinResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesImportChatInviteDE91436E not implemented")
 }
 func (UnimplementedRPCChatInvitesServer) MessagesGetExportedChatInvites(context.Context, *TLMessagesGetExportedChatInvites) (*Messages_ExportedChatInvites, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetExportedChatInvites not implemented")
@@ -7734,6 +7861,9 @@ func (UnimplementedRPCChatInvitesServer) ChannelsToggleJoinToSend(context.Contex
 }
 func (UnimplementedRPCChatInvitesServer) ChannelsToggleJoinRequest(context.Context, *TLChannelsToggleJoinRequest) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsToggleJoinRequest not implemented")
+}
+func (UnimplementedRPCChatInvitesServer) MessagesImportChatInvite6C50051C(context.Context, *TLMessagesImportChatInvite6C50051C) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesImportChatInvite6C50051C not implemented")
 }
 func (UnimplementedRPCChatInvitesServer) testEmbeddedByValue() {}
 
@@ -7791,20 +7921,20 @@ func _RPCChatInvites_MessagesCheckChatInvite_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _RPCChatInvites_MessagesImportChatInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TLMessagesImportChatInvite)
+func _RPCChatInvites_MessagesImportChatInviteDE91436E_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesImportChatInviteDE91436E)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RPCChatInvitesServer).MessagesImportChatInvite(ctx, in)
+		return srv.(RPCChatInvitesServer).MessagesImportChatInviteDE91436E(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: RPCChatInvites_MessagesImportChatInvite_FullMethodName,
+		FullMethod: RPCChatInvites_MessagesImportChatInviteDE91436E_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RPCChatInvitesServer).MessagesImportChatInvite(ctx, req.(*TLMessagesImportChatInvite))
+		return srv.(RPCChatInvitesServer).MessagesImportChatInviteDE91436E(ctx, req.(*TLMessagesImportChatInviteDE91436E))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -8007,6 +8137,24 @@ func _RPCChatInvites_ChannelsToggleJoinRequest_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCChatInvites_MessagesImportChatInvite6C50051C_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesImportChatInvite6C50051C)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCChatInvitesServer).MessagesImportChatInvite6C50051C(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCChatInvites_MessagesImportChatInvite6C50051C_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCChatInvitesServer).MessagesImportChatInvite6C50051C(ctx, req.(*TLMessagesImportChatInvite6C50051C))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCChatInvites_ServiceDesc is the grpc.ServiceDesc for RPCChatInvites service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -8023,8 +8171,8 @@ var RPCChatInvites_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCChatInvites_MessagesCheckChatInvite_Handler,
 		},
 		{
-			MethodName: "messages_importChatInvite",
-			Handler:    _RPCChatInvites_MessagesImportChatInvite_Handler,
+			MethodName: "messages_importChatInviteDE91436E",
+			Handler:    _RPCChatInvites_MessagesImportChatInviteDE91436E_Handler,
 		},
 		{
 			MethodName: "messages_getExportedChatInvites",
@@ -8069,6 +8217,10 @@ var RPCChatInvites_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "channels_toggleJoinRequest",
 			Handler:    _RPCChatInvites_ChannelsToggleJoinRequest_Handler,
+		},
+		{
+			MethodName: "messages_importChatInvite6C50051C",
+			Handler:    _RPCChatInvites_MessagesImportChatInvite6C50051C_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -38561,6 +38713,220 @@ var RPCWallpapers_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_setChatWallPaper",
 			Handler:    _RPCWallpapers_MessagesSetChatWallPaper_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "schema.tl.sync_service.proto",
+}
+
+const (
+	RPCWebBrowser_AccountGetWebBrowserSettings_FullMethodName              = "/mtproto.RPCWebBrowser/account_getWebBrowserSettings"
+	RPCWebBrowser_AccountUpdateWebBrowserSettings_FullMethodName           = "/mtproto.RPCWebBrowser/account_updateWebBrowserSettings"
+	RPCWebBrowser_AccountToggleWebBrowserSettingsException_FullMethodName  = "/mtproto.RPCWebBrowser/account_toggleWebBrowserSettingsException"
+	RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_FullMethodName = "/mtproto.RPCWebBrowser/account_deleteWebBrowserSettingsExceptions"
+)
+
+// RPCWebBrowserClient is the client API for RPCWebBrowser service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type RPCWebBrowserClient interface {
+	AccountGetWebBrowserSettings(ctx context.Context, in *TLAccountGetWebBrowserSettings, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error)
+	AccountUpdateWebBrowserSettings(ctx context.Context, in *TLAccountUpdateWebBrowserSettings, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error)
+	AccountToggleWebBrowserSettingsException(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException, opts ...grpc.CallOption) (*Bool, error)
+	AccountDeleteWebBrowserSettingsExceptions(ctx context.Context, in *TLAccountDeleteWebBrowserSettingsExceptions, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error)
+}
+
+type rPCWebBrowserClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewRPCWebBrowserClient(cc grpc.ClientConnInterface) RPCWebBrowserClient {
+	return &rPCWebBrowserClient{cc}
+}
+
+func (c *rPCWebBrowserClient) AccountGetWebBrowserSettings(ctx context.Context, in *TLAccountGetWebBrowserSettings, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Account_WebBrowserSettings)
+	err := c.cc.Invoke(ctx, RPCWebBrowser_AccountGetWebBrowserSettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCWebBrowserClient) AccountUpdateWebBrowserSettings(ctx context.Context, in *TLAccountUpdateWebBrowserSettings, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Account_WebBrowserSettings)
+	err := c.cc.Invoke(ctx, RPCWebBrowser_AccountUpdateWebBrowserSettings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCWebBrowserClient) AccountToggleWebBrowserSettingsException(ctx context.Context, in *TLAccountToggleWebBrowserSettingsException, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCWebBrowser_AccountToggleWebBrowserSettingsException_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCWebBrowserClient) AccountDeleteWebBrowserSettingsExceptions(ctx context.Context, in *TLAccountDeleteWebBrowserSettingsExceptions, opts ...grpc.CallOption) (*Account_WebBrowserSettings, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Account_WebBrowserSettings)
+	err := c.cc.Invoke(ctx, RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// RPCWebBrowserServer is the server API for RPCWebBrowser service.
+// All implementations should embed UnimplementedRPCWebBrowserServer
+// for forward compatibility.
+type RPCWebBrowserServer interface {
+	AccountGetWebBrowserSettings(context.Context, *TLAccountGetWebBrowserSettings) (*Account_WebBrowserSettings, error)
+	AccountUpdateWebBrowserSettings(context.Context, *TLAccountUpdateWebBrowserSettings) (*Account_WebBrowserSettings, error)
+	AccountToggleWebBrowserSettingsException(context.Context, *TLAccountToggleWebBrowserSettingsException) (*Bool, error)
+	AccountDeleteWebBrowserSettingsExceptions(context.Context, *TLAccountDeleteWebBrowserSettingsExceptions) (*Account_WebBrowserSettings, error)
+}
+
+// UnimplementedRPCWebBrowserServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedRPCWebBrowserServer struct{}
+
+func (UnimplementedRPCWebBrowserServer) AccountGetWebBrowserSettings(context.Context, *TLAccountGetWebBrowserSettings) (*Account_WebBrowserSettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountGetWebBrowserSettings not implemented")
+}
+func (UnimplementedRPCWebBrowserServer) AccountUpdateWebBrowserSettings(context.Context, *TLAccountUpdateWebBrowserSettings) (*Account_WebBrowserSettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountUpdateWebBrowserSettings not implemented")
+}
+func (UnimplementedRPCWebBrowserServer) AccountToggleWebBrowserSettingsException(context.Context, *TLAccountToggleWebBrowserSettingsException) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountToggleWebBrowserSettingsException not implemented")
+}
+func (UnimplementedRPCWebBrowserServer) AccountDeleteWebBrowserSettingsExceptions(context.Context, *TLAccountDeleteWebBrowserSettingsExceptions) (*Account_WebBrowserSettings, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AccountDeleteWebBrowserSettingsExceptions not implemented")
+}
+func (UnimplementedRPCWebBrowserServer) testEmbeddedByValue() {}
+
+// UnsafeRPCWebBrowserServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RPCWebBrowserServer will
+// result in compilation errors.
+type UnsafeRPCWebBrowserServer interface {
+	mustEmbedUnimplementedRPCWebBrowserServer()
+}
+
+func RegisterRPCWebBrowserServer(s grpc.ServiceRegistrar, srv RPCWebBrowserServer) {
+	// If the following call pancis, it indicates UnimplementedRPCWebBrowserServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&RPCWebBrowser_ServiceDesc, srv)
+}
+
+func _RPCWebBrowser_AccountGetWebBrowserSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAccountGetWebBrowserSettings)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCWebBrowserServer).AccountGetWebBrowserSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCWebBrowser_AccountGetWebBrowserSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCWebBrowserServer).AccountGetWebBrowserSettings(ctx, req.(*TLAccountGetWebBrowserSettings))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCWebBrowser_AccountUpdateWebBrowserSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAccountUpdateWebBrowserSettings)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCWebBrowserServer).AccountUpdateWebBrowserSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCWebBrowser_AccountUpdateWebBrowserSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCWebBrowserServer).AccountUpdateWebBrowserSettings(ctx, req.(*TLAccountUpdateWebBrowserSettings))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCWebBrowser_AccountToggleWebBrowserSettingsException_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAccountToggleWebBrowserSettingsException)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCWebBrowser_AccountToggleWebBrowserSettingsException_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCWebBrowserServer).AccountToggleWebBrowserSettingsException(ctx, req.(*TLAccountToggleWebBrowserSettingsException))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAccountDeleteWebBrowserSettingsExceptions)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCWebBrowserServer).AccountDeleteWebBrowserSettingsExceptions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCWebBrowserServer).AccountDeleteWebBrowserSettingsExceptions(ctx, req.(*TLAccountDeleteWebBrowserSettingsExceptions))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// RPCWebBrowser_ServiceDesc is the grpc.ServiceDesc for RPCWebBrowser service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var RPCWebBrowser_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "mtproto.RPCWebBrowser",
+	HandlerType: (*RPCWebBrowserServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "account_getWebBrowserSettings",
+			Handler:    _RPCWebBrowser_AccountGetWebBrowserSettings_Handler,
+		},
+		{
+			MethodName: "account_updateWebBrowserSettings",
+			Handler:    _RPCWebBrowser_AccountUpdateWebBrowserSettings_Handler,
+		},
+		{
+			MethodName: "account_toggleWebBrowserSettingsException",
+			Handler:    _RPCWebBrowser_AccountToggleWebBrowserSettingsException_Handler,
+		},
+		{
+			MethodName: "account_deleteWebBrowserSettingsExceptions",
+			Handler:    _RPCWebBrowser_AccountDeleteWebBrowserSettingsExceptions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

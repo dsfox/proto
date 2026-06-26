@@ -953,6 +953,33 @@ message TL_account_deletePasskey {
   string id = 3;
 }
 
+message TL_account_confirmBotConnection {
+  TLConstructor constructor = 1;
+  InputUser bot_id = 3;
+}
+
+message TL_account_getWebBrowserSettings {
+  TLConstructor constructor = 1;
+  int64 hash = 3;
+}
+
+message TL_account_updateWebBrowserSettings {
+  TLConstructor constructor = 1;
+  bool open_external_browser = 3;
+  bool display_close_button = 4;
+}
+
+message TL_account_toggleWebBrowserSettingsException {
+  TLConstructor constructor = 1;
+  bool delete = 3;
+  Bool open_external_browser = 4;
+  string url = 5;
+}
+
+message TL_account_deleteWebBrowserSettingsExceptions {
+  TLConstructor constructor = 1;
+}
+
 message TL_users_getUsers {
   TLConstructor constructor = 1;
   repeated InputUser id = 3;
@@ -1493,7 +1520,7 @@ message TL_messages_checkChatInvite {
   string hash = 3;
 }
 
-message TL_messages_importChatInvite {
+message TL_messages_importChatInviteDE91436E {
   TLConstructor constructor = 1;
   string hash = 3;
 }
@@ -3388,7 +3415,7 @@ message TL_channels_updateUsername {
   string username = 4;
 }
 
-message TL_channels_joinChannel {
+message TL_channels_joinChannel7F6A1E22 {
   TLConstructor constructor = 1;
   InputChannel channel = 3;
 }
@@ -3533,8 +3560,10 @@ message TL_channels_toggleJoinToSend {
 
 message TL_channels_toggleJoinRequest {
   TLConstructor constructor = 1;
-  InputChannel channel = 3;
-  Bool enabled = 4;
+  bool apply_to_invites = 3;
+  InputChannel channel = 4;
+  Bool enabled = 5;
+  InputUser guard_bot = 6;
 }
 
 message TL_channels_reorderUsernames {
@@ -3893,6 +3922,12 @@ message TL_bots_editAccessSettings {
   bool restricted = 3;
   InputUser bot = 4;
   repeated InputUser add_users = 5;
+}
+
+message TL_bots_setJoinChatResults {
+  TLConstructor constructor = 1;
+  int64 query_id = 3;
+  JoinChatBotResult result = 4;
 }
 
 message TL_payments_getPaymentForm {
@@ -5229,6 +5264,16 @@ message TL_aicompose_getToneExample {
   int32 num = 4;
 }
 
+message TL_messages_importChatInvite6C50051C {
+  TLConstructor constructor = 1;
+  string hash = 3;
+}
+
+message TL_channels_joinChannel24B524C5 {
+  TLConstructor constructor = 1;
+  InputChannel channel = 3;
+}
+
 message TL_channels_editCreator {
   TLConstructor constructor = 1;
   InputChannel channel = 3;
@@ -5811,6 +5856,8 @@ service RPCAccount {
   rpc account_sendConfirmPhoneCode(TL_account_sendConfirmPhoneCode)
       returns (auth_SentCode) {}
   rpc account_confirmPhone(TL_account_confirmPhone) returns (Bool) {}
+  rpc account_confirmBotConnection(TL_account_confirmBotConnection)
+      returns (Bool) {}
 }
 
 service RPCAffiliatePrograms {
@@ -5972,6 +6019,7 @@ service RPCBots {
   rpc bots_getAccessSettings(TL_bots_getAccessSettings)
       returns (bots_AccessSettings) {}
   rpc bots_editAccessSettings(TL_bots_editAccessSettings) returns (Bool) {}
+  rpc bots_setJoinChatResults(TL_bots_setJoinChatResults) returns (Bool) {}
   rpc bots_getBotInfo75EC12E6(TL_bots_getBotInfo75EC12E6)
       returns (Vector_String) {}
 }
@@ -6078,7 +6126,8 @@ service RPCChannels {
   rpc channels_editAdmin(TL_channels_editAdmin) returns (Updates) {}
   rpc channels_editTitle(TL_channels_editTitle) returns (Updates) {}
   rpc channels_editPhoto(TL_channels_editPhoto) returns (Updates) {}
-  rpc channels_joinChannel(TL_channels_joinChannel) returns (Updates) {}
+  rpc channels_joinChannel7F6A1E22(TL_channels_joinChannel7F6A1E22)
+      returns (messages_ChatInviteJoinResult) {}
   rpc channels_leaveChannel(TL_channels_leaveChannel) returns (Updates) {}
   rpc channels_inviteToChannelC9E33D54(TL_channels_inviteToChannelC9E33D54)
       returns (messages_InvitedUsers) {}
@@ -6111,6 +6160,8 @@ service RPCChannels {
       returns (messages_AffectedHistory) {}
   rpc channels_toggleParticipantsHidden(TL_channels_toggleParticipantsHidden)
       returns (Updates) {}
+  rpc channels_joinChannel24B524C5(TL_channels_joinChannel24B524C5)
+      returns (Updates) {}
   rpc channels_editCreator(TL_channels_editCreator) returns (Updates) {}
   rpc channels_getFutureCreatorAfterLeave(
       TL_channels_getFutureCreatorAfterLeave) returns (User) {}
@@ -6125,8 +6176,8 @@ service RPCChatInvites {
       returns (ExportedChatInvite) {}
   rpc messages_checkChatInvite(TL_messages_checkChatInvite)
       returns (ChatInvite) {}
-  rpc messages_importChatInvite(TL_messages_importChatInvite)
-      returns (Updates) {}
+  rpc messages_importChatInviteDE91436E(TL_messages_importChatInviteDE91436E)
+      returns (messages_ChatInviteJoinResult) {}
   rpc messages_getExportedChatInvites(TL_messages_getExportedChatInvites)
       returns (messages_ExportedChatInvites) {}
   rpc messages_getExportedChatInvite(TL_messages_getExportedChatInvite)
@@ -6148,6 +6199,8 @@ service RPCChatInvites {
   rpc channels_toggleJoinToSend(TL_channels_toggleJoinToSend)
       returns (Updates) {}
   rpc channels_toggleJoinRequest(TL_channels_toggleJoinRequest)
+      returns (Updates) {}
+  rpc messages_importChatInvite6C50051C(TL_messages_importChatInvite6C50051C)
       returns (Updates) {}
 }
 
@@ -7535,6 +7588,18 @@ service RPCWallpapers {
       returns (Vector_WallPaper) {}
   rpc messages_setChatWallPaper(TL_messages_setChatWallPaper)
       returns (Updates) {}
+}
+
+service RPCWebBrowser {
+  rpc account_getWebBrowserSettings(TL_account_getWebBrowserSettings)
+      returns (account_WebBrowserSettings) {}
+  rpc account_updateWebBrowserSettings(TL_account_updateWebBrowserSettings)
+      returns (account_WebBrowserSettings) {}
+  rpc account_toggleWebBrowserSettingsException(
+      TL_account_toggleWebBrowserSettingsException) returns (Bool) {}
+  rpc account_deleteWebBrowserSettingsExceptions(
+      TL_account_deleteWebBrowserSettingsExceptions)
+      returns (account_WebBrowserSettings) {}
 }
 
 service RPCWebPage {
