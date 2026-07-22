@@ -19565,6 +19565,9 @@ func (m *BotCommand) CalcByteSize(layer int32) int {
 func (m *BotCommand) Decode(dBuf *DecodeBuf) error {
 	m.Constructor = TLConstructor(dBuf.Int())
 	switch uint32(m.Constructor) {
+	case 0x9852d6d2:
+		m2 := MakeTLBotCommand(m)
+		m2.Decode(dBuf)
 	case 0xc27ac8c7:
 		m2 := MakeTLBotCommand(m)
 		m2.Decode(dBuf)
@@ -19600,6 +19603,10 @@ func (m *TLBotCommand) To_BotCommand() *BotCommand {
 	return m.Data2
 }
 
+// // flags
+func (m *TLBotCommand) SetEphemeral(v bool) { m.Data2.Ephemeral = v }
+func (m *TLBotCommand) GetEphemeral() bool  { return m.Data2.Ephemeral }
+
 func (m *TLBotCommand) SetCommand(v string) { m.Data2.Command = v }
 func (m *TLBotCommand) GetCommand() string  { return m.Data2.Command }
 
@@ -19613,6 +19620,27 @@ func (m *TLBotCommand) GetPredicateName() string {
 func (m *TLBotCommand) Encode(x *EncodeBuf, layer int32) error {
 	clazzId := GetClazzID(Predicate_botCommand, int(layer))
 	switch uint32(clazzId) {
+	case 0x9852d6d2:
+		x.UInt(0x9852d6d2)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetEphemeral() == true {
+				flags |= 1 << 0
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.String(m.GetCommand())
+		x.String(m.GetDescription())
+
+		return nil
 	case 0xc27ac8c7:
 		x.UInt(0xc27ac8c7)
 
@@ -19632,6 +19660,15 @@ func (m *TLBotCommand) CalcByteSize(layer int32) int {
 
 func (m *TLBotCommand) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
+	case 0x9852d6d2:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetEphemeral(true)
+		}
+		m.SetCommand(dBuf.String())
+		m.SetDescription(dBuf.String())
+		return dBuf.GetError()
 	case 0xc27ac8c7:
 		m.SetCommand(dBuf.String())
 		m.SetDescription(dBuf.String())
@@ -35157,6 +35194,8 @@ func (m *TLChannelsSponsoredMessageReportResultReported) Decode(dBuf *DecodeBuf)
 //  + TL_ChatForbidden
 //  + TL_Channel
 //  + TL_ChannelForbidden
+//  + TL_CommunityForbidden
+//  + TL_Community
 //
 
 func (m *Chat) Encode(x *EncodeBuf, layer int32) error {
@@ -35198,6 +35237,18 @@ func (m *Chat) Encode(x *EncodeBuf, layer int32) error {
 		if err != nil {
 			return err
 		}
+	case Predicate_communityForbidden:
+		t := m.To_CommunityForbidden()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_community:
+		t := m.To_Community()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
 
 	default:
 		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
@@ -35221,6 +35272,9 @@ func (m *Chat) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x6592a1a7:
 		m2 := MakeTLChatForbidden(m)
+		m2.Decode(dBuf)
+	case 0xd49f34c6:
+		m2 := MakeTLChannel(m)
 		m2.Decode(dBuf)
 	case 0x1c32b11c:
 		m2 := MakeTLChannel(m)
@@ -35257,6 +35311,12 @@ func (m *Chat) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x17d493d5:
 		m2 := MakeTLChannelForbidden(m)
+		m2.Decode(dBuf)
+	case 0xfd3cdab8:
+		m2 := MakeTLCommunityForbidden(m)
+		m2.Decode(dBuf)
+	case 0x65efe954:
+		m2 := MakeTLCommunity(m)
 		m2.Decode(dBuf)
 
 	default:
@@ -35301,6 +35361,22 @@ func (m *Chat) To_Channel() *TLChannel {
 func (m *Chat) To_ChannelForbidden() *TLChannelForbidden {
 	m.PredicateName = Predicate_channelForbidden
 	return &TLChannelForbidden{
+		Data2: m,
+	}
+}
+
+// To_CommunityForbidden
+func (m *Chat) To_CommunityForbidden() *TLCommunityForbidden {
+	m.PredicateName = Predicate_communityForbidden
+	return &TLCommunityForbidden{
+		Data2: m,
+	}
+}
+
+// To_Community
+func (m *Chat) To_Community() *TLCommunity {
+	m.PredicateName = Predicate_community
+	return &TLCommunity{
 		Data2: m,
 	}
 }
@@ -35802,6 +35878,9 @@ func (m *TLChannel) GetSendPaidMessagesStars() *wrapperspb.Int64Value {
 func (m *TLChannel) SetLinkedMonoforumId(v *wrapperspb.Int64Value) { m.Data2.LinkedMonoforumId = v }
 func (m *TLChannel) GetLinkedMonoforumId() *wrapperspb.Int64Value  { return m.Data2.LinkedMonoforumId }
 
+func (m *TLChannel) SetLinkedCommunityId(v *wrapperspb.Int64Value) { m.Data2.LinkedCommunityId = v }
+func (m *TLChannel) GetLinkedCommunityId() *wrapperspb.Int64Value  { return m.Data2.LinkedCommunityId }
+
 func (m *TLChannel) SetStoriesMaxId_FLAGINT32(v *wrapperspb.Int32Value) {
 	m.Data2.StoriesMaxId_FLAGINT32 = v
 }
@@ -35822,6 +35901,277 @@ func (m *TLChannel) GetPredicateName() string {
 func (m *TLChannel) Encode(x *EncodeBuf, layer int32) error {
 	clazzId := GetClazzID(Predicate_channel, int(layer))
 	switch uint32(clazzId) {
+	case 0xd49f34c6:
+		x.UInt(0xd49f34c6)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetCreator() == true {
+				flags |= 1 << 0
+			}
+			if m.GetLeft() == true {
+				flags |= 1 << 2
+			}
+			if m.GetBroadcast() == true {
+				flags |= 1 << 5
+			}
+			if m.GetVerified() == true {
+				flags |= 1 << 7
+			}
+			if m.GetMegagroup() == true {
+				flags |= 1 << 8
+			}
+			if m.GetRestricted() == true {
+				flags |= 1 << 9
+			}
+			if m.GetSignatures() == true {
+				flags |= 1 << 11
+			}
+			if m.GetMin() == true {
+				flags |= 1 << 12
+			}
+			if m.GetScam() == true {
+				flags |= 1 << 19
+			}
+			if m.GetHasLink() == true {
+				flags |= 1 << 20
+			}
+			if m.GetHasGeo() == true {
+				flags |= 1 << 21
+			}
+			if m.GetSlowmodeEnabled() == true {
+				flags |= 1 << 22
+			}
+			if m.GetCallActive() == true {
+				flags |= 1 << 23
+			}
+			if m.GetCallNotEmpty() == true {
+				flags |= 1 << 24
+			}
+			if m.GetFake() == true {
+				flags |= 1 << 25
+			}
+			if m.GetGigagroup() == true {
+				flags |= 1 << 26
+			}
+			if m.GetNoforwards() == true {
+				flags |= 1 << 27
+			}
+			if m.GetJoinToSend() == true {
+				flags |= 1 << 28
+			}
+			if m.GetJoinRequest() == true {
+				flags |= 1 << 29
+			}
+			if m.GetForum() == true {
+				flags |= 1 << 30
+			}
+
+			if m.GetAccessHash_FLAGINT64() != nil {
+				flags |= 1 << 13
+			}
+
+			if m.GetUsername() != nil {
+				flags |= 1 << 6
+			}
+
+			if m.GetRestrictionReason() != nil {
+				flags |= 1 << 9
+			}
+			if m.GetAdminRights() != nil {
+				flags |= 1 << 14
+			}
+			if m.GetBannedRights() != nil {
+				flags |= 1 << 15
+			}
+			if m.GetDefaultBannedRights() != nil {
+				flags |= 1 << 18
+			}
+			if m.GetParticipantsCount_FLAGINT32() != nil {
+				flags |= 1 << 17
+			}
+
+			return flags
+		}
+		// set flags2
+		var getFlags2 = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetStoriesHidden() == true {
+				flags |= 1 << 1
+			}
+			if m.GetStoriesHiddenMin() == true {
+				flags |= 1 << 2
+			}
+			if m.GetStoriesUnavailable() == true {
+				flags |= 1 << 3
+			}
+			if m.GetSignatureProfiles() == true {
+				flags |= 1 << 12
+			}
+			if m.GetAutotranslation() == true {
+				flags |= 1 << 15
+			}
+			if m.GetBroadcastMessagesAllowed() == true {
+				flags |= 1 << 16
+			}
+			if m.GetMonoforum() == true {
+				flags |= 1 << 17
+			}
+			if m.GetForumTabs() == true {
+				flags |= 1 << 19
+			}
+
+			if m.GetUsernames() != nil {
+				flags |= 1 << 0
+			}
+			if m.GetStoriesMaxId_FLAGRECENTSTORY() != nil {
+				flags |= 1 << 4
+			}
+			if m.GetColor_FLAGPEERCOLOR() != nil {
+				flags |= 1 << 7
+			}
+			if m.GetProfileColor() != nil {
+				flags |= 1 << 8
+			}
+			if m.GetEmojiStatus() != nil {
+				flags |= 1 << 9
+			}
+			if m.GetLevel() != nil {
+				flags |= 1 << 10
+			}
+			if m.GetSubscriptionUntilDate() != nil {
+				flags |= 1 << 11
+			}
+			if m.GetBotVerificationIcon() != nil {
+				flags |= 1 << 13
+			}
+			if m.GetSendPaidMessagesStars() != nil {
+				flags |= 1 << 14
+			}
+			if m.GetLinkedMonoforumId() != nil {
+				flags |= 1 << 18
+			}
+			if m.GetLinkedCommunityId() != nil {
+				flags |= 1 << 20
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		// set flags
+		var flags2 = getFlags2()
+		x.UInt(flags2)
+		x.Long(m.GetId())
+		if m.GetAccessHash_FLAGINT64() != nil {
+			x.Long(m.GetAccessHash_FLAGINT64().Value)
+		}
+
+		x.String(m.GetTitle())
+		if m.GetUsername() != nil {
+			x.String(m.GetUsername().Value)
+		}
+
+		m.GetPhoto().Encode(x, layer)
+		x.Int(m.GetDate())
+		if m.GetRestrictionReason() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list42 := m.GetRestrictionReason()
+				x.Int(int32(len(list42)))
+				for _, v := range list42 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+		if m.GetAdminRights() != nil {
+			m.GetAdminRights().Encode(x, layer)
+		}
+
+		if m.GetBannedRights() != nil {
+			m.GetBannedRights().Encode(x, layer)
+		}
+
+		if m.GetDefaultBannedRights() != nil {
+			m.GetDefaultBannedRights().Encode(x, layer)
+		}
+
+		if m.GetParticipantsCount_FLAGINT32() != nil {
+			x.Int(m.GetParticipantsCount_FLAGINT32().Value)
+		}
+
+		if m.GetUsernames() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list44 := m.GetUsernames()
+				x.Int(int32(len(list44)))
+				for _, v := range list44 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+		if m.GetStoriesMaxId_FLAGRECENTSTORY() != nil {
+			m.GetStoriesMaxId_FLAGRECENTSTORY().Encode(x, layer)
+		}
+
+		if m.GetColor_FLAGPEERCOLOR() != nil {
+			m.GetColor_FLAGPEERCOLOR().Encode(x, layer)
+		}
+
+		if m.GetProfileColor() != nil {
+			m.GetProfileColor().Encode(x, layer)
+		}
+
+		if m.GetEmojiStatus() != nil {
+			m.GetEmojiStatus().Encode(x, layer)
+		}
+
+		if m.GetLevel() != nil {
+			x.Int(m.GetLevel().Value)
+		}
+
+		if m.GetSubscriptionUntilDate() != nil {
+			x.Int(m.GetSubscriptionUntilDate().Value)
+		}
+
+		if m.GetBotVerificationIcon() != nil {
+			x.Long(m.GetBotVerificationIcon().Value)
+		}
+
+		if m.GetSendPaidMessagesStars() != nil {
+			x.Long(m.GetSendPaidMessagesStars().Value)
+		}
+
+		if m.GetLinkedMonoforumId() != nil {
+			x.Long(m.GetLinkedMonoforumId().Value)
+		}
+
+		if m.GetLinkedCommunityId() != nil {
+			x.Long(m.GetLinkedCommunityId().Value)
+		}
+
+		return nil
 	case 0x1c32b11c:
 		x.UInt(0x1c32b11c)
 
@@ -38219,6 +38569,208 @@ func (m *TLChannel) CalcByteSize(layer int32) int {
 
 func (m *TLChannel) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
+	case 0xd49f34c6:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetCreator(true)
+		}
+		if (flags & (1 << 2)) != 0 {
+			m.SetLeft(true)
+		}
+		if (flags & (1 << 5)) != 0 {
+			m.SetBroadcast(true)
+		}
+		if (flags & (1 << 7)) != 0 {
+			m.SetVerified(true)
+		}
+		if (flags & (1 << 8)) != 0 {
+			m.SetMegagroup(true)
+		}
+		if (flags & (1 << 9)) != 0 {
+			m.SetRestricted(true)
+		}
+		if (flags & (1 << 11)) != 0 {
+			m.SetSignatures(true)
+		}
+		if (flags & (1 << 12)) != 0 {
+			m.SetMin(true)
+		}
+		if (flags & (1 << 19)) != 0 {
+			m.SetScam(true)
+		}
+		if (flags & (1 << 20)) != 0 {
+			m.SetHasLink(true)
+		}
+		if (flags & (1 << 21)) != 0 {
+			m.SetHasGeo(true)
+		}
+		if (flags & (1 << 22)) != 0 {
+			m.SetSlowmodeEnabled(true)
+		}
+		if (flags & (1 << 23)) != 0 {
+			m.SetCallActive(true)
+		}
+		if (flags & (1 << 24)) != 0 {
+			m.SetCallNotEmpty(true)
+		}
+		if (flags & (1 << 25)) != 0 {
+			m.SetFake(true)
+		}
+		if (flags & (1 << 26)) != 0 {
+			m.SetGigagroup(true)
+		}
+		if (flags & (1 << 27)) != 0 {
+			m.SetNoforwards(true)
+		}
+		if (flags & (1 << 28)) != 0 {
+			m.SetJoinToSend(true)
+		}
+		if (flags & (1 << 29)) != 0 {
+			m.SetJoinRequest(true)
+		}
+		if (flags & (1 << 30)) != 0 {
+			m.SetForum(true)
+		}
+		var flags2 = dBuf.UInt()
+		_ = flags2
+		if (flags2 & (1 << 1)) != 0 {
+			m.SetStoriesHidden(true)
+		}
+		if (flags2 & (1 << 2)) != 0 {
+			m.SetStoriesHiddenMin(true)
+		}
+		if (flags2 & (1 << 3)) != 0 {
+			m.SetStoriesUnavailable(true)
+		}
+		if (flags2 & (1 << 12)) != 0 {
+			m.SetSignatureProfiles(true)
+		}
+		if (flags2 & (1 << 15)) != 0 {
+			m.SetAutotranslation(true)
+		}
+		if (flags2 & (1 << 16)) != 0 {
+			m.SetBroadcastMessagesAllowed(true)
+		}
+		if (flags2 & (1 << 17)) != 0 {
+			m.SetMonoforum(true)
+		}
+		if (flags2 & (1 << 19)) != 0 {
+			m.SetForumTabs(true)
+		}
+		m.SetId(dBuf.Long())
+		if (flags & (1 << 13)) != 0 {
+			m.SetAccessHash_FLAGINT64(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		m.SetTitle(dBuf.String())
+		if (flags & (1 << 6)) != 0 {
+			m.SetUsername(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		m9 := &ChatPhoto{}
+		m9.Decode(dBuf)
+		m.SetPhoto(m9)
+
+		m.SetDate(dBuf.Int())
+		if (flags & (1 << 9)) != 0 {
+			c42 := dBuf.Int()
+			if c42 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 42, c42)
+				return dBuf.GetError()
+			}
+			l42 := dBuf.Int()
+			if l42 < 0 || l42 > maxVectorLen {
+				return fmt.Errorf("invalid vector length: %d", l42)
+			}
+			v42 := make([]*RestrictionReason, l42)
+			for i := int32(0); i < l42; i++ {
+				v42[i] = &RestrictionReason{}
+				v42[i].Decode(dBuf)
+			}
+			m.SetRestrictionReason(v42)
+		}
+		if (flags & (1 << 14)) != 0 {
+			m14 := &ChatAdminRights{}
+			m14.Decode(dBuf)
+			m.SetAdminRights(m14)
+		}
+		if (flags & (1 << 15)) != 0 {
+			m43 := &ChatBannedRights{}
+			m43.Decode(dBuf)
+			m.SetBannedRights(m43)
+		}
+		if (flags & (1 << 18)) != 0 {
+			m15 := &ChatBannedRights{}
+			m15.Decode(dBuf)
+			m.SetDefaultBannedRights(m15)
+		}
+		if (flags & (1 << 17)) != 0 {
+			m.SetParticipantsCount_FLAGINT32(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		if (flags2 & (1 << 0)) != 0 {
+			c44 := dBuf.Int()
+			if c44 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 44, c44)
+				return dBuf.GetError()
+			}
+			l44 := dBuf.Int()
+			if l44 < 0 || l44 > maxVectorLen {
+				return fmt.Errorf("invalid vector length: %d", l44)
+			}
+			v44 := make([]*Username, l44)
+			for i := int32(0); i < l44; i++ {
+				v44[i] = &Username{}
+				v44[i].Decode(dBuf)
+			}
+			m.SetUsernames(v44)
+		}
+		if (flags2 & (1 << 4)) != 0 {
+			m45 := &RecentStory{}
+			m45.Decode(dBuf)
+			m.SetStoriesMaxId_FLAGRECENTSTORY(m45)
+		}
+		if (flags2 & (1 << 7)) != 0 {
+			m46 := &PeerColor{}
+			m46.Decode(dBuf)
+			m.SetColor_FLAGPEERCOLOR(m46)
+		}
+		if (flags2 & (1 << 8)) != 0 {
+			m47 := &PeerColor{}
+			m47.Decode(dBuf)
+			m.SetProfileColor(m47)
+		}
+		if (flags2 & (1 << 9)) != 0 {
+			m48 := &EmojiStatus{}
+			m48.Decode(dBuf)
+			m.SetEmojiStatus(m48)
+		}
+		if (flags2 & (1 << 10)) != 0 {
+			m.SetLevel(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		if (flags2 & (1 << 11)) != 0 {
+			m.SetSubscriptionUntilDate(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		if (flags2 & (1 << 13)) != 0 {
+			m.SetBotVerificationIcon(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		if (flags2 & (1 << 14)) != 0 {
+			m.SetSendPaidMessagesStars(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		if (flags2 & (1 << 18)) != 0 {
+			m.SetLinkedMonoforumId(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		if (flags2 & (1 << 20)) != 0 {
+			m.SetLinkedCommunityId(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		return dBuf.GetError()
 	case 0x1c32b11c:
 		var flags = dBuf.UInt()
 		_ = flags
@@ -40139,6 +40691,282 @@ func (m *TLChannelForbidden) Decode(dBuf *DecodeBuf) error {
 	}
 }
 
+// MakeTLCommunityForbidden
+func MakeTLCommunityForbidden(data2 *Chat) *TLCommunityForbidden {
+	if data2 == nil {
+		return &TLCommunityForbidden{Data2: &Chat{
+			PredicateName: Predicate_communityForbidden,
+		}}
+	} else {
+		data2.PredicateName = Predicate_communityForbidden
+		return &TLCommunityForbidden{Data2: data2}
+	}
+}
+
+func (m *TLCommunityForbidden) To_Chat() *Chat {
+	m.Data2.PredicateName = Predicate_communityForbidden
+	return m.Data2
+}
+
+// // flags
+func (m *TLCommunityForbidden) SetId(v int64) { m.Data2.Id = v }
+func (m *TLCommunityForbidden) GetId() int64  { return m.Data2.Id }
+
+func (m *TLCommunityForbidden) SetAccessHash_FLAGINT64(v *wrapperspb.Int64Value) {
+	m.Data2.AccessHash_FLAGINT64 = v
+}
+func (m *TLCommunityForbidden) GetAccessHash_FLAGINT64() *wrapperspb.Int64Value {
+	return m.Data2.AccessHash_FLAGINT64
+}
+
+func (m *TLCommunityForbidden) SetTitle(v string) { m.Data2.Title = v }
+func (m *TLCommunityForbidden) GetTitle() string  { return m.Data2.Title }
+
+func (m *TLCommunityForbidden) GetPredicateName() string {
+	return Predicate_communityForbidden
+}
+
+func (m *TLCommunityForbidden) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_communityForbidden, int(layer))
+	switch uint32(clazzId) {
+	case 0xfd3cdab8:
+		x.UInt(0xfd3cdab8)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetAccessHash_FLAGINT64() != nil {
+				flags |= 1 << 13
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.Long(m.GetId())
+		if m.GetAccessHash_FLAGINT64() != nil {
+			x.Long(m.GetAccessHash_FLAGINT64().Value)
+		}
+
+		x.String(m.GetTitle())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_communityForbidden, layer)
+	}
+}
+
+func (m *TLCommunityForbidden) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunityForbidden) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0xfd3cdab8:
+		var flags = dBuf.UInt()
+		_ = flags
+		m.SetId(dBuf.Long())
+		if (flags & (1 << 13)) != 0 {
+			m.SetAccessHash_FLAGINT64(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		m.SetTitle(dBuf.String())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLCommunity
+func MakeTLCommunity(data2 *Chat) *TLCommunity {
+	if data2 == nil {
+		return &TLCommunity{Data2: &Chat{
+			PredicateName: Predicate_community,
+		}}
+	} else {
+		data2.PredicateName = Predicate_community
+		return &TLCommunity{Data2: data2}
+	}
+}
+
+func (m *TLCommunity) To_Chat() *Chat {
+	m.Data2.PredicateName = Predicate_community
+	return m.Data2
+}
+
+// // flags
+func (m *TLCommunity) SetCreator(v bool) { m.Data2.Creator = v }
+func (m *TLCommunity) GetCreator() bool  { return m.Data2.Creator }
+
+func (m *TLCommunity) SetLeft(v bool) { m.Data2.Left = v }
+func (m *TLCommunity) GetLeft() bool  { return m.Data2.Left }
+
+func (m *TLCommunity) SetMin(v bool) { m.Data2.Min = v }
+func (m *TLCommunity) GetMin() bool  { return m.Data2.Min }
+
+// // flags
+func (m *TLCommunity) SetCollapsedInDialogs(v bool) { m.Data2.CollapsedInDialogs = v }
+func (m *TLCommunity) GetCollapsedInDialogs() bool  { return m.Data2.CollapsedInDialogs }
+
+func (m *TLCommunity) SetId(v int64) { m.Data2.Id = v }
+func (m *TLCommunity) GetId() int64  { return m.Data2.Id }
+
+func (m *TLCommunity) SetAccessHash_FLAGINT64(v *wrapperspb.Int64Value) {
+	m.Data2.AccessHash_FLAGINT64 = v
+}
+func (m *TLCommunity) GetAccessHash_FLAGINT64() *wrapperspb.Int64Value {
+	return m.Data2.AccessHash_FLAGINT64
+}
+
+func (m *TLCommunity) SetTitle(v string) { m.Data2.Title = v }
+func (m *TLCommunity) GetTitle() string  { return m.Data2.Title }
+
+func (m *TLCommunity) SetPhoto(v *ChatPhoto) { m.Data2.Photo = v }
+func (m *TLCommunity) GetPhoto() *ChatPhoto  { return m.Data2.Photo }
+
+func (m *TLCommunity) SetDate(v int32) { m.Data2.Date = v }
+func (m *TLCommunity) GetDate() int32  { return m.Data2.Date }
+
+func (m *TLCommunity) SetAdminRights(v *ChatAdminRights) { m.Data2.AdminRights = v }
+func (m *TLCommunity) GetAdminRights() *ChatAdminRights  { return m.Data2.AdminRights }
+
+func (m *TLCommunity) SetDefaultBannedRights(v *ChatBannedRights) { m.Data2.DefaultBannedRights = v }
+func (m *TLCommunity) GetDefaultBannedRights() *ChatBannedRights  { return m.Data2.DefaultBannedRights }
+
+func (m *TLCommunity) GetPredicateName() string {
+	return Predicate_community
+}
+
+func (m *TLCommunity) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_community, int(layer))
+	switch uint32(clazzId) {
+	case 0x65efe954:
+		x.UInt(0x65efe954)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetCreator() == true {
+				flags |= 1 << 0
+			}
+			if m.GetLeft() == true {
+				flags |= 1 << 2
+			}
+			if m.GetMin() == true {
+				flags |= 1 << 12
+			}
+
+			if m.GetAccessHash_FLAGINT64() != nil {
+				flags |= 1 << 13
+			}
+
+			if m.GetAdminRights() != nil {
+				flags |= 1 << 14
+			}
+			if m.GetDefaultBannedRights() != nil {
+				flags |= 1 << 18
+			}
+
+			return flags
+		}
+		// set flags2
+		var getFlags2 = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetCollapsedInDialogs() == true {
+				flags |= 1 << 20
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		// set flags
+		var flags2 = getFlags2()
+		x.UInt(flags2)
+		x.Long(m.GetId())
+		if m.GetAccessHash_FLAGINT64() != nil {
+			x.Long(m.GetAccessHash_FLAGINT64().Value)
+		}
+
+		x.String(m.GetTitle())
+		m.GetPhoto().Encode(x, layer)
+		x.Int(m.GetDate())
+		if m.GetAdminRights() != nil {
+			m.GetAdminRights().Encode(x, layer)
+		}
+
+		if m.GetDefaultBannedRights() != nil {
+			m.GetDefaultBannedRights().Encode(x, layer)
+		}
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_community, layer)
+	}
+}
+
+func (m *TLCommunity) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunity) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x65efe954:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetCreator(true)
+		}
+		if (flags & (1 << 2)) != 0 {
+			m.SetLeft(true)
+		}
+		if (flags & (1 << 12)) != 0 {
+			m.SetMin(true)
+		}
+		var flags2 = dBuf.UInt()
+		_ = flags2
+		if (flags2 & (1 << 20)) != 0 {
+			m.SetCollapsedInDialogs(true)
+		}
+		m.SetId(dBuf.Long())
+		if (flags & (1 << 13)) != 0 {
+			m.SetAccessHash_FLAGINT64(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		m.SetTitle(dBuf.String())
+
+		m9 := &ChatPhoto{}
+		m9.Decode(dBuf)
+		m.SetPhoto(m9)
+
+		m.SetDate(dBuf.Int())
+		if (flags & (1 << 14)) != 0 {
+			m14 := &ChatAdminRights{}
+			m14.Decode(dBuf)
+			m.SetAdminRights(m14)
+		}
+		if (flags & (1 << 18)) != 0 {
+			m15 := &ChatBannedRights{}
+			m15.Decode(dBuf)
+			m.SetDefaultBannedRights(m15)
+		}
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // ChatAdminRights <--
 //  + TL_ChatAdminRights
@@ -40261,6 +41089,9 @@ func (m *TLChatAdminRights) GetManageDirectMessages() bool  { return m.Data2.Man
 func (m *TLChatAdminRights) SetManageRanks(v bool) { m.Data2.ManageRanks = v }
 func (m *TLChatAdminRights) GetManageRanks() bool  { return m.Data2.ManageRanks }
 
+func (m *TLChatAdminRights) SetManageLinkedPeers(v bool) { m.Data2.ManageLinkedPeers = v }
+func (m *TLChatAdminRights) GetManageLinkedPeers() bool  { return m.Data2.ManageLinkedPeers }
+
 func (m *TLChatAdminRights) GetPredicateName() string {
 	return Predicate_chatAdminRights
 }
@@ -40325,6 +41156,9 @@ func (m *TLChatAdminRights) Encode(x *EncodeBuf, layer int32) error {
 			}
 			if m.GetManageRanks() == true {
 				flags |= 1 << 18
+			}
+			if m.GetManageLinkedPeers() == true {
+				flags |= 1 << 19
 			}
 
 			return flags
@@ -40400,6 +41234,9 @@ func (m *TLChatAdminRights) Decode(dBuf *DecodeBuf) error {
 		}
 		if (flags & (1 << 18)) != 0 {
 			m.SetManageRanks(true)
+		}
+		if (flags & (1 << 19)) != 0 {
+			m.SetManageLinkedPeers(true)
 		}
 		return dBuf.GetError()
 
@@ -40662,6 +41499,9 @@ func (m *TLChatBannedRights) GetEditRank() bool  { return m.Data2.EditRank }
 func (m *TLChatBannedRights) SetSendReactions(v bool) { m.Data2.SendReactions = v }
 func (m *TLChatBannedRights) GetSendReactions() bool  { return m.Data2.SendReactions }
 
+func (m *TLChatBannedRights) SetManageLinkedPeers(v bool) { m.Data2.ManageLinkedPeers = v }
+func (m *TLChatBannedRights) GetManageLinkedPeers() bool  { return m.Data2.ManageLinkedPeers }
+
 func (m *TLChatBannedRights) SetUntilDate(v int32) { m.Data2.UntilDate = v }
 func (m *TLChatBannedRights) GetUntilDate() int32  { return m.Data2.UntilDate }
 
@@ -40744,6 +41584,9 @@ func (m *TLChatBannedRights) Encode(x *EncodeBuf, layer int32) error {
 			}
 			if m.GetSendReactions() == true {
 				flags |= 1 << 27
+			}
+			if m.GetManageLinkedPeers() == true {
+				flags |= 1 << 28
 			}
 
 			return flags
@@ -40836,6 +41679,9 @@ func (m *TLChatBannedRights) Decode(dBuf *DecodeBuf) error {
 		if (flags & (1 << 27)) != 0 {
 			m.SetSendReactions(true)
 		}
+		if (flags & (1 << 28)) != 0 {
+			m.SetManageLinkedPeers(true)
+		}
 		m.SetUntilDate(dBuf.Int())
 		return dBuf.GetError()
 
@@ -40848,6 +41694,7 @@ func (m *TLChatBannedRights) Decode(dBuf *DecodeBuf) error {
 // ChatFull <--
 //  + TL_ChatFull
 //  + TL_ChannelFull
+//  + TL_CommunityFull
 //
 
 func (m *ChatFull) Encode(x *EncodeBuf, layer int32) error {
@@ -40867,6 +41714,12 @@ func (m *ChatFull) Encode(x *EncodeBuf, layer int32) error {
 		}
 	case Predicate_channelFull:
 		t := m.To_ChannelFull()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_communityFull:
+		t := m.To_CommunityFull()
 		err := t.Encode(x, layer)
 		if err != nil {
 			return err
@@ -40931,6 +41784,9 @@ func (m *ChatFull) Decode(dBuf *DecodeBuf) error {
 	case 0xe13c3d20:
 		m2 := MakeTLChannelFull(m)
 		m2.Decode(dBuf)
+	case 0xcbb7a507:
+		m2 := MakeTLCommunityFull(m)
+		m2.Decode(dBuf)
 
 	default:
 		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
@@ -40950,6 +41806,14 @@ func (m *ChatFull) To_ChatFull() *TLChatFull {
 func (m *ChatFull) To_ChannelFull() *TLChannelFull {
 	m.PredicateName = Predicate_channelFull
 	return &TLChannelFull{
+		Data2: m,
+	}
+}
+
+// To_CommunityFull
+func (m *ChatFull) To_CommunityFull() *TLCommunityFull {
+	m.PredicateName = Predicate_communityFull
+	return &TLCommunityFull{
 		Data2: m,
 	}
 }
@@ -48397,6 +49261,170 @@ func (m *TLChannelFull) Decode(dBuf *DecodeBuf) error {
 	}
 }
 
+// MakeTLCommunityFull
+func MakeTLCommunityFull(data2 *ChatFull) *TLCommunityFull {
+	if data2 == nil {
+		return &TLCommunityFull{Data2: &ChatFull{
+			PredicateName: Predicate_communityFull,
+		}}
+	} else {
+		data2.PredicateName = Predicate_communityFull
+		return &TLCommunityFull{Data2: data2}
+	}
+}
+
+func (m *TLCommunityFull) To_ChatFull() *ChatFull {
+	m.Data2.PredicateName = Predicate_communityFull
+	return m.Data2
+}
+
+// // flags
+func (m *TLCommunityFull) SetId(v int64) { m.Data2.Id = v }
+func (m *TLCommunityFull) GetId() int64  { return m.Data2.Id }
+
+func (m *TLCommunityFull) SetAbout(v string) { m.Data2.About = v }
+func (m *TLCommunityFull) GetAbout() string  { return m.Data2.About }
+
+func (m *TLCommunityFull) SetChatPhoto(v *Photo) { m.Data2.ChatPhoto = v }
+func (m *TLCommunityFull) GetChatPhoto() *Photo  { return m.Data2.ChatPhoto }
+
+func (m *TLCommunityFull) SetLinkedPeers(v []*CommunityPeer) { m.Data2.LinkedPeers = v }
+func (m *TLCommunityFull) GetLinkedPeers() []*CommunityPeer  { return m.Data2.LinkedPeers }
+
+func (m *TLCommunityFull) SetAdminsCount(v *wrapperspb.Int32Value) { m.Data2.AdminsCount = v }
+func (m *TLCommunityFull) GetAdminsCount() *wrapperspb.Int32Value  { return m.Data2.AdminsCount }
+
+func (m *TLCommunityFull) SetKickedCount(v *wrapperspb.Int32Value) { m.Data2.KickedCount = v }
+func (m *TLCommunityFull) GetKickedCount() *wrapperspb.Int32Value  { return m.Data2.KickedCount }
+
+func (m *TLCommunityFull) SetPeerLinkRequestsPending(v *wrapperspb.Int32Value) {
+	m.Data2.PeerLinkRequestsPending = v
+}
+func (m *TLCommunityFull) GetPeerLinkRequestsPending() *wrapperspb.Int32Value {
+	return m.Data2.PeerLinkRequestsPending
+}
+
+func (m *TLCommunityFull) GetPredicateName() string {
+	return Predicate_communityFull
+}
+
+func (m *TLCommunityFull) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_communityFull, int(layer))
+	switch uint32(clazzId) {
+	case 0xcbb7a507:
+		x.UInt(0xcbb7a507)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetAdminsCount() != nil {
+				flags |= 1 << 1
+			}
+			if m.GetKickedCount() != nil {
+				flags |= 1 << 2
+			}
+			if m.GetPeerLinkRequestsPending() != nil {
+				flags |= 1 << 0
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.Long(m.GetId())
+		x.String(m.GetAbout())
+		m.GetChatPhoto().Encode(x, layer)
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list70 := m.GetLinkedPeers()
+			x.Int(int32(len(list70)))
+			for _, v := range list70 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		if m.GetAdminsCount() != nil {
+			x.Int(m.GetAdminsCount().Value)
+		}
+
+		if m.GetKickedCount() != nil {
+			x.Int(m.GetKickedCount().Value)
+		}
+
+		if m.GetPeerLinkRequestsPending() != nil {
+			x.Int(m.GetPeerLinkRequestsPending().Value)
+		}
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_communityFull, layer)
+	}
+}
+
+func (m *TLCommunityFull) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunityFull) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0xcbb7a507:
+		var flags = dBuf.UInt()
+		_ = flags
+		m.SetId(dBuf.Long())
+		m.SetAbout(dBuf.String())
+
+		m7 := &Photo{}
+		m7.Decode(dBuf)
+		m.SetChatPhoto(m7)
+
+		c70 := dBuf.Int()
+		if c70 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 70, c70)
+			return dBuf.GetError()
+		}
+		l70 := dBuf.Int()
+		if l70 < 0 || l70 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l70)
+		}
+		v70 := make([]*CommunityPeer, l70)
+		for i := int32(0); i < l70; i++ {
+			v70[i] = &CommunityPeer{}
+			v70[i].Decode(dBuf)
+		}
+		m.SetLinkedPeers(v70)
+
+		if (flags & (1 << 1)) != 0 {
+			m.SetAdminsCount(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		if (flags & (1 << 2)) != 0 {
+			m.SetKickedCount(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		if (flags & (1 << 0)) != 0 {
+			m.SetPeerLinkRequestsPending(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // ChatInvite <--
 //  + TL_ChatInviteAlready
@@ -52376,6 +53404,742 @@ func (m *TLCodeSettings) Decode(dBuf *DecodeBuf) error {
 		if (flags & (1 << 6)) != 0 {
 			m.SetLogoutTokens(dBuf.VectorBytes())
 		}
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Communities_ParticipantJoinedChats <--
+//  + TL_CommunitiesParticipantJoinedChats
+//
+
+func (m *Communities_ParticipantJoinedChats) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_communities_participantJoinedChats:
+		t := m.To_CommunitiesParticipantJoinedChats()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *Communities_ParticipantJoinedChats) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *Communities_ParticipantJoinedChats) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0x8d78512a:
+		m2 := MakeTLCommunitiesParticipantJoinedChats(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_CommunitiesParticipantJoinedChats
+func (m *Communities_ParticipantJoinedChats) To_CommunitiesParticipantJoinedChats() *TLCommunitiesParticipantJoinedChats {
+	m.PredicateName = Predicate_communities_participantJoinedChats
+	return &TLCommunitiesParticipantJoinedChats{
+		Data2: m,
+	}
+}
+
+// MakeTLCommunitiesParticipantJoinedChats
+func MakeTLCommunitiesParticipantJoinedChats(data2 *Communities_ParticipantJoinedChats) *TLCommunitiesParticipantJoinedChats {
+	if data2 == nil {
+		return &TLCommunitiesParticipantJoinedChats{Data2: &Communities_ParticipantJoinedChats{
+			PredicateName: Predicate_communities_participantJoinedChats,
+		}}
+	} else {
+		data2.PredicateName = Predicate_communities_participantJoinedChats
+		return &TLCommunitiesParticipantJoinedChats{Data2: data2}
+	}
+}
+
+func (m *TLCommunitiesParticipantJoinedChats) To_Communities_ParticipantJoinedChats() *Communities_ParticipantJoinedChats {
+	m.Data2.PredicateName = Predicate_communities_participantJoinedChats
+	return m.Data2
+}
+
+func (m *TLCommunitiesParticipantJoinedChats) SetCreatorChatIds(v []int64) {
+	m.Data2.CreatorChatIds = v
+}
+func (m *TLCommunitiesParticipantJoinedChats) GetCreatorChatIds() []int64 {
+	return m.Data2.CreatorChatIds
+}
+
+func (m *TLCommunitiesParticipantJoinedChats) SetJoinedChatIds(v []int64) { m.Data2.JoinedChatIds = v }
+func (m *TLCommunitiesParticipantJoinedChats) GetJoinedChatIds() []int64 {
+	return m.Data2.JoinedChatIds
+}
+
+func (m *TLCommunitiesParticipantJoinedChats) SetChats(v []*Chat) { m.Data2.Chats = v }
+func (m *TLCommunitiesParticipantJoinedChats) GetChats() []*Chat  { return m.Data2.Chats }
+
+func (m *TLCommunitiesParticipantJoinedChats) SetUsers(v []*User) { m.Data2.Users = v }
+func (m *TLCommunitiesParticipantJoinedChats) GetUsers() []*User  { return m.Data2.Users }
+
+func (m *TLCommunitiesParticipantJoinedChats) GetPredicateName() string {
+	return Predicate_communities_participantJoinedChats
+}
+
+func (m *TLCommunitiesParticipantJoinedChats) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_communities_participantJoinedChats, int(layer))
+	switch uint32(clazzId) {
+	case 0x8d78512a:
+		x.UInt(0x8d78512a)
+
+		x.VectorLong(m.GetCreatorChatIds())
+
+		x.VectorLong(m.GetJoinedChatIds())
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list2 := m.GetChats()
+			x.Int(int32(len(list2)))
+			for _, v := range list2 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list3 := m.GetUsers()
+			x.Int(int32(len(list3)))
+			for _, v := range list3 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_communities_participantJoinedChats, layer)
+	}
+}
+
+func (m *TLCommunitiesParticipantJoinedChats) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesParticipantJoinedChats) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x8d78512a:
+
+		m.SetCreatorChatIds(dBuf.VectorLong())
+
+		m.SetJoinedChatIds(dBuf.VectorLong())
+
+		c2 := dBuf.Int()
+		if c2 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 2, c2)
+			return dBuf.GetError()
+		}
+		l2 := dBuf.Int()
+		if l2 < 0 || l2 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l2)
+		}
+		v2 := make([]*Chat, l2)
+		for i := int32(0); i < l2; i++ {
+			v2[i] = &Chat{}
+			v2[i].Decode(dBuf)
+		}
+		m.SetChats(v2)
+
+		c3 := dBuf.Int()
+		if c3 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 3, c3)
+			return dBuf.GetError()
+		}
+		l3 := dBuf.Int()
+		if l3 < 0 || l3 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l3)
+		}
+		v3 := make([]*User, l3)
+		for i := int32(0); i < l3; i++ {
+			v3[i] = &User{}
+			v3[i].Decode(dBuf)
+		}
+		m.SetUsers(v3)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Communities_PeerLinkRequests <--
+//  + TL_CommunitiesPeerLinkRequests
+//
+
+func (m *Communities_PeerLinkRequests) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_communities_peerLinkRequests:
+		t := m.To_CommunitiesPeerLinkRequests()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *Communities_PeerLinkRequests) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *Communities_PeerLinkRequests) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0x2244afad:
+		m2 := MakeTLCommunitiesPeerLinkRequests(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_CommunitiesPeerLinkRequests
+func (m *Communities_PeerLinkRequests) To_CommunitiesPeerLinkRequests() *TLCommunitiesPeerLinkRequests {
+	m.PredicateName = Predicate_communities_peerLinkRequests
+	return &TLCommunitiesPeerLinkRequests{
+		Data2: m,
+	}
+}
+
+// MakeTLCommunitiesPeerLinkRequests
+func MakeTLCommunitiesPeerLinkRequests(data2 *Communities_PeerLinkRequests) *TLCommunitiesPeerLinkRequests {
+	if data2 == nil {
+		return &TLCommunitiesPeerLinkRequests{Data2: &Communities_PeerLinkRequests{
+			PredicateName: Predicate_communities_peerLinkRequests,
+		}}
+	} else {
+		data2.PredicateName = Predicate_communities_peerLinkRequests
+		return &TLCommunitiesPeerLinkRequests{Data2: data2}
+	}
+}
+
+func (m *TLCommunitiesPeerLinkRequests) To_Communities_PeerLinkRequests() *Communities_PeerLinkRequests {
+	m.Data2.PredicateName = Predicate_communities_peerLinkRequests
+	return m.Data2
+}
+
+// // flags
+func (m *TLCommunitiesPeerLinkRequests) SetTotalCount(v int32) { m.Data2.TotalCount = v }
+func (m *TLCommunitiesPeerLinkRequests) GetTotalCount() int32  { return m.Data2.TotalCount }
+
+func (m *TLCommunitiesPeerLinkRequests) SetRequests(v []*CommunityPeerRequest) { m.Data2.Requests = v }
+func (m *TLCommunitiesPeerLinkRequests) GetRequests() []*CommunityPeerRequest {
+	return m.Data2.Requests
+}
+
+func (m *TLCommunitiesPeerLinkRequests) SetNextOffset(v *wrapperspb.StringValue) {
+	m.Data2.NextOffset = v
+}
+func (m *TLCommunitiesPeerLinkRequests) GetNextOffset() *wrapperspb.StringValue {
+	return m.Data2.NextOffset
+}
+
+func (m *TLCommunitiesPeerLinkRequests) SetChats(v []*Chat) { m.Data2.Chats = v }
+func (m *TLCommunitiesPeerLinkRequests) GetChats() []*Chat  { return m.Data2.Chats }
+
+func (m *TLCommunitiesPeerLinkRequests) SetUsers(v []*User) { m.Data2.Users = v }
+func (m *TLCommunitiesPeerLinkRequests) GetUsers() []*User  { return m.Data2.Users }
+
+func (m *TLCommunitiesPeerLinkRequests) GetPredicateName() string {
+	return Predicate_communities_peerLinkRequests
+}
+
+func (m *TLCommunitiesPeerLinkRequests) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_communities_peerLinkRequests, int(layer))
+	switch uint32(clazzId) {
+	case 0x2244afad:
+		x.UInt(0x2244afad)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetNextOffset() != nil {
+				flags |= 1 << 0
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.Int(m.GetTotalCount())
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list2 := m.GetRequests()
+			x.Int(int32(len(list2)))
+			for _, v := range list2 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		if m.GetNextOffset() != nil {
+			x.String(m.GetNextOffset().Value)
+		}
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list4 := m.GetChats()
+			x.Int(int32(len(list4)))
+			for _, v := range list4 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list5 := m.GetUsers()
+			x.Int(int32(len(list5)))
+			for _, v := range list5 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_communities_peerLinkRequests, layer)
+	}
+}
+
+func (m *TLCommunitiesPeerLinkRequests) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesPeerLinkRequests) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x2244afad:
+		var flags = dBuf.UInt()
+		_ = flags
+		m.SetTotalCount(dBuf.Int())
+		c2 := dBuf.Int()
+		if c2 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 2, c2)
+			return dBuf.GetError()
+		}
+		l2 := dBuf.Int()
+		if l2 < 0 || l2 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l2)
+		}
+		v2 := make([]*CommunityPeerRequest, l2)
+		for i := int32(0); i < l2; i++ {
+			v2[i] = &CommunityPeerRequest{}
+			v2[i].Decode(dBuf)
+		}
+		m.SetRequests(v2)
+
+		if (flags & (1 << 0)) != 0 {
+			m.SetNextOffset(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		c4 := dBuf.Int()
+		if c4 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 4, c4)
+			return dBuf.GetError()
+		}
+		l4 := dBuf.Int()
+		if l4 < 0 || l4 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l4)
+		}
+		v4 := make([]*Chat, l4)
+		for i := int32(0); i < l4; i++ {
+			v4[i] = &Chat{}
+			v4[i].Decode(dBuf)
+		}
+		m.SetChats(v4)
+
+		c5 := dBuf.Int()
+		if c5 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 5, c5)
+			return dBuf.GetError()
+		}
+		l5 := dBuf.Int()
+		if l5 < 0 || l5 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l5)
+		}
+		v5 := make([]*User, l5)
+		for i := int32(0); i < l5; i++ {
+			v5[i] = &User{}
+			v5[i].Decode(dBuf)
+		}
+		m.SetUsers(v5)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CommunityPeer <--
+//  + TL_CommunityPeer
+//
+
+func (m *CommunityPeer) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_communityPeer:
+		t := m.To_CommunityPeer()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *CommunityPeer) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *CommunityPeer) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0x76141ebd:
+		m2 := MakeTLCommunityPeer(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_CommunityPeer
+func (m *CommunityPeer) To_CommunityPeer() *TLCommunityPeer {
+	m.PredicateName = Predicate_communityPeer
+	return &TLCommunityPeer{
+		Data2: m,
+	}
+}
+
+// MakeTLCommunityPeer
+func MakeTLCommunityPeer(data2 *CommunityPeer) *TLCommunityPeer {
+	if data2 == nil {
+		return &TLCommunityPeer{Data2: &CommunityPeer{
+			PredicateName: Predicate_communityPeer,
+		}}
+	} else {
+		data2.PredicateName = Predicate_communityPeer
+		return &TLCommunityPeer{Data2: data2}
+	}
+}
+
+func (m *TLCommunityPeer) To_CommunityPeer() *CommunityPeer {
+	m.Data2.PredicateName = Predicate_communityPeer
+	return m.Data2
+}
+
+// // flags
+func (m *TLCommunityPeer) SetCanViewHistory(v bool) { m.Data2.CanViewHistory = v }
+func (m *TLCommunityPeer) GetCanViewHistory() bool  { return m.Data2.CanViewHistory }
+
+func (m *TLCommunityPeer) SetVisible(v *Bool) { m.Data2.Visible = v }
+func (m *TLCommunityPeer) GetVisible() *Bool  { return m.Data2.Visible }
+
+func (m *TLCommunityPeer) SetPeer(v *Peer) { m.Data2.Peer = v }
+func (m *TLCommunityPeer) GetPeer() *Peer  { return m.Data2.Peer }
+
+func (m *TLCommunityPeer) GetPredicateName() string {
+	return Predicate_communityPeer
+}
+
+func (m *TLCommunityPeer) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_communityPeer, int(layer))
+	switch uint32(clazzId) {
+	case 0x76141ebd:
+		x.UInt(0x76141ebd)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetCanViewHistory() == true {
+				flags |= 1 << 2
+			}
+			if m.GetVisible() != nil {
+				flags |= 1 << 0
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		if m.GetVisible() != nil {
+			m.GetVisible().Encode(x, layer)
+		}
+
+		m.GetPeer().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_communityPeer, layer)
+	}
+}
+
+func (m *TLCommunityPeer) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunityPeer) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x76141ebd:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 2)) != 0 {
+			m.SetCanViewHistory(true)
+		}
+		if (flags & (1 << 0)) != 0 {
+			m2 := &Bool{}
+			m2.Decode(dBuf)
+			m.SetVisible(m2)
+		}
+
+		m3 := &Peer{}
+		m3.Decode(dBuf)
+		m.SetPeer(m3)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CommunityPeerRequest <--
+//  + TL_CommunityPeerRequest
+//
+
+func (m *CommunityPeerRequest) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_communityPeerRequest:
+		t := m.To_CommunityPeerRequest()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *CommunityPeerRequest) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *CommunityPeerRequest) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0x7beafa85:
+		m2 := MakeTLCommunityPeerRequest(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_CommunityPeerRequest
+func (m *CommunityPeerRequest) To_CommunityPeerRequest() *TLCommunityPeerRequest {
+	m.PredicateName = Predicate_communityPeerRequest
+	return &TLCommunityPeerRequest{
+		Data2: m,
+	}
+}
+
+// MakeTLCommunityPeerRequest
+func MakeTLCommunityPeerRequest(data2 *CommunityPeerRequest) *TLCommunityPeerRequest {
+	if data2 == nil {
+		return &TLCommunityPeerRequest{Data2: &CommunityPeerRequest{
+			PredicateName: Predicate_communityPeerRequest,
+		}}
+	} else {
+		data2.PredicateName = Predicate_communityPeerRequest
+		return &TLCommunityPeerRequest{Data2: data2}
+	}
+}
+
+func (m *TLCommunityPeerRequest) To_CommunityPeerRequest() *CommunityPeerRequest {
+	m.Data2.PredicateName = Predicate_communityPeerRequest
+	return m.Data2
+}
+
+// // flags
+func (m *TLCommunityPeerRequest) SetVisible(v bool) { m.Data2.Visible = v }
+func (m *TLCommunityPeerRequest) GetVisible() bool  { return m.Data2.Visible }
+
+func (m *TLCommunityPeerRequest) SetPeer(v *Peer) { m.Data2.Peer = v }
+func (m *TLCommunityPeerRequest) GetPeer() *Peer  { return m.Data2.Peer }
+
+func (m *TLCommunityPeerRequest) SetRequestedBy(v int64) { m.Data2.RequestedBy = v }
+func (m *TLCommunityPeerRequest) GetRequestedBy() int64  { return m.Data2.RequestedBy }
+
+func (m *TLCommunityPeerRequest) SetDate(v int32) { m.Data2.Date = v }
+func (m *TLCommunityPeerRequest) GetDate() int32  { return m.Data2.Date }
+
+func (m *TLCommunityPeerRequest) GetPredicateName() string {
+	return Predicate_communityPeerRequest
+}
+
+func (m *TLCommunityPeerRequest) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_communityPeerRequest, int(layer))
+	switch uint32(clazzId) {
+	case 0x7beafa85:
+		x.UInt(0x7beafa85)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetVisible() == true {
+				flags |= 1 << 0
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		m.GetPeer().Encode(x, layer)
+		x.Long(m.GetRequestedBy())
+		x.Int(m.GetDate())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_communityPeerRequest, layer)
+	}
+}
+
+func (m *TLCommunityPeerRequest) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunityPeerRequest) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x7beafa85:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetVisible(true)
+		}
+
+		m2 := &Peer{}
+		m2.Decode(dBuf)
+		m.SetPeer(m2)
+
+		m.SetRequestedBy(dBuf.Long())
+		m.SetDate(dBuf.Int())
 		return dBuf.GetError()
 
 	default:
@@ -56993,6 +58757,7 @@ func (m *TLDefaultHistoryTTL) Decode(dBuf *DecodeBuf) error {
 // Dialog <--
 //  + TL_Dialog
 //  + TL_DialogFolder
+//  + TL_DialogCommunity
 //
 
 func (m *Dialog) Encode(x *EncodeBuf, layer int32) error {
@@ -57012,6 +58777,12 @@ func (m *Dialog) Encode(x *EncodeBuf, layer int32) error {
 		}
 	case Predicate_dialogFolder:
 		t := m.To_DialogFolder()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_dialogCommunity:
+		t := m.To_DialogCommunity()
 		err := t.Encode(x, layer)
 		if err != nil {
 			return err
@@ -57043,6 +58814,9 @@ func (m *Dialog) Decode(dBuf *DecodeBuf) error {
 	case 0x71bd134c:
 		m2 := MakeTLDialogFolder(m)
 		m2.Decode(dBuf)
+	case 0xf78a0973:
+		m2 := MakeTLDialogCommunity(m)
+		m2.Decode(dBuf)
 
 	default:
 		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
@@ -57062,6 +58836,14 @@ func (m *Dialog) To_Dialog() *TLDialog {
 func (m *Dialog) To_DialogFolder() *TLDialogFolder {
 	m.PredicateName = Predicate_dialogFolder
 	return &TLDialogFolder{
+		Data2: m,
+	}
+}
+
+// To_DialogCommunity
+func (m *Dialog) To_DialogCommunity() *TLDialogCommunity {
+	m.PredicateName = Predicate_dialogCommunity
+	return &TLDialogCommunity{
 		Data2: m,
 	}
 }
@@ -57574,6 +59356,92 @@ func (m *TLDialogFolder) Decode(dBuf *DecodeBuf) error {
 		m.SetUnreadUnmutedPeersCount(dBuf.Int())
 		m.SetUnreadMutedMessagesCount(dBuf.Int())
 		m.SetUnreadUnmutedMessagesCount(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLDialogCommunity
+func MakeTLDialogCommunity(data2 *Dialog) *TLDialogCommunity {
+	if data2 == nil {
+		return &TLDialogCommunity{Data2: &Dialog{
+			PredicateName: Predicate_dialogCommunity,
+		}}
+	} else {
+		data2.PredicateName = Predicate_dialogCommunity
+		return &TLDialogCommunity{Data2: data2}
+	}
+}
+
+func (m *TLDialogCommunity) To_Dialog() *Dialog {
+	m.Data2.PredicateName = Predicate_dialogCommunity
+	return m.Data2
+}
+
+// // flags
+func (m *TLDialogCommunity) SetPinned(v bool) { m.Data2.Pinned = v }
+func (m *TLDialogCommunity) GetPinned() bool  { return m.Data2.Pinned }
+
+func (m *TLDialogCommunity) SetCommunityId(v int64) { m.Data2.CommunityId = v }
+func (m *TLDialogCommunity) GetCommunityId() int64  { return m.Data2.CommunityId }
+
+func (m *TLDialogCommunity) SetNotifySettings(v *PeerNotifySettings) { m.Data2.NotifySettings = v }
+func (m *TLDialogCommunity) GetNotifySettings() *PeerNotifySettings  { return m.Data2.NotifySettings }
+
+func (m *TLDialogCommunity) GetPredicateName() string {
+	return Predicate_dialogCommunity
+}
+
+func (m *TLDialogCommunity) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_dialogCommunity, int(layer))
+	switch uint32(clazzId) {
+	case 0xf78a0973:
+		x.UInt(0xf78a0973)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetPinned() == true {
+				flags |= 1 << 2
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.Long(m.GetCommunityId())
+		m.GetNotifySettings().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_dialogCommunity, layer)
+	}
+}
+
+func (m *TLDialogCommunity) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLDialogCommunity) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0xf78a0973:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 2)) != 0 {
+			m.SetPinned(true)
+		}
+		m.SetCommunityId(dBuf.Long())
+
+		m12 := &PeerNotifySettings{}
+		m12.Decode(dBuf)
+		m.SetNotifySettings(m12)
+
 		return dBuf.GetError()
 
 	default:
@@ -58953,6 +60821,7 @@ func (m *TLDialogFilterSuggested) Decode(dBuf *DecodeBuf) error {
 // DialogPeer <--
 //  + TL_DialogPeer
 //  + TL_DialogPeerFolder
+//  + TL_DialogPeerCommunity
 //
 
 func (m *DialogPeer) Encode(x *EncodeBuf, layer int32) error {
@@ -58972,6 +60841,12 @@ func (m *DialogPeer) Encode(x *EncodeBuf, layer int32) error {
 		}
 	case Predicate_dialogPeerFolder:
 		t := m.To_DialogPeerFolder()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_dialogPeerCommunity:
+		t := m.To_DialogPeerCommunity()
 		err := t.Encode(x, layer)
 		if err != nil {
 			return err
@@ -58997,6 +60872,9 @@ func (m *DialogPeer) Decode(dBuf *DecodeBuf) error {
 	case 0x514519e2:
 		m2 := MakeTLDialogPeerFolder(m)
 		m2.Decode(dBuf)
+	case 0x2f65c8e4:
+		m2 := MakeTLDialogPeerCommunity(m)
+		m2.Decode(dBuf)
 
 	default:
 		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
@@ -59016,6 +60894,14 @@ func (m *DialogPeer) To_DialogPeer() *TLDialogPeer {
 func (m *DialogPeer) To_DialogPeerFolder() *TLDialogPeerFolder {
 	m.PredicateName = Predicate_dialogPeerFolder
 	return &TLDialogPeerFolder{
+		Data2: m,
+	}
+}
+
+// To_DialogPeerCommunity
+func (m *DialogPeer) To_DialogPeerCommunity() *TLDialogPeerCommunity {
+	m.PredicateName = Predicate_dialogPeerCommunity
+	return &TLDialogPeerCommunity{
 		Data2: m,
 	}
 }
@@ -59125,6 +61011,60 @@ func (m *TLDialogPeerFolder) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
 	case 0x514519e2:
 		m.SetFolderId(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLDialogPeerCommunity
+func MakeTLDialogPeerCommunity(data2 *DialogPeer) *TLDialogPeerCommunity {
+	if data2 == nil {
+		return &TLDialogPeerCommunity{Data2: &DialogPeer{
+			PredicateName: Predicate_dialogPeerCommunity,
+		}}
+	} else {
+		data2.PredicateName = Predicate_dialogPeerCommunity
+		return &TLDialogPeerCommunity{Data2: data2}
+	}
+}
+
+func (m *TLDialogPeerCommunity) To_DialogPeer() *DialogPeer {
+	m.Data2.PredicateName = Predicate_dialogPeerCommunity
+	return m.Data2
+}
+
+func (m *TLDialogPeerCommunity) SetCommunityId(v int64) { m.Data2.CommunityId = v }
+func (m *TLDialogPeerCommunity) GetCommunityId() int64  { return m.Data2.CommunityId }
+
+func (m *TLDialogPeerCommunity) GetPredicateName() string {
+	return Predicate_dialogPeerCommunity
+}
+
+func (m *TLDialogPeerCommunity) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_dialogPeerCommunity, int(layer))
+	switch uint32(clazzId) {
+	case 0x2f65c8e4:
+		x.UInt(0x2f65c8e4)
+
+		x.Long(m.GetCommunityId())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_dialogPeerCommunity, layer)
+	}
+}
+
+func (m *TLDialogPeerCommunity) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLDialogPeerCommunity) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x2f65c8e4:
+		m.SetCommunityId(dBuf.Long())
 		return dBuf.GetError()
 
 	default:
@@ -64722,6 +66662,269 @@ func (m *TLEncryptedMessageService) Decode(dBuf *DecodeBuf) error {
 		m.SetChatId(dBuf.Int())
 		m.SetDate(dBuf.Int())
 		m.SetBytes(dBuf.StringBytes())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// EphemeralMessage <--
+//  + TL_EphemeralMessage
+//
+
+func (m *EphemeralMessage) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_ephemeralMessage:
+		t := m.To_EphemeralMessage()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *EphemeralMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *EphemeralMessage) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0xd9c6dc1a:
+		m2 := MakeTLEphemeralMessage(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_EphemeralMessage
+func (m *EphemeralMessage) To_EphemeralMessage() *TLEphemeralMessage {
+	m.PredicateName = Predicate_ephemeralMessage
+	return &TLEphemeralMessage{
+		Data2: m,
+	}
+}
+
+// MakeTLEphemeralMessage
+func MakeTLEphemeralMessage(data2 *EphemeralMessage) *TLEphemeralMessage {
+	if data2 == nil {
+		return &TLEphemeralMessage{Data2: &EphemeralMessage{
+			PredicateName: Predicate_ephemeralMessage,
+		}}
+	} else {
+		data2.PredicateName = Predicate_ephemeralMessage
+		return &TLEphemeralMessage{Data2: data2}
+	}
+}
+
+func (m *TLEphemeralMessage) To_EphemeralMessage() *EphemeralMessage {
+	m.Data2.PredicateName = Predicate_ephemeralMessage
+	return m.Data2
+}
+
+// // flags
+func (m *TLEphemeralMessage) SetOut(v bool) { m.Data2.Out = v }
+func (m *TLEphemeralMessage) GetOut() bool  { return m.Data2.Out }
+
+func (m *TLEphemeralMessage) SetId(v int32) { m.Data2.Id = v }
+func (m *TLEphemeralMessage) GetId() int32  { return m.Data2.Id }
+
+func (m *TLEphemeralMessage) SetFromId(v *Peer) { m.Data2.FromId = v }
+func (m *TLEphemeralMessage) GetFromId() *Peer  { return m.Data2.FromId }
+
+func (m *TLEphemeralMessage) SetPeerId(v *Peer) { m.Data2.PeerId = v }
+func (m *TLEphemeralMessage) GetPeerId() *Peer  { return m.Data2.PeerId }
+
+func (m *TLEphemeralMessage) SetReceiverId(v int64) { m.Data2.ReceiverId = v }
+func (m *TLEphemeralMessage) GetReceiverId() int64  { return m.Data2.ReceiverId }
+
+func (m *TLEphemeralMessage) SetTopMsgId(v *wrapperspb.Int32Value) { m.Data2.TopMsgId = v }
+func (m *TLEphemeralMessage) GetTopMsgId() *wrapperspb.Int32Value  { return m.Data2.TopMsgId }
+
+func (m *TLEphemeralMessage) SetDate(v int32) { m.Data2.Date = v }
+func (m *TLEphemeralMessage) GetDate() int32  { return m.Data2.Date }
+
+func (m *TLEphemeralMessage) SetMessage(v string) { m.Data2.Message = v }
+func (m *TLEphemeralMessage) GetMessage() string  { return m.Data2.Message }
+
+func (m *TLEphemeralMessage) SetEntities(v []*MessageEntity) { m.Data2.Entities = v }
+func (m *TLEphemeralMessage) GetEntities() []*MessageEntity  { return m.Data2.Entities }
+
+func (m *TLEphemeralMessage) SetMedia(v *MessageMedia) { m.Data2.Media = v }
+func (m *TLEphemeralMessage) GetMedia() *MessageMedia  { return m.Data2.Media }
+
+func (m *TLEphemeralMessage) SetReplyMarkup(v *ReplyMarkup) { m.Data2.ReplyMarkup = v }
+func (m *TLEphemeralMessage) GetReplyMarkup() *ReplyMarkup  { return m.Data2.ReplyMarkup }
+
+func (m *TLEphemeralMessage) SetReplyTo(v *MessageReplyHeader) { m.Data2.ReplyTo = v }
+func (m *TLEphemeralMessage) GetReplyTo() *MessageReplyHeader  { return m.Data2.ReplyTo }
+
+func (m *TLEphemeralMessage) GetPredicateName() string {
+	return Predicate_ephemeralMessage
+}
+
+func (m *TLEphemeralMessage) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_ephemeralMessage, int(layer))
+	switch uint32(clazzId) {
+	case 0xd9c6dc1a:
+		x.UInt(0xd9c6dc1a)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetOut() == true {
+				flags |= 1 << 0
+			}
+
+			if m.GetTopMsgId() != nil {
+				flags |= 1 << 1
+			}
+
+			if m.GetEntities() != nil {
+				flags |= 1 << 2
+			}
+			if m.GetMedia() != nil {
+				flags |= 1 << 3
+			}
+			if m.GetReplyMarkup() != nil {
+				flags |= 1 << 4
+			}
+			if m.GetReplyTo() != nil {
+				flags |= 1 << 6
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.Int(m.GetId())
+		m.GetFromId().Encode(x, layer)
+		m.GetPeerId().Encode(x, layer)
+		x.Long(m.GetReceiverId())
+		if m.GetTopMsgId() != nil {
+			x.Int(m.GetTopMsgId().Value)
+		}
+
+		x.Int(m.GetDate())
+		x.String(m.GetMessage())
+		if m.GetEntities() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list9 := m.GetEntities()
+				x.Int(int32(len(list9)))
+				for _, v := range list9 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+		if m.GetMedia() != nil {
+			m.GetMedia().Encode(x, layer)
+		}
+
+		if m.GetReplyMarkup() != nil {
+			m.GetReplyMarkup().Encode(x, layer)
+		}
+
+		if m.GetReplyTo() != nil {
+			m.GetReplyTo().Encode(x, layer)
+		}
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_ephemeralMessage, layer)
+	}
+}
+
+func (m *TLEphemeralMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLEphemeralMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0xd9c6dc1a:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetOut(true)
+		}
+		m.SetId(dBuf.Int())
+
+		m3 := &Peer{}
+		m3.Decode(dBuf)
+		m.SetFromId(m3)
+
+		m4 := &Peer{}
+		m4.Decode(dBuf)
+		m.SetPeerId(m4)
+
+		m.SetReceiverId(dBuf.Long())
+		if (flags & (1 << 1)) != 0 {
+			m.SetTopMsgId(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		m.SetDate(dBuf.Int())
+		m.SetMessage(dBuf.String())
+		if (flags & (1 << 2)) != 0 {
+			c9 := dBuf.Int()
+			if c9 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 9, c9)
+				return dBuf.GetError()
+			}
+			l9 := dBuf.Int()
+			if l9 < 0 || l9 > maxVectorLen {
+				return fmt.Errorf("invalid vector length: %d", l9)
+			}
+			v9 := make([]*MessageEntity, l9)
+			for i := int32(0); i < l9; i++ {
+				v9[i] = &MessageEntity{}
+				v9[i].Decode(dBuf)
+			}
+			m.SetEntities(v9)
+		}
+		if (flags & (1 << 3)) != 0 {
+			m10 := &MessageMedia{}
+			m10.Decode(dBuf)
+			m.SetMedia(m10)
+		}
+		if (flags & (1 << 4)) != 0 {
+			m11 := &ReplyMarkup{}
+			m11.Decode(dBuf)
+			m.SetReplyMarkup(m11)
+		}
+		if (flags & (1 << 6)) != 0 {
+			m12 := &MessageReplyHeader{}
+			m12.Decode(dBuf)
+			m.SetReplyTo(m12)
+		}
 		return dBuf.GetError()
 
 	default:
@@ -76309,6 +78512,7 @@ func (m *TLInlineQueryPeerTypeBotPM) Decode(dBuf *DecodeBuf) error {
 //  + TL_InputAiComposeToneDefault
 //  + TL_InputAiComposeToneID
 //  + TL_InputAiComposeToneSlug
+//  + TL_InputAiComposeToneSingleUse
 //
 
 func (m *InputAiComposeTone) Encode(x *EncodeBuf, layer int32) error {
@@ -76338,6 +78542,12 @@ func (m *InputAiComposeTone) Encode(x *EncodeBuf, layer int32) error {
 		if err != nil {
 			return err
 		}
+	case Predicate_inputAiComposeToneSingleUse:
+		t := m.To_InputAiComposeToneSingleUse()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
 
 	default:
 		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
@@ -76361,6 +78571,9 @@ func (m *InputAiComposeTone) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x1fa01357:
 		m2 := MakeTLInputAiComposeToneSlug(m)
+		m2.Decode(dBuf)
+	case 0xe0c35af:
+		m2 := MakeTLInputAiComposeToneSingleUse(m)
 		m2.Decode(dBuf)
 
 	default:
@@ -76389,6 +78602,14 @@ func (m *InputAiComposeTone) To_InputAiComposeToneID() *TLInputAiComposeToneID {
 func (m *InputAiComposeTone) To_InputAiComposeToneSlug() *TLInputAiComposeToneSlug {
 	m.PredicateName = Predicate_inputAiComposeToneSlug
 	return &TLInputAiComposeToneSlug{
+		Data2: m,
+	}
+}
+
+// To_InputAiComposeToneSingleUse
+func (m *InputAiComposeTone) To_InputAiComposeToneSingleUse() *TLInputAiComposeToneSingleUse {
+	m.PredicateName = Predicate_inputAiComposeToneSingleUse
+	return &TLInputAiComposeToneSingleUse{
 		Data2: m,
 	}
 }
@@ -76553,6 +78774,60 @@ func (m *TLInputAiComposeToneSlug) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
 	case 0x1fa01357:
 		m.SetSlug(dBuf.String())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLInputAiComposeToneSingleUse
+func MakeTLInputAiComposeToneSingleUse(data2 *InputAiComposeTone) *TLInputAiComposeToneSingleUse {
+	if data2 == nil {
+		return &TLInputAiComposeToneSingleUse{Data2: &InputAiComposeTone{
+			PredicateName: Predicate_inputAiComposeToneSingleUse,
+		}}
+	} else {
+		data2.PredicateName = Predicate_inputAiComposeToneSingleUse
+		return &TLInputAiComposeToneSingleUse{Data2: data2}
+	}
+}
+
+func (m *TLInputAiComposeToneSingleUse) To_InputAiComposeTone() *InputAiComposeTone {
+	m.Data2.PredicateName = Predicate_inputAiComposeToneSingleUse
+	return m.Data2
+}
+
+func (m *TLInputAiComposeToneSingleUse) SetCustomPrompt(v string) { m.Data2.CustomPrompt = v }
+func (m *TLInputAiComposeToneSingleUse) GetCustomPrompt() string  { return m.Data2.CustomPrompt }
+
+func (m *TLInputAiComposeToneSingleUse) GetPredicateName() string {
+	return Predicate_inputAiComposeToneSingleUse
+}
+
+func (m *TLInputAiComposeToneSingleUse) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_inputAiComposeToneSingleUse, int(layer))
+	switch uint32(clazzId) {
+	case 0xe0c35af:
+		x.UInt(0xe0c35af)
+
+		x.String(m.GetCustomPrompt())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_inputAiComposeToneSingleUse, layer)
+	}
+}
+
+func (m *TLInputAiComposeToneSingleUse) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLInputAiComposeToneSingleUse) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0xe0c35af:
+		m.SetCustomPrompt(dBuf.String())
 		return dBuf.GetError()
 
 	default:
@@ -81591,6 +83866,7 @@ func (m *TLInputPhoneContact) Decode(dBuf *DecodeBuf) error {
 // InputDialogPeer <--
 //  + TL_InputDialogPeer
 //  + TL_InputDialogPeerFolder
+//  + TL_InputDialogPeerCommunity
 //
 
 func (m *InputDialogPeer) Encode(x *EncodeBuf, layer int32) error {
@@ -81610,6 +83886,12 @@ func (m *InputDialogPeer) Encode(x *EncodeBuf, layer int32) error {
 		}
 	case Predicate_inputDialogPeerFolder:
 		t := m.To_InputDialogPeerFolder()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_inputDialogPeerCommunity:
+		t := m.To_InputDialogPeerCommunity()
 		err := t.Encode(x, layer)
 		if err != nil {
 			return err
@@ -81635,6 +83917,9 @@ func (m *InputDialogPeer) Decode(dBuf *DecodeBuf) error {
 	case 0x64600527:
 		m2 := MakeTLInputDialogPeerFolder(m)
 		m2.Decode(dBuf)
+	case 0x69ef72c4:
+		m2 := MakeTLInputDialogPeerCommunity(m)
+		m2.Decode(dBuf)
 
 	default:
 		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
@@ -81654,6 +83939,14 @@ func (m *InputDialogPeer) To_InputDialogPeer() *TLInputDialogPeer {
 func (m *InputDialogPeer) To_InputDialogPeerFolder() *TLInputDialogPeerFolder {
 	m.PredicateName = Predicate_inputDialogPeerFolder
 	return &TLInputDialogPeerFolder{
+		Data2: m,
+	}
+}
+
+// To_InputDialogPeerCommunity
+func (m *InputDialogPeer) To_InputDialogPeerCommunity() *TLInputDialogPeerCommunity {
+	m.PredicateName = Predicate_inputDialogPeerCommunity
+	return &TLInputDialogPeerCommunity{
 		Data2: m,
 	}
 }
@@ -81763,6 +84056,64 @@ func (m *TLInputDialogPeerFolder) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
 	case 0x64600527:
 		m.SetFolderId(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLInputDialogPeerCommunity
+func MakeTLInputDialogPeerCommunity(data2 *InputDialogPeer) *TLInputDialogPeerCommunity {
+	if data2 == nil {
+		return &TLInputDialogPeerCommunity{Data2: &InputDialogPeer{
+			PredicateName: Predicate_inputDialogPeerCommunity,
+		}}
+	} else {
+		data2.PredicateName = Predicate_inputDialogPeerCommunity
+		return &TLInputDialogPeerCommunity{Data2: data2}
+	}
+}
+
+func (m *TLInputDialogPeerCommunity) To_InputDialogPeer() *InputDialogPeer {
+	m.Data2.PredicateName = Predicate_inputDialogPeerCommunity
+	return m.Data2
+}
+
+func (m *TLInputDialogPeerCommunity) SetCommunity(v *InputChannel) { m.Data2.Community = v }
+func (m *TLInputDialogPeerCommunity) GetCommunity() *InputChannel  { return m.Data2.Community }
+
+func (m *TLInputDialogPeerCommunity) GetPredicateName() string {
+	return Predicate_inputDialogPeerCommunity
+}
+
+func (m *TLInputDialogPeerCommunity) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_inputDialogPeerCommunity, int(layer))
+	switch uint32(clazzId) {
+	case 0x69ef72c4:
+		x.UInt(0x69ef72c4)
+
+		m.GetCommunity().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_inputDialogPeerCommunity, layer)
+	}
+}
+
+func (m *TLInputDialogPeerCommunity) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLInputDialogPeerCommunity) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x69ef72c4:
+
+		m2 := &InputChannel{}
+		m2.Decode(dBuf)
+		m.SetCommunity(m2)
+
 		return dBuf.GetError()
 
 	default:
@@ -89724,6 +92075,7 @@ func (m *TLInputMessageReadMetric) Decode(dBuf *DecodeBuf) error {
 //  + TL_InputNotifyChats
 //  + TL_InputNotifyBroadcasts
 //  + TL_InputNotifyForumTopic
+//  + TL_InputNotifyCommunity
 //
 
 func (m *InputNotifyPeer) Encode(x *EncodeBuf, layer int32) error {
@@ -89765,6 +92117,12 @@ func (m *InputNotifyPeer) Encode(x *EncodeBuf, layer int32) error {
 		if err != nil {
 			return err
 		}
+	case Predicate_inputNotifyCommunity:
+		t := m.To_InputNotifyCommunity()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
 
 	default:
 		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
@@ -89794,6 +92152,9 @@ func (m *InputNotifyPeer) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x5c467992:
 		m2 := MakeTLInputNotifyForumTopic(m)
+		m2.Decode(dBuf)
+	case 0x27bb1adc:
+		m2 := MakeTLInputNotifyCommunity(m)
 		m2.Decode(dBuf)
 
 	default:
@@ -89838,6 +92199,14 @@ func (m *InputNotifyPeer) To_InputNotifyBroadcasts() *TLInputNotifyBroadcasts {
 func (m *InputNotifyPeer) To_InputNotifyForumTopic() *TLInputNotifyForumTopic {
 	m.PredicateName = Predicate_inputNotifyForumTopic
 	return &TLInputNotifyForumTopic{
+		Data2: m,
+	}
+}
+
+// To_InputNotifyCommunity
+func (m *InputNotifyPeer) To_InputNotifyCommunity() *TLInputNotifyCommunity {
+	m.PredicateName = Predicate_inputNotifyCommunity
+	return &TLInputNotifyCommunity{
 		Data2: m,
 	}
 }
@@ -90100,6 +92469,64 @@ func (m *TLInputNotifyForumTopic) Decode(dBuf *DecodeBuf) error {
 		m.SetPeer(m0)
 
 		m.SetTopMsgId(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLInputNotifyCommunity
+func MakeTLInputNotifyCommunity(data2 *InputNotifyPeer) *TLInputNotifyCommunity {
+	if data2 == nil {
+		return &TLInputNotifyCommunity{Data2: &InputNotifyPeer{
+			PredicateName: Predicate_inputNotifyCommunity,
+		}}
+	} else {
+		data2.PredicateName = Predicate_inputNotifyCommunity
+		return &TLInputNotifyCommunity{Data2: data2}
+	}
+}
+
+func (m *TLInputNotifyCommunity) To_InputNotifyPeer() *InputNotifyPeer {
+	m.Data2.PredicateName = Predicate_inputNotifyCommunity
+	return m.Data2
+}
+
+func (m *TLInputNotifyCommunity) SetCommunity(v *InputChannel) { m.Data2.Community = v }
+func (m *TLInputNotifyCommunity) GetCommunity() *InputChannel  { return m.Data2.Community }
+
+func (m *TLInputNotifyCommunity) GetPredicateName() string {
+	return Predicate_inputNotifyCommunity
+}
+
+func (m *TLInputNotifyCommunity) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_inputNotifyCommunity, int(layer))
+	switch uint32(clazzId) {
+	case 0x27bb1adc:
+		x.UInt(0x27bb1adc)
+
+		m.GetCommunity().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_inputNotifyCommunity, layer)
+	}
+}
+
+func (m *TLInputNotifyCommunity) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLInputNotifyCommunity) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x27bb1adc:
+
+		m2 := &InputChannel{}
+		m2.Decode(dBuf)
+		m.SetCommunity(m2)
+
 		return dBuf.GetError()
 
 	default:
@@ -94231,6 +96658,7 @@ func (m *TLInputQuickReplyShortcutId) Decode(dBuf *DecodeBuf) error {
 //  + TL_InputReplyToMessage
 //  + TL_InputReplyToStory
 //  + TL_InputReplyToMonoForum
+//  + TL_InputReplyToEphemeralMessage
 //
 
 func (m *InputReplyTo) Encode(x *EncodeBuf, layer int32) error {
@@ -94256,6 +96684,12 @@ func (m *InputReplyTo) Encode(x *EncodeBuf, layer int32) error {
 		}
 	case Predicate_inputReplyToMonoForum:
 		t := m.To_InputReplyToMonoForum()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_inputReplyToEphemeralMessage:
+		t := m.To_InputReplyToEphemeralMessage()
 		err := t.Encode(x, layer)
 		if err != nil {
 			return err
@@ -94302,6 +96736,9 @@ func (m *InputReplyTo) Decode(dBuf *DecodeBuf) error {
 	case 0x69d66c45:
 		m2 := MakeTLInputReplyToMonoForum(m)
 		m2.Decode(dBuf)
+	case 0x4119b95e:
+		m2 := MakeTLInputReplyToEphemeralMessage(m)
+		m2.Decode(dBuf)
 
 	default:
 		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
@@ -94329,6 +96766,14 @@ func (m *InputReplyTo) To_InputReplyToStory() *TLInputReplyToStory {
 func (m *InputReplyTo) To_InputReplyToMonoForum() *TLInputReplyToMonoForum {
 	m.PredicateName = Predicate_inputReplyToMonoForum
 	return &TLInputReplyToMonoForum{
+		Data2: m,
+	}
+}
+
+// To_InputReplyToEphemeralMessage
+func (m *InputReplyTo) To_InputReplyToEphemeralMessage() *TLInputReplyToEphemeralMessage {
+	m.PredicateName = Predicate_inputReplyToEphemeralMessage
+	return &TLInputReplyToEphemeralMessage{
 		Data2: m,
 	}
 }
@@ -95083,9 +97528,9 @@ func (m *TLInputReplyToStory) Decode(dBuf *DecodeBuf) error {
 		return dBuf.GetError()
 	case 0x15b0f283:
 
-		m12 := &InputUser{}
-		m12.Decode(dBuf)
-		m.SetUserId(m12)
+		m13 := &InputUser{}
+		m13.Decode(dBuf)
+		m.SetUserId(m13)
 
 		m.SetStoryId(dBuf.Int())
 		return dBuf.GetError()
@@ -95153,6 +97598,257 @@ func (m *TLInputReplyToMonoForum) Decode(dBuf *DecodeBuf) error {
 	}
 }
 
+// MakeTLInputReplyToEphemeralMessage
+func MakeTLInputReplyToEphemeralMessage(data2 *InputReplyTo) *TLInputReplyToEphemeralMessage {
+	if data2 == nil {
+		return &TLInputReplyToEphemeralMessage{Data2: &InputReplyTo{
+			PredicateName: Predicate_inputReplyToEphemeralMessage,
+		}}
+	} else {
+		data2.PredicateName = Predicate_inputReplyToEphemeralMessage
+		return &TLInputReplyToEphemeralMessage{Data2: data2}
+	}
+}
+
+func (m *TLInputReplyToEphemeralMessage) To_InputReplyTo() *InputReplyTo {
+	m.Data2.PredicateName = Predicate_inputReplyToEphemeralMessage
+	return m.Data2
+}
+
+func (m *TLInputReplyToEphemeralMessage) SetId(v int32) { m.Data2.Id = v }
+func (m *TLInputReplyToEphemeralMessage) GetId() int32  { return m.Data2.Id }
+
+func (m *TLInputReplyToEphemeralMessage) GetPredicateName() string {
+	return Predicate_inputReplyToEphemeralMessage
+}
+
+func (m *TLInputReplyToEphemeralMessage) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_inputReplyToEphemeralMessage, int(layer))
+	switch uint32(clazzId) {
+	case 0x4119b95e:
+		x.UInt(0x4119b95e)
+
+		x.Int(m.GetId())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_inputReplyToEphemeralMessage, layer)
+	}
+}
+
+func (m *TLInputReplyToEphemeralMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLInputReplyToEphemeralMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x4119b95e:
+		m.SetId(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// InputRichFile <--
+//  + TL_InputRichFilePhoto
+//  + TL_InputRichFileDocument
+//
+
+func (m *InputRichFile) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_inputRichFilePhoto:
+		t := m.To_InputRichFilePhoto()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_inputRichFileDocument:
+		t := m.To_InputRichFileDocument()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *InputRichFile) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *InputRichFile) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0x9b00622b:
+		m2 := MakeTLInputRichFilePhoto(m)
+		m2.Decode(dBuf)
+	case 0x83281dbd:
+		m2 := MakeTLInputRichFileDocument(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_InputRichFilePhoto
+func (m *InputRichFile) To_InputRichFilePhoto() *TLInputRichFilePhoto {
+	m.PredicateName = Predicate_inputRichFilePhoto
+	return &TLInputRichFilePhoto{
+		Data2: m,
+	}
+}
+
+// To_InputRichFileDocument
+func (m *InputRichFile) To_InputRichFileDocument() *TLInputRichFileDocument {
+	m.PredicateName = Predicate_inputRichFileDocument
+	return &TLInputRichFileDocument{
+		Data2: m,
+	}
+}
+
+// MakeTLInputRichFilePhoto
+func MakeTLInputRichFilePhoto(data2 *InputRichFile) *TLInputRichFilePhoto {
+	if data2 == nil {
+		return &TLInputRichFilePhoto{Data2: &InputRichFile{
+			PredicateName: Predicate_inputRichFilePhoto,
+		}}
+	} else {
+		data2.PredicateName = Predicate_inputRichFilePhoto
+		return &TLInputRichFilePhoto{Data2: data2}
+	}
+}
+
+func (m *TLInputRichFilePhoto) To_InputRichFile() *InputRichFile {
+	m.Data2.PredicateName = Predicate_inputRichFilePhoto
+	return m.Data2
+}
+
+func (m *TLInputRichFilePhoto) SetId(v string) { m.Data2.Id = v }
+func (m *TLInputRichFilePhoto) GetId() string  { return m.Data2.Id }
+
+func (m *TLInputRichFilePhoto) SetPhoto(v *InputPhoto) { m.Data2.Photo = v }
+func (m *TLInputRichFilePhoto) GetPhoto() *InputPhoto  { return m.Data2.Photo }
+
+func (m *TLInputRichFilePhoto) GetPredicateName() string {
+	return Predicate_inputRichFilePhoto
+}
+
+func (m *TLInputRichFilePhoto) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_inputRichFilePhoto, int(layer))
+	switch uint32(clazzId) {
+	case 0x9b00622b:
+		x.UInt(0x9b00622b)
+
+		x.String(m.GetId())
+		m.GetPhoto().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_inputRichFilePhoto, layer)
+	}
+}
+
+func (m *TLInputRichFilePhoto) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLInputRichFilePhoto) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x9b00622b:
+		m.SetId(dBuf.String())
+
+		m1 := &InputPhoto{}
+		m1.Decode(dBuf)
+		m.SetPhoto(m1)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLInputRichFileDocument
+func MakeTLInputRichFileDocument(data2 *InputRichFile) *TLInputRichFileDocument {
+	if data2 == nil {
+		return &TLInputRichFileDocument{Data2: &InputRichFile{
+			PredicateName: Predicate_inputRichFileDocument,
+		}}
+	} else {
+		data2.PredicateName = Predicate_inputRichFileDocument
+		return &TLInputRichFileDocument{Data2: data2}
+	}
+}
+
+func (m *TLInputRichFileDocument) To_InputRichFile() *InputRichFile {
+	m.Data2.PredicateName = Predicate_inputRichFileDocument
+	return m.Data2
+}
+
+func (m *TLInputRichFileDocument) SetId(v string) { m.Data2.Id = v }
+func (m *TLInputRichFileDocument) GetId() string  { return m.Data2.Id }
+
+func (m *TLInputRichFileDocument) SetDocument(v *InputDocument) { m.Data2.Document = v }
+func (m *TLInputRichFileDocument) GetDocument() *InputDocument  { return m.Data2.Document }
+
+func (m *TLInputRichFileDocument) GetPredicateName() string {
+	return Predicate_inputRichFileDocument
+}
+
+func (m *TLInputRichFileDocument) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_inputRichFileDocument, int(layer))
+	switch uint32(clazzId) {
+	case 0x83281dbd:
+		x.UInt(0x83281dbd)
+
+		x.String(m.GetId())
+		m.GetDocument().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_inputRichFileDocument, layer)
+	}
+}
+
+func (m *TLInputRichFileDocument) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLInputRichFileDocument) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x83281dbd:
+		m.SetId(dBuf.String())
+
+		m2 := &InputDocument{}
+		m2.Decode(dBuf)
+		m.SetDocument(m2)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // InputRichMessage <--
 //  + TL_InputRichMessage
@@ -95205,8 +97901,14 @@ func (m *InputRichMessage) Decode(dBuf *DecodeBuf) error {
 	case 0xe4c449fc:
 		m2 := MakeTLInputRichMessage(m)
 		m2.Decode(dBuf)
+	case 0xdacb836a:
+		m2 := MakeTLInputRichMessageHTML(m)
+		m2.Decode(dBuf)
 	case 0xd4eab551:
 		m2 := MakeTLInputRichMessageHTML(m)
+		m2.Decode(dBuf)
+	case 0x4b572c:
+		m2 := MakeTLInputRichMessageMarkdown(m)
 		m2.Decode(dBuf)
 	case 0x9ac8186:
 		m2 := MakeTLInputRichMessageMarkdown(m)
@@ -95511,6 +98213,9 @@ func (m *TLInputRichMessageHTML) GetNoautolink() bool  { return m.Data2.Noautoli
 func (m *TLInputRichMessageHTML) SetHtml(v string) { m.Data2.Html = v }
 func (m *TLInputRichMessageHTML) GetHtml() string  { return m.Data2.Html }
 
+func (m *TLInputRichMessageHTML) SetFiles(v []*InputRichFile) { m.Data2.Files = v }
+func (m *TLInputRichMessageHTML) GetFiles() []*InputRichFile  { return m.Data2.Files }
+
 func (m *TLInputRichMessageHTML) SetPhotos(v []*InputPhoto) { m.Data2.Photos = v }
 func (m *TLInputRichMessageHTML) GetPhotos() []*InputPhoto  { return m.Data2.Photos }
 
@@ -95527,6 +98232,51 @@ func (m *TLInputRichMessageHTML) GetPredicateName() string {
 func (m *TLInputRichMessageHTML) Encode(x *EncodeBuf, layer int32) error {
 	clazzId := GetClazzID(Predicate_inputRichMessageHTML, int(layer))
 	switch uint32(clazzId) {
+	case 0xdacb836a:
+		x.UInt(0xdacb836a)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetRtl() == true {
+				flags |= 1 << 0
+			}
+			if m.GetNoautolink() == true {
+				flags |= 1 << 1
+			}
+
+			if m.GetFiles() != nil {
+				flags |= 1 << 2
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.String(m.GetHtml())
+		if m.GetFiles() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list8 := m.GetFiles()
+				x.Int(int32(len(list8)))
+				for _, v := range list8 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+
+		return nil
 	case 0xd4eab551:
 		x.UInt(0xd4eab551)
 
@@ -95626,6 +98376,34 @@ func (m *TLInputRichMessageHTML) CalcByteSize(layer int32) int {
 
 func (m *TLInputRichMessageHTML) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
+	case 0xdacb836a:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetRtl(true)
+		}
+		if (flags & (1 << 1)) != 0 {
+			m.SetNoautolink(true)
+		}
+		m.SetHtml(dBuf.String())
+		if (flags & (1 << 2)) != 0 {
+			c8 := dBuf.Int()
+			if c8 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 8, c8)
+				return dBuf.GetError()
+			}
+			l8 := dBuf.Int()
+			if l8 < 0 || l8 > maxVectorLen {
+				return fmt.Errorf("invalid vector length: %d", l8)
+			}
+			v8 := make([]*InputRichFile, l8)
+			for i := int32(0); i < l8; i++ {
+				v8[i] = &InputRichFile{}
+				v8[i].Decode(dBuf)
+			}
+			m.SetFiles(v8)
+		}
+		return dBuf.GetError()
 	case 0xd4eab551:
 		var flags = dBuf.UInt()
 		_ = flags
@@ -95721,6 +98499,9 @@ func (m *TLInputRichMessageMarkdown) GetNoautolink() bool  { return m.Data2.Noau
 func (m *TLInputRichMessageMarkdown) SetMarkdown(v string) { m.Data2.Markdown = v }
 func (m *TLInputRichMessageMarkdown) GetMarkdown() string  { return m.Data2.Markdown }
 
+func (m *TLInputRichMessageMarkdown) SetFiles(v []*InputRichFile) { m.Data2.Files = v }
+func (m *TLInputRichMessageMarkdown) GetFiles() []*InputRichFile  { return m.Data2.Files }
+
 func (m *TLInputRichMessageMarkdown) SetPhotos(v []*InputPhoto) { m.Data2.Photos = v }
 func (m *TLInputRichMessageMarkdown) GetPhotos() []*InputPhoto  { return m.Data2.Photos }
 
@@ -95737,6 +98518,51 @@ func (m *TLInputRichMessageMarkdown) GetPredicateName() string {
 func (m *TLInputRichMessageMarkdown) Encode(x *EncodeBuf, layer int32) error {
 	clazzId := GetClazzID(Predicate_inputRichMessageMarkdown, int(layer))
 	switch uint32(clazzId) {
+	case 0x4b572c:
+		x.UInt(0x4b572c)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetRtl() == true {
+				flags |= 1 << 0
+			}
+			if m.GetNoautolink() == true {
+				flags |= 1 << 1
+			}
+
+			if m.GetFiles() != nil {
+				flags |= 1 << 2
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.String(m.GetMarkdown())
+		if m.GetFiles() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list8 := m.GetFiles()
+				x.Int(int32(len(list8)))
+				for _, v := range list8 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+
+		return nil
 	case 0x9ac8186:
 		x.UInt(0x9ac8186)
 
@@ -95836,6 +98662,34 @@ func (m *TLInputRichMessageMarkdown) CalcByteSize(layer int32) int {
 
 func (m *TLInputRichMessageMarkdown) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
+	case 0x4b572c:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetRtl(true)
+		}
+		if (flags & (1 << 1)) != 0 {
+			m.SetNoautolink(true)
+		}
+		m.SetMarkdown(dBuf.String())
+		if (flags & (1 << 2)) != 0 {
+			c8 := dBuf.Int()
+			if c8 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 8, c8)
+				return dBuf.GetError()
+			}
+			l8 := dBuf.Int()
+			if l8 < 0 || l8 > maxVectorLen {
+				return fmt.Errorf("invalid vector length: %d", l8)
+			}
+			v8 := make([]*InputRichFile, l8)
+			for i := int32(0); i < l8; i++ {
+				v8[i] = &InputRichFile{}
+				v8[i].Decode(dBuf)
+			}
+			m.SetFiles(v8)
+		}
+		return dBuf.GetError()
 	case 0x9ac8186:
 		var flags = dBuf.UInt()
 		_ = flags
@@ -115748,6 +118602,7 @@ func (m *TLMessageService) Decode(dBuf *DecodeBuf) error {
 //  + TL_MessageActionPollAppendAnswer
 //  + TL_MessageActionPollDeleteAnswer
 //  + TL_MessageActionManagedBotCreated
+//  + TL_MessageActionChangeCommunity
 //  + TL_MessageActionSetSameChatWallPaper
 //  + TL_MessageActionAttachMenuBotAllowed
 //  + TL_MessageActionBizDataRaw
@@ -116164,6 +119019,12 @@ func (m *MessageAction) Encode(x *EncodeBuf, layer int32) error {
 		if err != nil {
 			return err
 		}
+	case Predicate_messageActionChangeCommunity:
+		t := m.To_MessageActionChangeCommunity()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
 	case Predicate_messageActionSetSameChatWallPaper:
 		t := m.To_MessageActionSetSameChatWallPaper()
 		err := t.Encode(x, layer)
@@ -116484,6 +119345,9 @@ func (m *MessageAction) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x16605e3e:
 		m2 := MakeTLMessageActionManagedBotCreated(m)
+		m2.Decode(dBuf)
+	case 0x5d20bae8:
+		m2 := MakeTLMessageActionChangeCommunity(m)
 		m2.Decode(dBuf)
 	case 0xc0787d6d:
 		m2 := MakeTLMessageActionSetSameChatWallPaper(m)
@@ -117033,6 +119897,14 @@ func (m *MessageAction) To_MessageActionPollDeleteAnswer() *TLMessageActionPollD
 func (m *MessageAction) To_MessageActionManagedBotCreated() *TLMessageActionManagedBotCreated {
 	m.PredicateName = Predicate_messageActionManagedBotCreated
 	return &TLMessageActionManagedBotCreated{
+		Data2: m,
+	}
+}
+
+// To_MessageActionChangeCommunity
+func (m *MessageAction) To_MessageActionChangeCommunity() *TLMessageActionChangeCommunity {
+	m.PredicateName = Predicate_messageActionChangeCommunity
+	return &TLMessageActionChangeCommunity{
 		Data2: m,
 	}
 }
@@ -124838,6 +127710,86 @@ func (m *TLMessageActionManagedBotCreated) Decode(dBuf *DecodeBuf) error {
 	}
 }
 
+// MakeTLMessageActionChangeCommunity
+func MakeTLMessageActionChangeCommunity(data2 *MessageAction) *TLMessageActionChangeCommunity {
+	if data2 == nil {
+		return &TLMessageActionChangeCommunity{Data2: &MessageAction{
+			PredicateName: Predicate_messageActionChangeCommunity,
+		}}
+	} else {
+		data2.PredicateName = Predicate_messageActionChangeCommunity
+		return &TLMessageActionChangeCommunity{Data2: data2}
+	}
+}
+
+func (m *TLMessageActionChangeCommunity) To_MessageAction() *MessageAction {
+	m.Data2.PredicateName = Predicate_messageActionChangeCommunity
+	return m.Data2
+}
+
+// // flags
+func (m *TLMessageActionChangeCommunity) SetCommunityId(v *wrapperspb.Int64Value) {
+	m.Data2.CommunityId = v
+}
+func (m *TLMessageActionChangeCommunity) GetCommunityId() *wrapperspb.Int64Value {
+	return m.Data2.CommunityId
+}
+
+func (m *TLMessageActionChangeCommunity) GetPredicateName() string {
+	return Predicate_messageActionChangeCommunity
+}
+
+func (m *TLMessageActionChangeCommunity) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_messageActionChangeCommunity, int(layer))
+	switch uint32(clazzId) {
+	case 0x5d20bae8:
+		x.UInt(0x5d20bae8)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetCommunityId() != nil {
+				flags |= 1 << 0
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		if m.GetCommunityId() != nil {
+			x.Long(m.GetCommunityId().Value)
+		}
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_messageActionChangeCommunity, layer)
+	}
+}
+
+func (m *TLMessageActionChangeCommunity) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLMessageActionChangeCommunity) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x5d20bae8:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetCommunityId(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
 // MakeTLMessageActionSetSameChatWallPaper
 func MakeTLMessageActionSetSameChatWallPaper(data2 *MessageAction) *TLMessageActionSetSameChatWallPaper {
 	if data2 == nil {
@@ -124991,9 +127943,9 @@ func (m *TLMessageActionBizDataRaw) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
 	case 0x2ffdf1b7:
 
-		m122 := &BizDataRaw{}
-		m122.Decode(dBuf)
-		m.SetBizData(m122)
+		m123 := &BizDataRaw{}
+		m123.Decode(dBuf)
+		m.SetBizData(m123)
 
 		return dBuf.GetError()
 
@@ -138274,6 +141226,9 @@ func (m *Messages_ChatInviteJoinResult) Decode(dBuf *DecodeBuf) error {
 	case 0x445663a7:
 		m2 := MakeTLMessagesChatInviteJoinResultOk(m)
 		m2.Decode(dBuf)
+	case 0x61ca29d3:
+		m2 := MakeTLMessagesChatInviteJoinResultWebView(m)
+		m2.Decode(dBuf)
 	case 0x2f51c337:
 		m2 := MakeTLMessagesChatInviteJoinResultWebView(m)
 		m2.Decode(dBuf)
@@ -138381,17 +141336,17 @@ func (m *TLMessagesChatInviteJoinResultWebView) To_Messages_ChatInviteJoinResult
 func (m *TLMessagesChatInviteJoinResultWebView) SetBotId(v int64) { m.Data2.BotId = v }
 func (m *TLMessagesChatInviteJoinResultWebView) GetBotId() int64  { return m.Data2.BotId }
 
-func (m *TLMessagesChatInviteJoinResultWebView) SetWebview(v *WebViewResult) { m.Data2.Webview = v }
-func (m *TLMessagesChatInviteJoinResultWebView) GetWebview() *WebViewResult  { return m.Data2.Webview }
+func (m *TLMessagesChatInviteJoinResultWebView) SetQueryId(v int64) { m.Data2.QueryId = v }
+func (m *TLMessagesChatInviteJoinResultWebView) GetQueryId() int64  { return m.Data2.QueryId }
 
 func (m *TLMessagesChatInviteJoinResultWebView) SetUsers(v []*User) { m.Data2.Users = v }
 func (m *TLMessagesChatInviteJoinResultWebView) GetUsers() []*User  { return m.Data2.Users }
 
+func (m *TLMessagesChatInviteJoinResultWebView) SetWebview(v *WebViewResult) { m.Data2.Webview = v }
+func (m *TLMessagesChatInviteJoinResultWebView) GetWebview() *WebViewResult  { return m.Data2.Webview }
+
 func (m *TLMessagesChatInviteJoinResultWebView) SetUrl(v string) { m.Data2.Url = v }
 func (m *TLMessagesChatInviteJoinResultWebView) GetUrl() string  { return m.Data2.Url }
-
-func (m *TLMessagesChatInviteJoinResultWebView) SetQueryId(v int64) { m.Data2.QueryId = v }
-func (m *TLMessagesChatInviteJoinResultWebView) GetQueryId() int64  { return m.Data2.QueryId }
 
 func (m *TLMessagesChatInviteJoinResultWebView) GetPredicateName() string {
 	return Predicate_messages_chatInviteJoinResultWebView
@@ -138400,6 +141355,30 @@ func (m *TLMessagesChatInviteJoinResultWebView) GetPredicateName() string {
 func (m *TLMessagesChatInviteJoinResultWebView) Encode(x *EncodeBuf, layer int32) error {
 	clazzId := GetClazzID(Predicate_messages_chatInviteJoinResultWebView, int(layer))
 	switch uint32(clazzId) {
+	case 0x61ca29d3:
+		x.UInt(0x61ca29d3)
+
+		x.Long(m.GetBotId())
+		x.Long(m.GetQueryId())
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list3 := m.GetUsers()
+			x.Int(int32(len(list3)))
+			for _, v := range list3 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		return nil
 	case 0x2f51c337:
 		x.UInt(0x2f51c337)
 
@@ -138461,12 +141440,32 @@ func (m *TLMessagesChatInviteJoinResultWebView) CalcByteSize(layer int32) int {
 
 func (m *TLMessagesChatInviteJoinResultWebView) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
+	case 0x61ca29d3:
+		m.SetBotId(dBuf.Long())
+		m.SetQueryId(dBuf.Long())
+		c3 := dBuf.Int()
+		if c3 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 3, c3)
+			return dBuf.GetError()
+		}
+		l3 := dBuf.Int()
+		if l3 < 0 || l3 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l3)
+		}
+		v3 := make([]*User, l3)
+		for i := int32(0); i < l3; i++ {
+			v3[i] = &User{}
+			v3[i].Decode(dBuf)
+		}
+		m.SetUsers(v3)
+
+		return dBuf.GetError()
 	case 0x2f51c337:
 		m.SetBotId(dBuf.Long())
 
-		m2 := &WebViewResult{}
-		m2.Decode(dBuf)
-		m.SetWebview(m2)
+		m4 := &WebViewResult{}
+		m4.Decode(dBuf)
+		m.SetWebview(m4)
 
 		c3 := dBuf.Int()
 		if c3 != int32(CRC32_vector) {
@@ -138998,6 +141997,117 @@ func (m *TLMessagesComposedMessageWithAI) Decode(dBuf *DecodeBuf) error {
 			m2.Decode(dBuf)
 			m.SetDiffText(m2)
 		}
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Messages_ComposedRichMessageWithAI <--
+//  + TL_MessagesComposedRichMessageWithAI
+//
+
+func (m *Messages_ComposedRichMessageWithAI) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_messages_composedRichMessageWithAI:
+		t := m.To_MessagesComposedRichMessageWithAI()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *Messages_ComposedRichMessageWithAI) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *Messages_ComposedRichMessageWithAI) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0x4c4537c8:
+		m2 := MakeTLMessagesComposedRichMessageWithAI(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_MessagesComposedRichMessageWithAI
+func (m *Messages_ComposedRichMessageWithAI) To_MessagesComposedRichMessageWithAI() *TLMessagesComposedRichMessageWithAI {
+	m.PredicateName = Predicate_messages_composedRichMessageWithAI
+	return &TLMessagesComposedRichMessageWithAI{
+		Data2: m,
+	}
+}
+
+// MakeTLMessagesComposedRichMessageWithAI
+func MakeTLMessagesComposedRichMessageWithAI(data2 *Messages_ComposedRichMessageWithAI) *TLMessagesComposedRichMessageWithAI {
+	if data2 == nil {
+		return &TLMessagesComposedRichMessageWithAI{Data2: &Messages_ComposedRichMessageWithAI{
+			PredicateName: Predicate_messages_composedRichMessageWithAI,
+		}}
+	} else {
+		data2.PredicateName = Predicate_messages_composedRichMessageWithAI
+		return &TLMessagesComposedRichMessageWithAI{Data2: data2}
+	}
+}
+
+func (m *TLMessagesComposedRichMessageWithAI) To_Messages_ComposedRichMessageWithAI() *Messages_ComposedRichMessageWithAI {
+	m.Data2.PredicateName = Predicate_messages_composedRichMessageWithAI
+	return m.Data2
+}
+
+func (m *TLMessagesComposedRichMessageWithAI) SetResult(v *RichMessage) { m.Data2.Result = v }
+func (m *TLMessagesComposedRichMessageWithAI) GetResult() *RichMessage  { return m.Data2.Result }
+
+func (m *TLMessagesComposedRichMessageWithAI) GetPredicateName() string {
+	return Predicate_messages_composedRichMessageWithAI
+}
+
+func (m *TLMessagesComposedRichMessageWithAI) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_messages_composedRichMessageWithAI, int(layer))
+	switch uint32(clazzId) {
+	case 0x4c4537c8:
+		x.UInt(0x4c4537c8)
+
+		m.GetResult().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_messages_composedRichMessageWithAI, layer)
+	}
+}
+
+func (m *TLMessagesComposedRichMessageWithAI) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLMessagesComposedRichMessageWithAI) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x4c4537c8:
+
+		m0 := &RichMessage{}
+		m0.Decode(dBuf)
+		m.SetResult(m0)
+
 		return dBuf.GetError()
 
 	default:
@@ -150094,6 +153204,143 @@ func (m *TLMessagesTranscribedAudio) Decode(dBuf *DecodeBuf) error {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Messages_TranslatedRichMessage <--
+//  + TL_MessagesTranslatedRichMessage
+//
+
+func (m *Messages_TranslatedRichMessage) Encode(x *EncodeBuf, layer int32) error {
+	predicateName := m.PredicateName
+	if predicateName == "" {
+		if n, ok := clazzIdNameRegisters2[int32(m.Constructor)]; ok {
+			predicateName = n
+		}
+	}
+
+	switch predicateName {
+	case Predicate_messages_translatedRichMessage:
+		t := m.To_MessagesTranslatedRichMessage()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
+	}
+
+	return nil
+}
+
+func (m *Messages_TranslatedRichMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *Messages_TranslatedRichMessage) Decode(dBuf *DecodeBuf) error {
+	m.Constructor = TLConstructor(dBuf.Int())
+	switch uint32(m.Constructor) {
+	case 0x4203998f:
+		m2 := MakeTLMessagesTranslatedRichMessage(m)
+		m2.Decode(dBuf)
+
+	default:
+		return fmt.Errorf("invalid constructorId: 0x%x", uint32(m.Constructor))
+	}
+	return dBuf.GetError()
+}
+
+// To_MessagesTranslatedRichMessage
+func (m *Messages_TranslatedRichMessage) To_MessagesTranslatedRichMessage() *TLMessagesTranslatedRichMessage {
+	m.PredicateName = Predicate_messages_translatedRichMessage
+	return &TLMessagesTranslatedRichMessage{
+		Data2: m,
+	}
+}
+
+// MakeTLMessagesTranslatedRichMessage
+func MakeTLMessagesTranslatedRichMessage(data2 *Messages_TranslatedRichMessage) *TLMessagesTranslatedRichMessage {
+	if data2 == nil {
+		return &TLMessagesTranslatedRichMessage{Data2: &Messages_TranslatedRichMessage{
+			PredicateName: Predicate_messages_translatedRichMessage,
+		}}
+	} else {
+		data2.PredicateName = Predicate_messages_translatedRichMessage
+		return &TLMessagesTranslatedRichMessage{Data2: data2}
+	}
+}
+
+func (m *TLMessagesTranslatedRichMessage) To_Messages_TranslatedRichMessage() *Messages_TranslatedRichMessage {
+	m.Data2.PredicateName = Predicate_messages_translatedRichMessage
+	return m.Data2
+}
+
+func (m *TLMessagesTranslatedRichMessage) SetResult(v []*RichMessage) { m.Data2.Result = v }
+func (m *TLMessagesTranslatedRichMessage) GetResult() []*RichMessage  { return m.Data2.Result }
+
+func (m *TLMessagesTranslatedRichMessage) GetPredicateName() string {
+	return Predicate_messages_translatedRichMessage
+}
+
+func (m *TLMessagesTranslatedRichMessage) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_messages_translatedRichMessage, int(layer))
+	switch uint32(clazzId) {
+	case 0x4203998f:
+		x.UInt(0x4203998f)
+
+		x.Int(int32(CRC32_vector))
+		{
+			var (
+				sz     = int32(0)
+				offset = x.GetOffset()
+			)
+			list0 := m.GetResult()
+			x.Int(int32(len(list0)))
+			for _, v := range list0 {
+				err := v.Encode(x, layer)
+				if err == nil {
+					sz += 1
+				}
+			}
+			x.IntOffset(offset, sz)
+		}
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_messages_translatedRichMessage, layer)
+	}
+}
+
+func (m *TLMessagesTranslatedRichMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLMessagesTranslatedRichMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x4203998f:
+		c0 := dBuf.Int()
+		if c0 != int32(CRC32_vector) {
+			// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 0, c0)
+			return dBuf.GetError()
+		}
+		l0 := dBuf.Int()
+		if l0 < 0 || l0 > maxVectorLen {
+			return fmt.Errorf("invalid vector length: %d", l0)
+		}
+		v0 := make([]*RichMessage, l0)
+		for i := int32(0); i < l0; i++ {
+			v0[i] = &RichMessage{}
+			v0[i].Decode(dBuf)
+		}
+		m.SetResult(v0)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Messages_TranslatedText <--
 //  + TL_MessagesTranslateResult
 //  + TL_MessagesTranslateNoResult
@@ -152166,6 +155413,7 @@ func (m *TLNotificationSoundRingtone) Decode(dBuf *DecodeBuf) error {
 //  + TL_NotifyChats
 //  + TL_NotifyBroadcasts
 //  + TL_NotifyForumTopic
+//  + TL_NotifyCommunity
 //
 
 func (m *NotifyPeer) Encode(x *EncodeBuf, layer int32) error {
@@ -152207,6 +155455,12 @@ func (m *NotifyPeer) Encode(x *EncodeBuf, layer int32) error {
 		if err != nil {
 			return err
 		}
+	case Predicate_notifyCommunity:
+		t := m.To_NotifyCommunity()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
 
 	default:
 		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
@@ -152236,6 +155490,9 @@ func (m *NotifyPeer) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x226e6308:
 		m2 := MakeTLNotifyForumTopic(m)
+		m2.Decode(dBuf)
+	case 0xbe376999:
+		m2 := MakeTLNotifyCommunity(m)
 		m2.Decode(dBuf)
 
 	default:
@@ -152280,6 +155537,14 @@ func (m *NotifyPeer) To_NotifyBroadcasts() *TLNotifyBroadcasts {
 func (m *NotifyPeer) To_NotifyForumTopic() *TLNotifyForumTopic {
 	m.PredicateName = Predicate_notifyForumTopic
 	return &TLNotifyForumTopic{
+		Data2: m,
+	}
+}
+
+// To_NotifyCommunity
+func (m *NotifyPeer) To_NotifyCommunity() *TLNotifyCommunity {
+	m.PredicateName = Predicate_notifyCommunity
+	return &TLNotifyCommunity{
 		Data2: m,
 	}
 }
@@ -152542,6 +155807,60 @@ func (m *TLNotifyForumTopic) Decode(dBuf *DecodeBuf) error {
 		m.SetPeer(m0)
 
 		m.SetTopMsgId(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLNotifyCommunity
+func MakeTLNotifyCommunity(data2 *NotifyPeer) *TLNotifyCommunity {
+	if data2 == nil {
+		return &TLNotifyCommunity{Data2: &NotifyPeer{
+			PredicateName: Predicate_notifyCommunity,
+		}}
+	} else {
+		data2.PredicateName = Predicate_notifyCommunity
+		return &TLNotifyCommunity{Data2: data2}
+	}
+}
+
+func (m *TLNotifyCommunity) To_NotifyPeer() *NotifyPeer {
+	m.Data2.PredicateName = Predicate_notifyCommunity
+	return m.Data2
+}
+
+func (m *TLNotifyCommunity) SetCommunityId(v int64) { m.Data2.CommunityId = v }
+func (m *TLNotifyCommunity) GetCommunityId() int64  { return m.Data2.CommunityId }
+
+func (m *TLNotifyCommunity) GetPredicateName() string {
+	return Predicate_notifyCommunity
+}
+
+func (m *TLNotifyCommunity) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_notifyCommunity, int(layer))
+	switch uint32(clazzId) {
+	case 0xbe376999:
+		x.UInt(0xbe376999)
+
+		x.Long(m.GetCommunityId())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_notifyCommunity, layer)
+	}
+}
+
+func (m *TLNotifyCommunity) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLNotifyCommunity) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0xbe376999:
+		m.SetCommunityId(dBuf.Long())
 		return dBuf.GetError()
 
 	default:
@@ -186207,6 +189526,7 @@ func (m *TLRichMessage) Decode(dBuf *DecodeBuf) error {
 //  + TL_TextBankCard
 //  + TL_TextMentionName
 //  + TL_TextDate
+//  + TL_TextDiff
 //
 
 func (m *RichText) Encode(x *EncodeBuf, layer int32) error {
@@ -186392,6 +189712,12 @@ func (m *RichText) Encode(x *EncodeBuf, layer int32) error {
 		if err != nil {
 			return err
 		}
+	case Predicate_textDiff:
+		t := m.To_TextDiff()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
 
 	default:
 		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
@@ -186493,6 +189819,9 @@ func (m *RichText) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0xa5b45e2b:
 		m2 := MakeTLTextDate(m)
+		m2.Decode(dBuf)
+	case 0x9686cb50:
+		m2 := MakeTLTextDiff(m)
 		m2.Decode(dBuf)
 
 	default:
@@ -186729,6 +190058,14 @@ func (m *RichText) To_TextMentionName() *TLTextMentionName {
 func (m *RichText) To_TextDate() *TLTextDate {
 	m.PredicateName = Predicate_textDate
 	return &TLTextDate{
+		Data2: m,
+	}
+}
+
+// To_TextDiff
+func (m *RichText) To_TextDiff() *TLTextDiff {
+	m.PredicateName = Predicate_textDiff
+	return &TLTextDiff{
 		Data2: m,
 	}
 }
@@ -188526,6 +191863,72 @@ func (m *TLTextDate) Decode(dBuf *DecodeBuf) error {
 		m.SetText_RICHTEXT(m0)
 
 		m.SetDate(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLTextDiff
+func MakeTLTextDiff(data2 *RichText) *TLTextDiff {
+	if data2 == nil {
+		return &TLTextDiff{Data2: &RichText{
+			PredicateName: Predicate_textDiff,
+		}}
+	} else {
+		data2.PredicateName = Predicate_textDiff
+		return &TLTextDiff{Data2: data2}
+	}
+}
+
+func (m *TLTextDiff) To_RichText() *RichText {
+	m.Data2.PredicateName = Predicate_textDiff
+	return m.Data2
+}
+
+func (m *TLTextDiff) SetText_RICHTEXT(v *RichText) { m.Data2.Text_RICHTEXT = v }
+func (m *TLTextDiff) GetText_RICHTEXT() *RichText  { return m.Data2.Text_RICHTEXT }
+
+func (m *TLTextDiff) SetOldText(v *RichText) { m.Data2.OldText = v }
+func (m *TLTextDiff) GetOldText() *RichText  { return m.Data2.OldText }
+
+func (m *TLTextDiff) GetPredicateName() string {
+	return Predicate_textDiff
+}
+
+func (m *TLTextDiff) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_textDiff, int(layer))
+	switch uint32(clazzId) {
+	case 0x9686cb50:
+		x.UInt(0x9686cb50)
+
+		m.GetText_RICHTEXT().Encode(x, layer)
+		m.GetOldText().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_textDiff, layer)
+	}
+}
+
+func (m *TLTextDiff) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLTextDiff) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x9686cb50:
+
+		m0 := &RichText{}
+		m0.Decode(dBuf)
+		m.SetText_RICHTEXT(m0)
+
+		m21 := &RichText{}
+		m21.Decode(dBuf)
+		m.SetOldText(m21)
+
 		return dBuf.GetError()
 
 	default:
@@ -224356,6 +227759,10 @@ func (m *TLTrue) Decode(dBuf *DecodeBuf) error {
 //  + TL_UpdateNewBotConnection
 //  + TL_UpdateWebBrowserSettings
 //  + TL_UpdateWebBrowserException
+//  + TL_UpdateNewEphemeralMessage
+//  + TL_UpdateDeleteEphemeralMessages
+//  + TL_UpdateEditEphemeralMessage
+//  + TL_UpdateBotStarsSubscription
 //  + TL_UpdateChannelPinnedTopic
 //  + TL_UpdateChannelPinnedTopics
 //  + TL_UpdateBroadcastRevenueTransactions
@@ -225334,6 +228741,30 @@ func (m *Update) Encode(x *EncodeBuf, layer int32) error {
 		if err != nil {
 			return err
 		}
+	case Predicate_updateNewEphemeralMessage:
+		t := m.To_UpdateNewEphemeralMessage()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_updateDeleteEphemeralMessages:
+		t := m.To_UpdateDeleteEphemeralMessages()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_updateEditEphemeralMessage:
+		t := m.To_UpdateEditEphemeralMessage()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+	case Predicate_updateBotStarsSubscription:
+		t := m.To_UpdateBotStarsSubscription()
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
 	case Predicate_updateChannelPinnedTopic:
 		t := m.To_UpdateChannelPinnedTopic()
 		err := t.Encode(x, layer)
@@ -225951,6 +229382,18 @@ func (m *Update) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x140502d1:
 		m2 := MakeTLUpdateWebBrowserException(m)
+		m2.Decode(dBuf)
+	case 0x20bcbba1:
+		m2 := MakeTLUpdateNewEphemeralMessage(m)
+		m2.Decode(dBuf)
+	case 0x56dbfcf8:
+		m2 := MakeTLUpdateDeleteEphemeralMessages(m)
+		m2.Decode(dBuf)
+	case 0x4bbb8f01:
+		m2 := MakeTLUpdateEditEphemeralMessage(m)
+		m2.Decode(dBuf)
+	case 0x6c0d8e23:
+		m2 := MakeTLUpdateBotStarsSubscription(m)
 		m2.Decode(dBuf)
 	case 0x192efbe3:
 		m2 := MakeTLUpdateChannelPinnedTopic(m)
@@ -227259,6 +230702,38 @@ func (m *Update) To_UpdateWebBrowserSettings() *TLUpdateWebBrowserSettings {
 func (m *Update) To_UpdateWebBrowserException() *TLUpdateWebBrowserException {
 	m.PredicateName = Predicate_updateWebBrowserException
 	return &TLUpdateWebBrowserException{
+		Data2: m,
+	}
+}
+
+// To_UpdateNewEphemeralMessage
+func (m *Update) To_UpdateNewEphemeralMessage() *TLUpdateNewEphemeralMessage {
+	m.PredicateName = Predicate_updateNewEphemeralMessage
+	return &TLUpdateNewEphemeralMessage{
+		Data2: m,
+	}
+}
+
+// To_UpdateDeleteEphemeralMessages
+func (m *Update) To_UpdateDeleteEphemeralMessages() *TLUpdateDeleteEphemeralMessages {
+	m.PredicateName = Predicate_updateDeleteEphemeralMessages
+	return &TLUpdateDeleteEphemeralMessages{
+		Data2: m,
+	}
+}
+
+// To_UpdateEditEphemeralMessage
+func (m *Update) To_UpdateEditEphemeralMessage() *TLUpdateEditEphemeralMessage {
+	m.PredicateName = Predicate_updateEditEphemeralMessage
+	return &TLUpdateEditEphemeralMessage{
+		Data2: m,
+	}
+}
+
+// To_UpdateBotStarsSubscription
+func (m *Update) To_UpdateBotStarsSubscription() *TLUpdateBotStarsSubscription {
+	m.PredicateName = Predicate_updateBotStarsSubscription
+	return &TLUpdateBotStarsSubscription{
 		Data2: m,
 	}
 }
@@ -240453,6 +243928,300 @@ func (m *TLUpdateWebBrowserException) Decode(dBuf *DecodeBuf) error {
 	}
 }
 
+// MakeTLUpdateNewEphemeralMessage
+func MakeTLUpdateNewEphemeralMessage(data2 *Update) *TLUpdateNewEphemeralMessage {
+	if data2 == nil {
+		return &TLUpdateNewEphemeralMessage{Data2: &Update{
+			PredicateName: Predicate_updateNewEphemeralMessage,
+		}}
+	} else {
+		data2.PredicateName = Predicate_updateNewEphemeralMessage
+		return &TLUpdateNewEphemeralMessage{Data2: data2}
+	}
+}
+
+func (m *TLUpdateNewEphemeralMessage) To_Update() *Update {
+	m.Data2.PredicateName = Predicate_updateNewEphemeralMessage
+	return m.Data2
+}
+
+func (m *TLUpdateNewEphemeralMessage) SetMessage_EPHEMERALMESSAGE(v *EphemeralMessage) {
+	m.Data2.Message_EPHEMERALMESSAGE = v
+}
+func (m *TLUpdateNewEphemeralMessage) GetMessage_EPHEMERALMESSAGE() *EphemeralMessage {
+	return m.Data2.Message_EPHEMERALMESSAGE
+}
+
+func (m *TLUpdateNewEphemeralMessage) GetPredicateName() string {
+	return Predicate_updateNewEphemeralMessage
+}
+
+func (m *TLUpdateNewEphemeralMessage) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_updateNewEphemeralMessage, int(layer))
+	switch uint32(clazzId) {
+	case 0x20bcbba1:
+		x.UInt(0x20bcbba1)
+
+		m.GetMessage_EPHEMERALMESSAGE().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_updateNewEphemeralMessage, layer)
+	}
+}
+
+func (m *TLUpdateNewEphemeralMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLUpdateNewEphemeralMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x20bcbba1:
+
+		m0 := &EphemeralMessage{}
+		m0.Decode(dBuf)
+		m.SetMessage_EPHEMERALMESSAGE(m0)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLUpdateDeleteEphemeralMessages
+func MakeTLUpdateDeleteEphemeralMessages(data2 *Update) *TLUpdateDeleteEphemeralMessages {
+	if data2 == nil {
+		return &TLUpdateDeleteEphemeralMessages{Data2: &Update{
+			PredicateName: Predicate_updateDeleteEphemeralMessages,
+		}}
+	} else {
+		data2.PredicateName = Predicate_updateDeleteEphemeralMessages
+		return &TLUpdateDeleteEphemeralMessages{Data2: data2}
+	}
+}
+
+func (m *TLUpdateDeleteEphemeralMessages) To_Update() *Update {
+	m.Data2.PredicateName = Predicate_updateDeleteEphemeralMessages
+	return m.Data2
+}
+
+func (m *TLUpdateDeleteEphemeralMessages) SetPeer_PEER(v *Peer) { m.Data2.Peer_PEER = v }
+func (m *TLUpdateDeleteEphemeralMessages) GetPeer_PEER() *Peer  { return m.Data2.Peer_PEER }
+
+func (m *TLUpdateDeleteEphemeralMessages) SetIds(v []int32) { m.Data2.Ids = v }
+func (m *TLUpdateDeleteEphemeralMessages) GetIds() []int32  { return m.Data2.Ids }
+
+func (m *TLUpdateDeleteEphemeralMessages) GetPredicateName() string {
+	return Predicate_updateDeleteEphemeralMessages
+}
+
+func (m *TLUpdateDeleteEphemeralMessages) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_updateDeleteEphemeralMessages, int(layer))
+	switch uint32(clazzId) {
+	case 0x56dbfcf8:
+		x.UInt(0x56dbfcf8)
+
+		m.GetPeer_PEER().Encode(x, layer)
+
+		x.VectorInt(m.GetIds())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_updateDeleteEphemeralMessages, layer)
+	}
+}
+
+func (m *TLUpdateDeleteEphemeralMessages) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLUpdateDeleteEphemeralMessages) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x56dbfcf8:
+
+		m28 := &Peer{}
+		m28.Decode(dBuf)
+		m.SetPeer_PEER(m28)
+
+		m.SetIds(dBuf.VectorInt())
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLUpdateEditEphemeralMessage
+func MakeTLUpdateEditEphemeralMessage(data2 *Update) *TLUpdateEditEphemeralMessage {
+	if data2 == nil {
+		return &TLUpdateEditEphemeralMessage{Data2: &Update{
+			PredicateName: Predicate_updateEditEphemeralMessage,
+		}}
+	} else {
+		data2.PredicateName = Predicate_updateEditEphemeralMessage
+		return &TLUpdateEditEphemeralMessage{Data2: data2}
+	}
+}
+
+func (m *TLUpdateEditEphemeralMessage) To_Update() *Update {
+	m.Data2.PredicateName = Predicate_updateEditEphemeralMessage
+	return m.Data2
+}
+
+func (m *TLUpdateEditEphemeralMessage) SetMessage_EPHEMERALMESSAGE(v *EphemeralMessage) {
+	m.Data2.Message_EPHEMERALMESSAGE = v
+}
+func (m *TLUpdateEditEphemeralMessage) GetMessage_EPHEMERALMESSAGE() *EphemeralMessage {
+	return m.Data2.Message_EPHEMERALMESSAGE
+}
+
+func (m *TLUpdateEditEphemeralMessage) GetPredicateName() string {
+	return Predicate_updateEditEphemeralMessage
+}
+
+func (m *TLUpdateEditEphemeralMessage) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_updateEditEphemeralMessage, int(layer))
+	switch uint32(clazzId) {
+	case 0x4bbb8f01:
+		x.UInt(0x4bbb8f01)
+
+		m.GetMessage_EPHEMERALMESSAGE().Encode(x, layer)
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_updateEditEphemeralMessage, layer)
+	}
+}
+
+func (m *TLUpdateEditEphemeralMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLUpdateEditEphemeralMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x4bbb8f01:
+
+		m0 := &EphemeralMessage{}
+		m0.Decode(dBuf)
+		m.SetMessage_EPHEMERALMESSAGE(m0)
+
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
+// MakeTLUpdateBotStarsSubscription
+func MakeTLUpdateBotStarsSubscription(data2 *Update) *TLUpdateBotStarsSubscription {
+	if data2 == nil {
+		return &TLUpdateBotStarsSubscription{Data2: &Update{
+			PredicateName: Predicate_updateBotStarsSubscription,
+		}}
+	} else {
+		data2.PredicateName = Predicate_updateBotStarsSubscription
+		return &TLUpdateBotStarsSubscription{Data2: data2}
+	}
+}
+
+func (m *TLUpdateBotStarsSubscription) To_Update() *Update {
+	m.Data2.PredicateName = Predicate_updateBotStarsSubscription
+	return m.Data2
+}
+
+// // flags
+func (m *TLUpdateBotStarsSubscription) SetCanceled(v bool) { m.Data2.Canceled = v }
+func (m *TLUpdateBotStarsSubscription) GetCanceled() bool  { return m.Data2.Canceled }
+
+func (m *TLUpdateBotStarsSubscription) SetPaymentFailed(v bool) { m.Data2.PaymentFailed = v }
+func (m *TLUpdateBotStarsSubscription) GetPaymentFailed() bool  { return m.Data2.PaymentFailed }
+
+func (m *TLUpdateBotStarsSubscription) SetRestored(v bool) { m.Data2.Restored = v }
+func (m *TLUpdateBotStarsSubscription) GetRestored() bool  { return m.Data2.Restored }
+
+func (m *TLUpdateBotStarsSubscription) SetUserId(v int64) { m.Data2.UserId = v }
+func (m *TLUpdateBotStarsSubscription) GetUserId() int64  { return m.Data2.UserId }
+
+func (m *TLUpdateBotStarsSubscription) SetPayload_BYTES(v []byte) { m.Data2.Payload_BYTES = v }
+func (m *TLUpdateBotStarsSubscription) GetPayload_BYTES() []byte  { return m.Data2.Payload_BYTES }
+
+func (m *TLUpdateBotStarsSubscription) SetQts(v int32) { m.Data2.Qts = v }
+func (m *TLUpdateBotStarsSubscription) GetQts() int32  { return m.Data2.Qts }
+
+func (m *TLUpdateBotStarsSubscription) GetPredicateName() string {
+	return Predicate_updateBotStarsSubscription
+}
+
+func (m *TLUpdateBotStarsSubscription) Encode(x *EncodeBuf, layer int32) error {
+	clazzId := GetClazzID(Predicate_updateBotStarsSubscription, int(layer))
+	switch uint32(clazzId) {
+	case 0x6c0d8e23:
+		x.UInt(0x6c0d8e23)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetCanceled() == true {
+				flags |= 1 << 0
+			}
+			if m.GetPaymentFailed() == true {
+				flags |= 1 << 1
+			}
+			if m.GetRestored() == true {
+				flags |= 1 << 2
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		x.Long(m.GetUserId())
+		x.StringBytes(m.GetPayload_BYTES())
+		x.Int(m.GetQts())
+
+		return nil
+
+	default:
+		return fmt.Errorf("not found clazzId by (%s, %d)", Predicate_updateBotStarsSubscription, layer)
+	}
+}
+
+func (m *TLUpdateBotStarsSubscription) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLUpdateBotStarsSubscription) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Data2.Constructor) {
+	case 0x6c0d8e23:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 0)) != 0 {
+			m.SetCanceled(true)
+		}
+		if (flags & (1 << 1)) != 0 {
+			m.SetPaymentFailed(true)
+		}
+		if (flags & (1 << 2)) != 0 {
+			m.SetRestored(true)
+		}
+		m.SetUserId(dBuf.Long())
+		m.SetPayload_BYTES(dBuf.StringBytes())
+		m.SetQts(dBuf.Int())
+		return dBuf.GetError()
+
+	default:
+		return fmt.Errorf("invalid constructor: %x", uint32(m.Data2.Constructor))
+	}
+}
+
 // MakeTLUpdateChannelPinnedTopic
 func MakeTLUpdateChannelPinnedTopic(data2 *Update) *TLUpdateChannelPinnedTopic {
 	if data2 == nil {
@@ -240715,9 +244484,9 @@ func (m *TLUpdateBroadcastRevenueTransactions) Decode(dBuf *DecodeBuf) error {
 		m28.Decode(dBuf)
 		m.SetPeer_PEER(m28)
 
-		m154 := &BroadcastRevenueBalances{}
-		m154.Decode(dBuf)
-		m.SetBalances(m154)
+		m158 := &BroadcastRevenueBalances{}
+		m158.Decode(dBuf)
+		m.SetBalances(m158)
 
 		return dBuf.GetError()
 
@@ -240915,13 +244684,13 @@ func (m *TLUpdateUserPhoto) Decode(dBuf *DecodeBuf) error {
 		m.SetUserId(dBuf.Long())
 		m.SetDate_INT32(dBuf.Int())
 
-		m157 := &UserProfilePhoto{}
-		m157.Decode(dBuf)
-		m.SetPhoto(m157)
+		m161 := &UserProfilePhoto{}
+		m161.Decode(dBuf)
+		m.SetPhoto(m161)
 
-		m158 := &Bool{}
-		m158.Decode(dBuf)
-		m.SetPrevious(m158)
+		m162 := &Bool{}
+		m162.Decode(dBuf)
+		m.SetPrevious(m162)
 
 		return dBuf.GetError()
 
@@ -240977,9 +244746,9 @@ func (m *TLUpdateBizDataRaw) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
 	case 0x83ce7a0e:
 
-		m160 := &BizDataRaw{}
-		m160.Decode(dBuf)
-		m.SetBizData(m160)
+		m164 := &BizDataRaw{}
+		m164.Decode(dBuf)
+		m.SetBizData(m164)
 
 		return dBuf.GetError()
 
@@ -245169,6 +248938,9 @@ func (m *User) Decode(dBuf *DecodeBuf) error {
 	case 0xd3bc4b7a:
 		m2 := MakeTLUserEmpty(m)
 		m2.Decode(dBuf)
+	case 0xb1b8cc83:
+		m2 := MakeTLUser(m)
+		m2.Decode(dBuf)
 	case 0x31774388:
 		m2 := MakeTLUser(m)
 		m2.Decode(dBuf)
@@ -245455,6 +249227,9 @@ func (m *TLUser) GetSendPaidMessagesStars() *wrapperspb.Int64Value {
 	return m.Data2.SendPaidMessagesStars
 }
 
+func (m *TLUser) SetLinkedCommunityId(v *wrapperspb.Int64Value) { m.Data2.LinkedCommunityId = v }
+func (m *TLUser) GetLinkedCommunityId() *wrapperspb.Int64Value  { return m.Data2.LinkedCommunityId }
+
 func (m *TLUser) SetStoriesMaxId_FLAGINT32(v *wrapperspb.Int32Value) {
 	m.Data2.StoriesMaxId_FLAGINT32 = v
 }
@@ -245475,6 +249250,292 @@ func (m *TLUser) GetPredicateName() string {
 func (m *TLUser) Encode(x *EncodeBuf, layer int32) error {
 	clazzId := GetClazzID(Predicate_user, int(layer))
 	switch uint32(clazzId) {
+	case 0xb1b8cc83:
+		x.UInt(0xb1b8cc83)
+
+		// set flags
+		var getFlags = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetSelf() == true {
+				flags |= 1 << 10
+			}
+			if m.GetContact() == true {
+				flags |= 1 << 11
+			}
+			if m.GetMutualContact() == true {
+				flags |= 1 << 12
+			}
+			if m.GetDeleted() == true {
+				flags |= 1 << 13
+			}
+			if m.GetBot() == true {
+				flags |= 1 << 14
+			}
+			if m.GetBotChatHistory() == true {
+				flags |= 1 << 15
+			}
+			if m.GetBotNochats() == true {
+				flags |= 1 << 16
+			}
+			if m.GetVerified() == true {
+				flags |= 1 << 17
+			}
+			if m.GetRestricted() == true {
+				flags |= 1 << 18
+			}
+			if m.GetMin() == true {
+				flags |= 1 << 20
+			}
+			if m.GetBotInlineGeo() == true {
+				flags |= 1 << 21
+			}
+			if m.GetSupport() == true {
+				flags |= 1 << 23
+			}
+			if m.GetScam() == true {
+				flags |= 1 << 24
+			}
+			if m.GetApplyMinPhoto() == true {
+				flags |= 1 << 25
+			}
+			if m.GetFake() == true {
+				flags |= 1 << 26
+			}
+			if m.GetBotAttachMenu() == true {
+				flags |= 1 << 27
+			}
+			if m.GetPremium() == true {
+				flags |= 1 << 28
+			}
+			if m.GetAttachMenuEnabled() == true {
+				flags |= 1 << 29
+			}
+
+			if m.GetAccessHash() != nil {
+				flags |= 1 << 0
+			}
+			if m.GetFirstName() != nil {
+				flags |= 1 << 1
+			}
+			if m.GetLastName() != nil {
+				flags |= 1 << 2
+			}
+			if m.GetUsername() != nil {
+				flags |= 1 << 3
+			}
+			if m.GetPhone() != nil {
+				flags |= 1 << 4
+			}
+			if m.GetPhoto() != nil {
+				flags |= 1 << 5
+			}
+			if m.GetStatus() != nil {
+				flags |= 1 << 6
+			}
+			if m.GetBotInfoVersion() != nil {
+				flags |= 1 << 14
+			}
+			if m.GetRestrictionReason() != nil {
+				flags |= 1 << 18
+			}
+			if m.GetBotInlinePlaceholder() != nil {
+				flags |= 1 << 19
+			}
+			if m.GetLangCode() != nil {
+				flags |= 1 << 22
+			}
+			if m.GetEmojiStatus() != nil {
+				flags |= 1 << 30
+			}
+
+			return flags
+		}
+		// set flags2
+		var getFlags2 = func() uint32 {
+			var flags uint32 = 0
+
+			if m.GetBotCanEdit() == true {
+				flags |= 1 << 1
+			}
+			if m.GetCloseFriend() == true {
+				flags |= 1 << 2
+			}
+			if m.GetStoriesHidden() == true {
+				flags |= 1 << 3
+			}
+			if m.GetStoriesUnavailable() == true {
+				flags |= 1 << 4
+			}
+			if m.GetContactRequirePremium() == true {
+				flags |= 1 << 10
+			}
+			if m.GetBotBusiness() == true {
+				flags |= 1 << 11
+			}
+			if m.GetBotHasMainApp() == true {
+				flags |= 1 << 13
+			}
+			if m.GetBotForumView() == true {
+				flags |= 1 << 16
+			}
+			if m.GetBotForumCanManageTopics() == true {
+				flags |= 1 << 17
+			}
+			if m.GetBotCanManageBots() == true {
+				flags |= 1 << 18
+			}
+			if m.GetBotGuestchat() == true {
+				flags |= 1 << 19
+			}
+			if m.GetBotGuard() == true {
+				flags |= 1 << 20
+			}
+
+			if m.GetUsernames() != nil {
+				flags |= 1 << 0
+			}
+			if m.GetStoriesMaxId_FLAGRECENTSTORY() != nil {
+				flags |= 1 << 5
+			}
+			if m.GetColor_FLAGPEERCOLOR() != nil {
+				flags |= 1 << 8
+			}
+			if m.GetProfileColor() != nil {
+				flags |= 1 << 9
+			}
+			if m.GetBotActiveUsers() != nil {
+				flags |= 1 << 12
+			}
+			if m.GetBotVerificationIcon() != nil {
+				flags |= 1 << 14
+			}
+			if m.GetSendPaidMessagesStars() != nil {
+				flags |= 1 << 15
+			}
+			if m.GetLinkedCommunityId() != nil {
+				flags |= 1 << 21
+			}
+
+			return flags
+		}
+
+		// set flags
+		var flags = getFlags()
+		x.UInt(flags)
+		// set flags
+		var flags2 = getFlags2()
+		x.UInt(flags2)
+		x.Long(m.GetId())
+		if m.GetAccessHash() != nil {
+			x.Long(m.GetAccessHash().Value)
+		}
+
+		if m.GetFirstName() != nil {
+			x.String(m.GetFirstName().Value)
+		}
+
+		if m.GetLastName() != nil {
+			x.String(m.GetLastName().Value)
+		}
+
+		if m.GetUsername() != nil {
+			x.String(m.GetUsername().Value)
+		}
+
+		if m.GetPhone() != nil {
+			x.String(m.GetPhone().Value)
+		}
+
+		if m.GetPhoto() != nil {
+			m.GetPhoto().Encode(x, layer)
+		}
+
+		if m.GetStatus() != nil {
+			m.GetStatus().Encode(x, layer)
+		}
+
+		if m.GetBotInfoVersion() != nil {
+			x.Int(m.GetBotInfoVersion().Value)
+		}
+
+		if m.GetRestrictionReason() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list41 := m.GetRestrictionReason()
+				x.Int(int32(len(list41)))
+				for _, v := range list41 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+		if m.GetBotInlinePlaceholder() != nil {
+			x.String(m.GetBotInlinePlaceholder().Value)
+		}
+
+		if m.GetLangCode() != nil {
+			x.String(m.GetLangCode().Value)
+		}
+
+		if m.GetEmojiStatus() != nil {
+			m.GetEmojiStatus().Encode(x, layer)
+		}
+
+		if m.GetUsernames() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list45 := m.GetUsernames()
+				x.Int(int32(len(list45)))
+				for _, v := range list45 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+		if m.GetStoriesMaxId_FLAGRECENTSTORY() != nil {
+			m.GetStoriesMaxId_FLAGRECENTSTORY().Encode(x, layer)
+		}
+
+		if m.GetColor_FLAGPEERCOLOR() != nil {
+			m.GetColor_FLAGPEERCOLOR().Encode(x, layer)
+		}
+
+		if m.GetProfileColor() != nil {
+			m.GetProfileColor().Encode(x, layer)
+		}
+
+		if m.GetBotActiveUsers() != nil {
+			x.Int(m.GetBotActiveUsers().Value)
+		}
+
+		if m.GetBotVerificationIcon() != nil {
+			x.Long(m.GetBotVerificationIcon().Value)
+		}
+
+		if m.GetSendPaidMessagesStars() != nil {
+			x.Long(m.GetSendPaidMessagesStars().Value)
+		}
+
+		if m.GetLinkedCommunityId() != nil {
+			x.Long(m.GetLinkedCommunityId().Value)
+		}
+
+		return nil
 	case 0x31774388:
 		x.UInt(0x31774388)
 
@@ -247770,6 +251831,215 @@ func (m *TLUser) CalcByteSize(layer int32) int {
 
 func (m *TLUser) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Data2.Constructor) {
+	case 0xb1b8cc83:
+		var flags = dBuf.UInt()
+		_ = flags
+		if (flags & (1 << 10)) != 0 {
+			m.SetSelf(true)
+		}
+		if (flags & (1 << 11)) != 0 {
+			m.SetContact(true)
+		}
+		if (flags & (1 << 12)) != 0 {
+			m.SetMutualContact(true)
+		}
+		if (flags & (1 << 13)) != 0 {
+			m.SetDeleted(true)
+		}
+		if (flags & (1 << 14)) != 0 {
+			m.SetBot(true)
+		}
+		if (flags & (1 << 15)) != 0 {
+			m.SetBotChatHistory(true)
+		}
+		if (flags & (1 << 16)) != 0 {
+			m.SetBotNochats(true)
+		}
+		if (flags & (1 << 17)) != 0 {
+			m.SetVerified(true)
+		}
+		if (flags & (1 << 18)) != 0 {
+			m.SetRestricted(true)
+		}
+		if (flags & (1 << 20)) != 0 {
+			m.SetMin(true)
+		}
+		if (flags & (1 << 21)) != 0 {
+			m.SetBotInlineGeo(true)
+		}
+		if (flags & (1 << 23)) != 0 {
+			m.SetSupport(true)
+		}
+		if (flags & (1 << 24)) != 0 {
+			m.SetScam(true)
+		}
+		if (flags & (1 << 25)) != 0 {
+			m.SetApplyMinPhoto(true)
+		}
+		if (flags & (1 << 26)) != 0 {
+			m.SetFake(true)
+		}
+		if (flags & (1 << 27)) != 0 {
+			m.SetBotAttachMenu(true)
+		}
+		if (flags & (1 << 28)) != 0 {
+			m.SetPremium(true)
+		}
+		if (flags & (1 << 29)) != 0 {
+			m.SetAttachMenuEnabled(true)
+		}
+		var flags2 = dBuf.UInt()
+		_ = flags2
+		if (flags2 & (1 << 1)) != 0 {
+			m.SetBotCanEdit(true)
+		}
+		if (flags2 & (1 << 2)) != 0 {
+			m.SetCloseFriend(true)
+		}
+		if (flags2 & (1 << 3)) != 0 {
+			m.SetStoriesHidden(true)
+		}
+		if (flags2 & (1 << 4)) != 0 {
+			m.SetStoriesUnavailable(true)
+		}
+		if (flags2 & (1 << 10)) != 0 {
+			m.SetContactRequirePremium(true)
+		}
+		if (flags2 & (1 << 11)) != 0 {
+			m.SetBotBusiness(true)
+		}
+		if (flags2 & (1 << 13)) != 0 {
+			m.SetBotHasMainApp(true)
+		}
+		if (flags2 & (1 << 16)) != 0 {
+			m.SetBotForumView(true)
+		}
+		if (flags2 & (1 << 17)) != 0 {
+			m.SetBotForumCanManageTopics(true)
+		}
+		if (flags2 & (1 << 18)) != 0 {
+			m.SetBotCanManageBots(true)
+		}
+		if (flags2 & (1 << 19)) != 0 {
+			m.SetBotGuestchat(true)
+		}
+		if (flags2 & (1 << 20)) != 0 {
+			m.SetBotGuard(true)
+		}
+		m.SetId(dBuf.Long())
+		if (flags & (1 << 0)) != 0 {
+			m.SetAccessHash(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		if (flags & (1 << 1)) != 0 {
+			m.SetFirstName(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		if (flags & (1 << 2)) != 0 {
+			m.SetLastName(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		if (flags & (1 << 3)) != 0 {
+			m.SetUsername(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		if (flags & (1 << 4)) != 0 {
+			m.SetPhone(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		if (flags & (1 << 5)) != 0 {
+			m38 := &UserProfilePhoto{}
+			m38.Decode(dBuf)
+			m.SetPhoto(m38)
+		}
+		if (flags & (1 << 6)) != 0 {
+			m39 := &UserStatus{}
+			m39.Decode(dBuf)
+			m.SetStatus(m39)
+		}
+		if (flags & (1 << 14)) != 0 {
+			m.SetBotInfoVersion(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		if (flags & (1 << 18)) != 0 {
+			c41 := dBuf.Int()
+			if c41 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 41, c41)
+				return dBuf.GetError()
+			}
+			l41 := dBuf.Int()
+			if l41 < 0 || l41 > maxVectorLen {
+				return fmt.Errorf("invalid vector length: %d", l41)
+			}
+			v41 := make([]*RestrictionReason, l41)
+			for i := int32(0); i < l41; i++ {
+				v41[i] = &RestrictionReason{}
+				v41[i].Decode(dBuf)
+			}
+			m.SetRestrictionReason(v41)
+		}
+		if (flags & (1 << 19)) != 0 {
+			m.SetBotInlinePlaceholder(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		if (flags & (1 << 22)) != 0 {
+			m.SetLangCode(&wrapperspb.StringValue{Value: dBuf.String()})
+		}
+
+		if (flags & (1 << 30)) != 0 {
+			m44 := &EmojiStatus{}
+			m44.Decode(dBuf)
+			m.SetEmojiStatus(m44)
+		}
+		if (flags2 & (1 << 0)) != 0 {
+			c45 := dBuf.Int()
+			if c45 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 45, c45)
+				return dBuf.GetError()
+			}
+			l45 := dBuf.Int()
+			if l45 < 0 || l45 > maxVectorLen {
+				return fmt.Errorf("invalid vector length: %d", l45)
+			}
+			v45 := make([]*Username, l45)
+			for i := int32(0); i < l45; i++ {
+				v45[i] = &Username{}
+				v45[i].Decode(dBuf)
+			}
+			m.SetUsernames(v45)
+		}
+		if (flags2 & (1 << 5)) != 0 {
+			m46 := &RecentStory{}
+			m46.Decode(dBuf)
+			m.SetStoriesMaxId_FLAGRECENTSTORY(m46)
+		}
+		if (flags2 & (1 << 8)) != 0 {
+			m47 := &PeerColor{}
+			m47.Decode(dBuf)
+			m.SetColor_FLAGPEERCOLOR(m47)
+		}
+		if (flags2 & (1 << 9)) != 0 {
+			m48 := &PeerColor{}
+			m48.Decode(dBuf)
+			m.SetProfileColor(m48)
+		}
+		if (flags2 & (1 << 12)) != 0 {
+			m.SetBotActiveUsers(&wrapperspb.Int32Value{Value: dBuf.Int()})
+		}
+
+		if (flags2 & (1 << 14)) != 0 {
+			m.SetBotVerificationIcon(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		if (flags2 & (1 << 15)) != 0 {
+			m.SetSendPaidMessagesStars(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		if (flags2 & (1 << 21)) != 0 {
+			m.SetLinkedCommunityId(&wrapperspb.Int64Value{Value: dBuf.Long()})
+		}
+
+		return dBuf.GetError()
 	case 0x31774388:
 		var flags = dBuf.UInt()
 		_ = flags
@@ -281396,6 +285666,48 @@ func (m *TLMessagesMigrateChat) Decode(dBuf *DecodeBuf) error {
 // /////////////////////////////////////////////////////////////////////////////
 func (m *TLMessagesSearchGlobal) Encode(x *EncodeBuf, layer int32) error {
 	switch uint32(m.Constructor) {
+	case 0x6126a43c:
+		x.UInt(0x6126a43c)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetBroadcastsOnly() == true {
+			flags |= 1 << 1
+		}
+		if m.GetGroupsOnly() == true {
+			flags |= 1 << 2
+		}
+		if m.GetUsersOnly() == true {
+			flags |= 1 << 3
+		}
+		if m.GetFolderId() != nil {
+			flags |= 1 << 0
+		}
+		if m.GetCommunity() != nil {
+			flags |= 1 << 4
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		if m.GetFolderId() != nil {
+			x.Int(m.GetFolderId().Value)
+		}
+
+		if m.GetCommunity() != nil {
+			m.GetCommunity().Encode(x, layer)
+		}
+
+		x.String(m.GetQ())
+		m.GetFilter().Encode(x, layer)
+		x.Int(m.GetMinDate())
+		x.Int(m.GetMaxDate())
+		x.Int(m.GetOffsetRate())
+		m.GetOffsetPeer().Encode(x, layer)
+		x.Int(m.GetOffsetId())
+		x.Int(m.GetLimit())
+
 	case 0x4bc6589a:
 		x.UInt(0x4bc6589a)
 
@@ -281444,6 +285756,47 @@ func (m *TLMessagesSearchGlobal) CalcByteSize(layer int32) int {
 
 func (m *TLMessagesSearchGlobal) Decode(dBuf *DecodeBuf) error {
 	switch uint32(m.Constructor) {
+	case 0x6126a43c:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 1)) != 0 {
+			m.BroadcastsOnly = true
+		}
+		if (flags & (1 << 2)) != 0 {
+			m.GroupsOnly = true
+		}
+		if (flags & (1 << 3)) != 0 {
+			m.UsersOnly = true
+		}
+		if (flags & (1 << 0)) != 0 {
+			m.FolderId = &wrapperspb.Int32Value{Value: dBuf.Int()}
+		}
+
+		if (flags & (1 << 4)) != 0 {
+			m6 := &InputChannel{}
+			m6.Decode(dBuf)
+			m.Community = m6
+		}
+		m.Q = dBuf.String()
+
+		m8 := &MessagesFilter{}
+		m8.Decode(dBuf)
+		m.Filter = m8
+
+		m.MinDate = dBuf.Int()
+		m.MaxDate = dBuf.Int()
+		m.OffsetRate = dBuf.Int()
+
+		m12 := &InputPeer{}
+		m12.Decode(dBuf)
+		m.OffsetPeer = m12
+
+		m.OffsetId = dBuf.Int()
+		m.Limit = dBuf.Int()
+		return dBuf.GetError()
 	case 0x4bc6589a:
 
 		flags := dBuf.UInt()
@@ -297696,6 +302049,267 @@ func (m *TLMessagesGetRichMessage) Decode(dBuf *DecodeBuf) error {
 	return dBuf.GetError()
 }
 
+// TLMessagesTranslateRichMessage
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLMessagesTranslateRichMessage) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x1a542004:
+		x.UInt(0x1a542004)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetPeer() != nil {
+			flags |= 1 << 0
+		}
+		if m.GetId() != nil {
+			flags |= 1 << 0
+		}
+		if m.GetText() != nil {
+			flags |= 1 << 1
+		}
+
+		if m.GetTone() != nil {
+			flags |= 1 << 2
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		if m.GetPeer() != nil {
+			m.GetPeer().Encode(x, layer)
+		}
+
+		if m.GetId() != nil {
+			x.VectorInt(m.GetId())
+		}
+		if m.GetText() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list4 := m.GetText()
+				x.Int(int32(len(list4)))
+				for _, v := range list4 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+		x.String(m.GetToLang())
+		if m.GetTone() != nil {
+			x.String(m.GetTone().Value)
+		}
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLMessagesTranslateRichMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLMessagesTranslateRichMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x1a542004:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 0)) != 0 {
+			m2 := &InputPeer{}
+			m2.Decode(dBuf)
+			m.Peer = m2
+		}
+		if (flags & (1 << 0)) != 0 {
+			m.Id = dBuf.VectorInt()
+		}
+		if (flags & (1 << 1)) != 0 {
+			c4 := dBuf.Int()
+			if c4 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 4, c4)
+				return dBuf.GetError()
+			}
+			l4 := dBuf.Int()
+			if l4 < 0 || l4 > maxVectorLen {
+				dBuf.err = fmt.Errorf("invalid vector length: %d", l4)
+				return dBuf.err
+			}
+			v4 := make([]*InputRichMessage, l4)
+			for i := int32(0); i < l4; i++ {
+				v4[i] = &InputRichMessage{}
+				v4[i].Decode(dBuf)
+			}
+			m.Text = v4
+		}
+		m.ToLang = dBuf.String()
+		if (flags & (1 << 2)) != 0 {
+			m.Tone = &wrapperspb.StringValue{Value: dBuf.String()}
+		}
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLMessagesComposeRichMessageWithAI
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLMessagesComposeRichMessageWithAI) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x8d7ae6af:
+		x.UInt(0x8d7ae6af)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetProofread() == true {
+			flags |= 1 << 0
+		}
+		if m.GetEmojify() == true {
+			flags |= 1 << 3
+		}
+		if m.GetText() != nil {
+			flags |= 1 << 4
+		}
+		if m.GetTranslateToLang() != nil {
+			flags |= 1 << 1
+		}
+		if m.GetTone() != nil {
+			flags |= 1 << 2
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		if m.GetText() != nil {
+			m.GetText().Encode(x, layer)
+		}
+
+		if m.GetTranslateToLang() != nil {
+			x.String(m.GetTranslateToLang().Value)
+		}
+
+		if m.GetTone() != nil {
+			m.GetTone().Encode(x, layer)
+		}
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLMessagesComposeRichMessageWithAI) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLMessagesComposeRichMessageWithAI) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x8d7ae6af:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 0)) != 0 {
+			m.Proofread = true
+		}
+		if (flags & (1 << 3)) != 0 {
+			m.Emojify = true
+		}
+		if (flags & (1 << 4)) != 0 {
+			m4 := &InputRichMessage{}
+			m4.Decode(dBuf)
+			m.Text = m4
+		}
+		if (flags & (1 << 1)) != 0 {
+			m.TranslateToLang = &wrapperspb.StringValue{Value: dBuf.String()}
+		}
+
+		if (flags & (1 << 2)) != 0 {
+			m6 := &InputAiComposeTone{}
+			m6.Decode(dBuf)
+			m.Tone = m6
+		}
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLMessagesRequestChatJoinWebView
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLMessagesRequestChatJoinWebView) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0xba9ee679:
+		x.UInt(0xba9ee679)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetThemeParams() != nil {
+			flags |= 1 << 0
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		x.Long(m.GetQueryId())
+		if m.GetThemeParams() != nil {
+			m.GetThemeParams().Encode(x, layer)
+		}
+
+		x.String(m.GetPlatform())
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLMessagesRequestChatJoinWebView) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLMessagesRequestChatJoinWebView) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0xba9ee679:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		m.QueryId = dBuf.Long()
+		if (flags & (1 << 0)) != 0 {
+			m3 := &DataJSON{}
+			m3.Decode(dBuf)
+			m.ThemeParams = m3
+		}
+		m.Platform = dBuf.String()
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
 // TLUpdatesGetState
 // /////////////////////////////////////////////////////////////////////////////
 func (m *TLUpdatesGetState) Encode(x *EncodeBuf, layer int32) error {
@@ -301199,6 +305813,9 @@ func (m *TLChannelsGetAdminedPublicChannels) Encode(x *EncodeBuf, layer int32) e
 		if m.GetForPersonal() == true {
 			flags |= 1 << 2
 		}
+		if m.GetForCommunityPeer() == true {
+			flags |= 1 << 3
+		}
 
 		x.UInt(flags)
 
@@ -301231,6 +305848,9 @@ func (m *TLChannelsGetAdminedPublicChannels) Decode(dBuf *DecodeBuf) error {
 		}
 		if (flags & (1 << 2)) != 0 {
 			m.ForPersonal = true
+		}
+		if (flags & (1 << 3)) != 0 {
+			m.ForCommunityPeer = true
 		}
 		return dBuf.GetError()
 
@@ -318814,6 +323434,802 @@ func (m *TLAicomposeGetToneExample) Decode(dBuf *DecodeBuf) error {
 		m.Tone = m1
 
 		m.Num = dBuf.Int()
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesCreate
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesCreate) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0xa63859ec:
+		x.UInt(0xa63859ec)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetHidden() == true {
+			flags |= 1 << 1
+		}
+
+		if m.GetAbout() != nil {
+			flags |= 1 << 0
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		x.String(m.GetTitle())
+		if m.GetAbout() != nil {
+			x.String(m.GetAbout().Value)
+		}
+
+		m.GetPeer().Encode(x, layer)
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesCreate) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesCreate) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0xa63859ec:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 1)) != 0 {
+			m.Hidden = true
+		}
+		m.Title = dBuf.String()
+		if (flags & (1 << 0)) != 0 {
+			m.About = &wrapperspb.StringValue{Value: dBuf.String()}
+		}
+
+		m5 := &InputPeer{}
+		m5.Decode(dBuf)
+		m.Peer = m5
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesTogglePeerLink
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesTogglePeerLink) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x736dcfea:
+		x.UInt(0x736dcfea)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetVisible() == true {
+			flags |= 1 << 0
+		}
+		if m.GetHidden() == true {
+			flags |= 1 << 1
+		}
+		if m.GetDeleted() == true {
+			flags |= 1 << 2
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		m.GetCommunity().Encode(x, layer)
+		m.GetPeer().Encode(x, layer)
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesTogglePeerLink) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesTogglePeerLink) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x736dcfea:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 0)) != 0 {
+			m.Visible = true
+		}
+		if (flags & (1 << 1)) != 0 {
+			m.Hidden = true
+		}
+		if (flags & (1 << 2)) != 0 {
+			m.Deleted = true
+		}
+
+		m5 := &InputChannel{}
+		m5.Decode(dBuf)
+		m.Community = m5
+
+		m6 := &InputPeer{}
+		m6.Decode(dBuf)
+		m.Peer = m6
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesGetJoinedCommunities
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesGetJoinedCommunities) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0xa663e830:
+		x.UInt(0xa663e830)
+
+		// no flags
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesGetJoinedCommunities) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesGetJoinedCommunities) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0xa663e830:
+
+		// not has flags
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesToggleCommunityCollapsedInDialogs
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesToggleCommunityCollapsedInDialogs) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0xd766e3ea:
+		x.UInt(0xd766e3ea)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetCollapsed() == true {
+			flags |= 1 << 0
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		m.GetCommunity().Encode(x, layer)
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesToggleCommunityCollapsedInDialogs) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesToggleCommunityCollapsedInDialogs) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0xd766e3ea:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 0)) != 0 {
+			m.Collapsed = true
+		}
+
+		m3 := &InputChannel{}
+		m3.Decode(dBuf)
+		m.Community = m3
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesGetPeerLinkRequests
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesGetPeerLinkRequests) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x93773344:
+		x.UInt(0x93773344)
+
+		// no flags
+
+		m.GetCommunity().Encode(x, layer)
+		x.String(m.GetOffset())
+		x.Int(m.GetLimit())
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesGetPeerLinkRequests) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesGetPeerLinkRequests) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x93773344:
+
+		// not has flags
+
+		m1 := &InputChannel{}
+		m1.Decode(dBuf)
+		m.Community = m1
+
+		m.Offset = dBuf.String()
+		m.Limit = dBuf.Int()
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesTogglePeerLinkRequestApproval
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesTogglePeerLinkRequestApproval) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x8c8219a8:
+		x.UInt(0x8c8219a8)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetReject() == true {
+			flags |= 1 << 0
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		m.GetCommunity().Encode(x, layer)
+		m.GetPeer().Encode(x, layer)
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesTogglePeerLinkRequestApproval) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesTogglePeerLinkRequestApproval) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x8c8219a8:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 0)) != 0 {
+			m.Reject = true
+		}
+
+		m3 := &InputChannel{}
+		m3.Decode(dBuf)
+		m.Community = m3
+
+		m4 := &InputPeer{}
+		m4.Decode(dBuf)
+		m.Peer = m4
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesToggleAllPeerLinkRequestApproval
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesToggleAllPeerLinkRequestApproval) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0xbfe3dd3d:
+		x.UInt(0xbfe3dd3d)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetReject() == true {
+			flags |= 1 << 0
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		m.GetCommunity().Encode(x, layer)
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesToggleAllPeerLinkRequestApproval) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesToggleAllPeerLinkRequestApproval) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0xbfe3dd3d:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 0)) != 0 {
+			m.Reject = true
+		}
+
+		m3 := &InputChannel{}
+		m3.Decode(dBuf)
+		m.Community = m3
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesToggleParticipantBanned
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesToggleParticipantBanned) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x9967ad0f:
+		x.UInt(0x9967ad0f)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetUnban() == true {
+			flags |= 1 << 0
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		m.GetCommunity().Encode(x, layer)
+		m.GetParticipant().Encode(x, layer)
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesToggleParticipantBanned) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesToggleParticipantBanned) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x9967ad0f:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+		if (flags & (1 << 0)) != 0 {
+			m.Unban = true
+		}
+
+		m3 := &InputChannel{}
+		m3.Decode(dBuf)
+		m.Community = m3
+
+		m4 := &InputPeer{}
+		m4.Decode(dBuf)
+		m.Participant = m4
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLCommunitiesGetParticipantJoinedChats
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLCommunitiesGetParticipantJoinedChats) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0xf87eabab:
+		x.UInt(0xf87eabab)
+
+		// no flags
+
+		m.GetCommunity().Encode(x, layer)
+		m.GetParticipant().Encode(x, layer)
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLCommunitiesGetParticipantJoinedChats) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLCommunitiesGetParticipantJoinedChats) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0xf87eabab:
+
+		// not has flags
+
+		m1 := &InputChannel{}
+		m1.Decode(dBuf)
+		m.Community = m1
+
+		m2 := &InputPeer{}
+		m2.Decode(dBuf)
+		m.Participant = m2
+
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLEphemeralSendMessage
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLEphemeralSendMessage) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x68cbd09f:
+		x.UInt(0x68cbd09f)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetQueryId() != nil {
+			flags |= 1 << 0
+		}
+
+		if m.GetEntities() != nil {
+			flags |= 1 << 1
+		}
+		if m.GetMedia() != nil {
+			flags |= 1 << 2
+		}
+		if m.GetReplyMarkup() != nil {
+			flags |= 1 << 3
+		}
+		if m.GetRichMessage() != nil {
+			flags |= 1 << 4
+		}
+
+		if m.GetReplyTo() != nil {
+			flags |= 1 << 5
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		m.GetPeer().Encode(x, layer)
+		m.GetReceiverId().Encode(x, layer)
+		if m.GetQueryId() != nil {
+			x.Long(m.GetQueryId().Value)
+		}
+
+		x.String(m.GetMessage())
+		if m.GetEntities() != nil {
+			x.Int(int32(CRC32_vector))
+			{
+				var (
+					sz     = int32(0)
+					offset = x.GetOffset()
+				)
+				list6 := m.GetEntities()
+				x.Int(int32(len(list6)))
+				for _, v := range list6 {
+					err := v.Encode(x, layer)
+					if err == nil {
+						sz += 1
+					}
+				}
+				x.IntOffset(offset, sz)
+			}
+		}
+		if m.GetMedia() != nil {
+			m.GetMedia().Encode(x, layer)
+		}
+
+		if m.GetReplyMarkup() != nil {
+			m.GetReplyMarkup().Encode(x, layer)
+		}
+
+		if m.GetRichMessage() != nil {
+			m.GetRichMessage().Encode(x, layer)
+		}
+
+		x.Long(m.GetRandomId())
+		if m.GetReplyTo() != nil {
+			m.GetReplyTo().Encode(x, layer)
+		}
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLEphemeralSendMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLEphemeralSendMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x68cbd09f:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+
+		m2 := &InputPeer{}
+		m2.Decode(dBuf)
+		m.Peer = m2
+
+		m3 := &InputUser{}
+		m3.Decode(dBuf)
+		m.ReceiverId = m3
+
+		if (flags & (1 << 0)) != 0 {
+			m.QueryId = &wrapperspb.Int64Value{Value: dBuf.Long()}
+		}
+
+		m.Message = dBuf.String()
+		if (flags & (1 << 1)) != 0 {
+			c6 := dBuf.Int()
+			if c6 != int32(CRC32_vector) {
+				// dBuf.err = fmt.Errorf("invalid CRC32_vector, c%d: %d", 6, c6)
+				return dBuf.GetError()
+			}
+			l6 := dBuf.Int()
+			if l6 < 0 || l6 > maxVectorLen {
+				dBuf.err = fmt.Errorf("invalid vector length: %d", l6)
+				return dBuf.err
+			}
+			v6 := make([]*MessageEntity, l6)
+			for i := int32(0); i < l6; i++ {
+				v6[i] = &MessageEntity{}
+				v6[i].Decode(dBuf)
+			}
+			m.Entities = v6
+		}
+		if (flags & (1 << 2)) != 0 {
+			m7 := &InputMedia{}
+			m7.Decode(dBuf)
+			m.Media = m7
+		}
+		if (flags & (1 << 3)) != 0 {
+			m8 := &ReplyMarkup{}
+			m8.Decode(dBuf)
+			m.ReplyMarkup = m8
+		}
+		if (flags & (1 << 4)) != 0 {
+			m9 := &InputRichMessage{}
+			m9.Decode(dBuf)
+			m.RichMessage = m9
+		}
+		m.RandomId = dBuf.Long()
+		if (flags & (1 << 5)) != 0 {
+			m11 := &InputReplyTo{}
+			m11.Decode(dBuf)
+			m.ReplyTo = m11
+		}
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLEphemeralDeleteMessage
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLEphemeralDeleteMessage) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0xa3c0d511:
+		x.UInt(0xa3c0d511)
+
+		// no flags
+
+		m.GetPeer().Encode(x, layer)
+		m.GetReceiverId().Encode(x, layer)
+		x.Int(m.GetId())
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLEphemeralDeleteMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLEphemeralDeleteMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0xa3c0d511:
+
+		// not has flags
+
+		m1 := &InputPeer{}
+		m1.Decode(dBuf)
+		m.Peer = m1
+
+		m2 := &InputUser{}
+		m2.Decode(dBuf)
+		m.ReceiverId = m2
+
+		m.Id = dBuf.Int()
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLEphemeralReportMessage
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLEphemeralReportMessage) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x8704f2bf:
+		x.UInt(0x8704f2bf)
+
+		// no flags
+
+		m.GetPeer().Encode(x, layer)
+		x.Int(m.GetId())
+		x.StringBytes(m.GetOption())
+		x.String(m.GetMessage())
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLEphemeralReportMessage) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLEphemeralReportMessage) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x8704f2bf:
+
+		// not has flags
+
+		m1 := &InputPeer{}
+		m1.Decode(dBuf)
+		m.Peer = m1
+
+		m.Id = dBuf.Int()
+		m.Option = dBuf.StringBytes()
+		m.Message = dBuf.String()
+		return dBuf.GetError()
+
+	default:
+		// log.Errorf("")
+	}
+	return dBuf.GetError()
+}
+
+// TLEphemeralGetCallbackAnswer
+// /////////////////////////////////////////////////////////////////////////////
+func (m *TLEphemeralGetCallbackAnswer) Encode(x *EncodeBuf, layer int32) error {
+	switch uint32(m.Constructor) {
+	case 0x3fa464c8:
+		x.UInt(0x3fa464c8)
+
+		// set flags
+		var flags uint32 = 0
+
+		if m.GetData() != nil {
+			flags |= 1 << 1
+		}
+
+		x.UInt(flags)
+
+		// flags Debug by @benqi
+		m.GetPeer().Encode(x, layer)
+		x.Int(m.GetId())
+		if m.GetData() != nil {
+			x.StringBytes(m.GetData())
+		}
+
+	default:
+		// log.Errorf("")
+	}
+
+	return nil
+}
+
+func (m *TLEphemeralGetCallbackAnswer) CalcByteSize(layer int32) int {
+	return 0
+}
+
+func (m *TLEphemeralGetCallbackAnswer) Decode(dBuf *DecodeBuf) error {
+	switch uint32(m.Constructor) {
+	case 0x3fa464c8:
+
+		flags := dBuf.UInt()
+		_ = flags
+
+		// flags Debug by @benqi
+
+		m2 := &InputPeer{}
+		m2.Decode(dBuf)
+		m.Peer = m2
+
+		m.Id = dBuf.Int()
+		if (flags & (1 << 1)) != 0 {
+			m.Data = dBuf.StringBytes()
+		}
+
 		return dBuf.GetError()
 
 	default:

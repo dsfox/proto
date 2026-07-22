@@ -1578,14 +1578,15 @@ message TL_messages_searchGlobal {
   bool groups_only = 4;
   bool users_only = 5;
   google.protobuf.Int32Value folder_id = 6;
-  string q = 7;
-  MessagesFilter filter = 8;
-  int32 min_date = 9;
-  int32 max_date = 10;
-  int32 offset_rate = 11;
-  InputPeer offset_peer = 12;
-  int32 offset_id = 13;
-  int32 limit = 14;
+  InputChannel community = 7;
+  string q = 8;
+  MessagesFilter filter = 9;
+  int32 min_date = 10;
+  int32 max_date = 11;
+  int32 offset_rate = 12;
+  InputPeer offset_peer = 13;
+  int32 offset_id = 14;
+  int32 limit = 15;
 }
 
 message TL_messages_reorderStickerSets {
@@ -3085,6 +3086,31 @@ message TL_messages_getRichMessage {
   int32 id = 4;
 }
 
+message TL_messages_translateRichMessage {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  repeated int32 id = 4;
+  repeated InputRichMessage text = 5;
+  string to_lang = 6;
+  google.protobuf.StringValue tone = 7;
+}
+
+message TL_messages_composeRichMessageWithAI {
+  TLConstructor constructor = 1;
+  bool proofread = 3;
+  bool emojify = 4;
+  InputRichMessage text = 5;
+  google.protobuf.StringValue translate_to_lang = 6;
+  InputAiComposeTone tone = 7;
+}
+
+message TL_messages_requestChatJoinWebView {
+  TLConstructor constructor = 1;
+  int64 query_id = 3;
+  DataJSON theme_params = 4;
+  string platform = 5;
+}
+
 message TL_updates_getState {
   TLConstructor constructor = 1;
 }
@@ -3469,6 +3495,7 @@ message TL_channels_getAdminedPublicChannels {
   bool by_location = 3;
   bool check_limit = 4;
   bool for_personal = 5;
+  bool for_community_peer = 6;
 }
 
 message TL_channels_editBanned {
@@ -5276,6 +5303,102 @@ message TL_aicompose_getToneExample {
   int32 num = 4;
 }
 
+message TL_communities_create {
+  TLConstructor constructor = 1;
+  bool hidden = 3;
+  string title = 4;
+  google.protobuf.StringValue about = 5;
+  InputPeer peer = 6;
+}
+
+message TL_communities_togglePeerLink {
+  TLConstructor constructor = 1;
+  bool visible = 3;
+  bool hidden = 4;
+  bool deleted = 5;
+  InputChannel community = 6;
+  InputPeer peer = 7;
+}
+
+message TL_communities_getJoinedCommunities {
+  TLConstructor constructor = 1;
+}
+
+message TL_communities_toggleCommunityCollapsedInDialogs {
+  TLConstructor constructor = 1;
+  bool collapsed = 3;
+  InputChannel community = 4;
+}
+
+message TL_communities_getPeerLinkRequests {
+  TLConstructor constructor = 1;
+  InputChannel community = 3;
+  string offset = 4;
+  int32 limit = 5;
+}
+
+message TL_communities_togglePeerLinkRequestApproval {
+  TLConstructor constructor = 1;
+  bool reject = 3;
+  InputChannel community = 4;
+  InputPeer peer = 5;
+}
+
+message TL_communities_toggleAllPeerLinkRequestApproval {
+  TLConstructor constructor = 1;
+  bool reject = 3;
+  InputChannel community = 4;
+}
+
+message TL_communities_toggleParticipantBanned {
+  TLConstructor constructor = 1;
+  bool unban = 3;
+  InputChannel community = 4;
+  InputPeer participant = 5;
+}
+
+message TL_communities_getParticipantJoinedChats {
+  TLConstructor constructor = 1;
+  InputChannel community = 3;
+  InputPeer participant = 4;
+}
+
+message TL_ephemeral_sendMessage {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  InputUser receiver_id = 4;
+  google.protobuf.Int64Value query_id = 5;
+  string message = 6;
+  repeated MessageEntity entities = 7;
+  InputMedia media = 8;
+  ReplyMarkup reply_markup = 9;
+  InputRichMessage rich_message = 10;
+  int64 random_id = 11;
+  InputReplyTo reply_to = 12;
+}
+
+message TL_ephemeral_deleteMessage {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  InputUser receiver_id = 4;
+  int32 id = 5;
+}
+
+message TL_ephemeral_reportMessage {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  int32 id = 4;
+  bytes option = 5;
+  string message = 6;
+}
+
+message TL_ephemeral_getCallbackAnswer {
+  TLConstructor constructor = 1;
+  InputPeer peer = 3;
+  int32 id = 4;
+  bytes data = 5;
+}
+
 message TL_account_toggleWebBrowserSettingsException2D0A0571 {
   TLConstructor constructor = 1;
   bool delete = 3;
@@ -6264,6 +6387,27 @@ service RPCChats {
       returns (Updates) {}
 }
 
+service RPCCommunities {
+  rpc communities_create(TL_communities_create) returns (Updates) {}
+  rpc communities_togglePeerLink(TL_communities_togglePeerLink) returns (Bool) {
+  }
+  rpc communities_getJoinedCommunities(TL_communities_getJoinedCommunities)
+      returns (messages_Chats) {}
+  rpc communities_toggleCommunityCollapsedInDialogs(
+      TL_communities_toggleCommunityCollapsedInDialogs) returns (Updates) {}
+  rpc communities_getPeerLinkRequests(TL_communities_getPeerLinkRequests)
+      returns (communities_PeerLinkRequests) {}
+  rpc communities_togglePeerLinkRequestApproval(
+      TL_communities_togglePeerLinkRequestApproval) returns (Bool) {}
+  rpc communities_toggleAllPeerLinkRequestApproval(
+      TL_communities_toggleAllPeerLinkRequestApproval) returns (Bool) {}
+  rpc communities_toggleParticipantBanned(
+      TL_communities_toggleParticipantBanned) returns (Bool) {}
+  rpc communities_getParticipantJoinedChats(
+      TL_communities_getParticipantJoinedChats)
+      returns (communities_ParticipantJoinedChats) {}
+}
+
 service RPCConferenceCalls {
   rpc phone_createConferenceCall7D0444BB(TL_phone_createConferenceCall7D0444BB)
       returns (Updates) {}
@@ -6429,6 +6573,15 @@ service RPCEmojiStatus {
   }
   rpc bots_toggleUserEmojiStatusPermission(
       TL_bots_toggleUserEmojiStatusPermission) returns (Bool) {}
+}
+
+service RPCEphemeral {
+  rpc ephemeral_sendMessage(TL_ephemeral_sendMessage) returns (Updates) {}
+  rpc ephemeral_deleteMessage(TL_ephemeral_deleteMessage) returns (Bool) {}
+  rpc ephemeral_reportMessage(TL_ephemeral_reportMessage)
+      returns (ReportResult) {}
+  rpc ephemeral_getCallbackAnswer(TL_ephemeral_getCallbackAnswer)
+      returns (messages_BotCallbackAnswer) {}
 }
 
 service RPCFactChecks {
@@ -6836,6 +6989,10 @@ service RPCMessages {
       returns (TextWithEntities) {}
   rpc messages_getRichMessage(TL_messages_getRichMessage)
       returns (messages_Messages) {}
+  rpc messages_translateRichMessage(TL_messages_translateRichMessage)
+      returns (messages_TranslatedRichMessage) {}
+  rpc messages_composeRichMessageWithAI(TL_messages_composeRichMessageWithAI)
+      returns (messages_ComposedRichMessageWithAI) {}
   rpc channels_getSendAs(TL_channels_getSendAs) returns (channels_SendAsPeers) {
   }
   rpc channels_searchPosts(TL_channels_searchPosts)
@@ -6855,6 +7012,8 @@ service RPCMiniBotApps {
   rpc messages_sendWebViewData(TL_messages_sendWebViewData) returns (Updates) {}
   rpc messages_getBotApp(TL_messages_getBotApp) returns (messages_BotApp) {}
   rpc messages_requestAppWebView53618BCE(TL_messages_requestAppWebView53618BCE)
+      returns (WebViewResult) {}
+  rpc messages_requestChatJoinWebView(TL_messages_requestChatJoinWebView)
       returns (WebViewResult) {}
   rpc bots_canSendMessage(TL_bots_canSendMessage) returns (Bool) {}
   rpc bots_allowSendMessage(TL_bots_allowSendMessage) returns (Updates) {}

@@ -9202,6 +9202,410 @@ var RPCChats_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	RPCCommunities_CommunitiesCreate_FullMethodName                            = "/mtproto.RPCCommunities/communities_create"
+	RPCCommunities_CommunitiesTogglePeerLink_FullMethodName                    = "/mtproto.RPCCommunities/communities_togglePeerLink"
+	RPCCommunities_CommunitiesGetJoinedCommunities_FullMethodName              = "/mtproto.RPCCommunities/communities_getJoinedCommunities"
+	RPCCommunities_CommunitiesToggleCommunityCollapsedInDialogs_FullMethodName = "/mtproto.RPCCommunities/communities_toggleCommunityCollapsedInDialogs"
+	RPCCommunities_CommunitiesGetPeerLinkRequests_FullMethodName               = "/mtproto.RPCCommunities/communities_getPeerLinkRequests"
+	RPCCommunities_CommunitiesTogglePeerLinkRequestApproval_FullMethodName     = "/mtproto.RPCCommunities/communities_togglePeerLinkRequestApproval"
+	RPCCommunities_CommunitiesToggleAllPeerLinkRequestApproval_FullMethodName  = "/mtproto.RPCCommunities/communities_toggleAllPeerLinkRequestApproval"
+	RPCCommunities_CommunitiesToggleParticipantBanned_FullMethodName           = "/mtproto.RPCCommunities/communities_toggleParticipantBanned"
+	RPCCommunities_CommunitiesGetParticipantJoinedChats_FullMethodName         = "/mtproto.RPCCommunities/communities_getParticipantJoinedChats"
+)
+
+// RPCCommunitiesClient is the client API for RPCCommunities service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type RPCCommunitiesClient interface {
+	CommunitiesCreate(ctx context.Context, in *TLCommunitiesCreate, opts ...grpc.CallOption) (*Updates, error)
+	CommunitiesTogglePeerLink(ctx context.Context, in *TLCommunitiesTogglePeerLink, opts ...grpc.CallOption) (*Bool, error)
+	CommunitiesGetJoinedCommunities(ctx context.Context, in *TLCommunitiesGetJoinedCommunities, opts ...grpc.CallOption) (*Messages_Chats, error)
+	CommunitiesToggleCommunityCollapsedInDialogs(ctx context.Context, in *TLCommunitiesToggleCommunityCollapsedInDialogs, opts ...grpc.CallOption) (*Updates, error)
+	CommunitiesGetPeerLinkRequests(ctx context.Context, in *TLCommunitiesGetPeerLinkRequests, opts ...grpc.CallOption) (*Communities_PeerLinkRequests, error)
+	CommunitiesTogglePeerLinkRequestApproval(ctx context.Context, in *TLCommunitiesTogglePeerLinkRequestApproval, opts ...grpc.CallOption) (*Bool, error)
+	CommunitiesToggleAllPeerLinkRequestApproval(ctx context.Context, in *TLCommunitiesToggleAllPeerLinkRequestApproval, opts ...grpc.CallOption) (*Bool, error)
+	CommunitiesToggleParticipantBanned(ctx context.Context, in *TLCommunitiesToggleParticipantBanned, opts ...grpc.CallOption) (*Bool, error)
+	CommunitiesGetParticipantJoinedChats(ctx context.Context, in *TLCommunitiesGetParticipantJoinedChats, opts ...grpc.CallOption) (*Communities_ParticipantJoinedChats, error)
+}
+
+type rPCCommunitiesClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewRPCCommunitiesClient(cc grpc.ClientConnInterface) RPCCommunitiesClient {
+	return &rPCCommunitiesClient{cc}
+}
+
+func (c *rPCCommunitiesClient) CommunitiesCreate(ctx context.Context, in *TLCommunitiesCreate, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesCreate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesTogglePeerLink(ctx context.Context, in *TLCommunitiesTogglePeerLink, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesTogglePeerLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesGetJoinedCommunities(ctx context.Context, in *TLCommunitiesGetJoinedCommunities, opts ...grpc.CallOption) (*Messages_Chats, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_Chats)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesGetJoinedCommunities_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesToggleCommunityCollapsedInDialogs(ctx context.Context, in *TLCommunitiesToggleCommunityCollapsedInDialogs, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesToggleCommunityCollapsedInDialogs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesGetPeerLinkRequests(ctx context.Context, in *TLCommunitiesGetPeerLinkRequests, opts ...grpc.CallOption) (*Communities_PeerLinkRequests, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Communities_PeerLinkRequests)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesGetPeerLinkRequests_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesTogglePeerLinkRequestApproval(ctx context.Context, in *TLCommunitiesTogglePeerLinkRequestApproval, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesTogglePeerLinkRequestApproval_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesToggleAllPeerLinkRequestApproval(ctx context.Context, in *TLCommunitiesToggleAllPeerLinkRequestApproval, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesToggleAllPeerLinkRequestApproval_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesToggleParticipantBanned(ctx context.Context, in *TLCommunitiesToggleParticipantBanned, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesToggleParticipantBanned_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCCommunitiesClient) CommunitiesGetParticipantJoinedChats(ctx context.Context, in *TLCommunitiesGetParticipantJoinedChats, opts ...grpc.CallOption) (*Communities_ParticipantJoinedChats, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Communities_ParticipantJoinedChats)
+	err := c.cc.Invoke(ctx, RPCCommunities_CommunitiesGetParticipantJoinedChats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// RPCCommunitiesServer is the server API for RPCCommunities service.
+// All implementations should embed UnimplementedRPCCommunitiesServer
+// for forward compatibility.
+type RPCCommunitiesServer interface {
+	CommunitiesCreate(context.Context, *TLCommunitiesCreate) (*Updates, error)
+	CommunitiesTogglePeerLink(context.Context, *TLCommunitiesTogglePeerLink) (*Bool, error)
+	CommunitiesGetJoinedCommunities(context.Context, *TLCommunitiesGetJoinedCommunities) (*Messages_Chats, error)
+	CommunitiesToggleCommunityCollapsedInDialogs(context.Context, *TLCommunitiesToggleCommunityCollapsedInDialogs) (*Updates, error)
+	CommunitiesGetPeerLinkRequests(context.Context, *TLCommunitiesGetPeerLinkRequests) (*Communities_PeerLinkRequests, error)
+	CommunitiesTogglePeerLinkRequestApproval(context.Context, *TLCommunitiesTogglePeerLinkRequestApproval) (*Bool, error)
+	CommunitiesToggleAllPeerLinkRequestApproval(context.Context, *TLCommunitiesToggleAllPeerLinkRequestApproval) (*Bool, error)
+	CommunitiesToggleParticipantBanned(context.Context, *TLCommunitiesToggleParticipantBanned) (*Bool, error)
+	CommunitiesGetParticipantJoinedChats(context.Context, *TLCommunitiesGetParticipantJoinedChats) (*Communities_ParticipantJoinedChats, error)
+}
+
+// UnimplementedRPCCommunitiesServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedRPCCommunitiesServer struct{}
+
+func (UnimplementedRPCCommunitiesServer) CommunitiesCreate(context.Context, *TLCommunitiesCreate) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesCreate not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesTogglePeerLink(context.Context, *TLCommunitiesTogglePeerLink) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesTogglePeerLink not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesGetJoinedCommunities(context.Context, *TLCommunitiesGetJoinedCommunities) (*Messages_Chats, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesGetJoinedCommunities not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesToggleCommunityCollapsedInDialogs(context.Context, *TLCommunitiesToggleCommunityCollapsedInDialogs) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesToggleCommunityCollapsedInDialogs not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesGetPeerLinkRequests(context.Context, *TLCommunitiesGetPeerLinkRequests) (*Communities_PeerLinkRequests, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesGetPeerLinkRequests not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesTogglePeerLinkRequestApproval(context.Context, *TLCommunitiesTogglePeerLinkRequestApproval) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesTogglePeerLinkRequestApproval not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesToggleAllPeerLinkRequestApproval(context.Context, *TLCommunitiesToggleAllPeerLinkRequestApproval) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesToggleAllPeerLinkRequestApproval not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesToggleParticipantBanned(context.Context, *TLCommunitiesToggleParticipantBanned) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesToggleParticipantBanned not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) CommunitiesGetParticipantJoinedChats(context.Context, *TLCommunitiesGetParticipantJoinedChats) (*Communities_ParticipantJoinedChats, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommunitiesGetParticipantJoinedChats not implemented")
+}
+func (UnimplementedRPCCommunitiesServer) testEmbeddedByValue() {}
+
+// UnsafeRPCCommunitiesServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RPCCommunitiesServer will
+// result in compilation errors.
+type UnsafeRPCCommunitiesServer interface {
+	mustEmbedUnimplementedRPCCommunitiesServer()
+}
+
+func RegisterRPCCommunitiesServer(s grpc.ServiceRegistrar, srv RPCCommunitiesServer) {
+	// If the following call pancis, it indicates UnimplementedRPCCommunitiesServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&RPCCommunities_ServiceDesc, srv)
+}
+
+func _RPCCommunities_CommunitiesCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesCreate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesCreate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesCreate(ctx, req.(*TLCommunitiesCreate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesTogglePeerLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesTogglePeerLink)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesTogglePeerLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesTogglePeerLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesTogglePeerLink(ctx, req.(*TLCommunitiesTogglePeerLink))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesGetJoinedCommunities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesGetJoinedCommunities)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesGetJoinedCommunities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesGetJoinedCommunities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesGetJoinedCommunities(ctx, req.(*TLCommunitiesGetJoinedCommunities))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesToggleCommunityCollapsedInDialogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesToggleCommunityCollapsedInDialogs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesToggleCommunityCollapsedInDialogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesToggleCommunityCollapsedInDialogs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesToggleCommunityCollapsedInDialogs(ctx, req.(*TLCommunitiesToggleCommunityCollapsedInDialogs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesGetPeerLinkRequests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesGetPeerLinkRequests)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesGetPeerLinkRequests(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesGetPeerLinkRequests_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesGetPeerLinkRequests(ctx, req.(*TLCommunitiesGetPeerLinkRequests))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesTogglePeerLinkRequestApproval_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesTogglePeerLinkRequestApproval)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesTogglePeerLinkRequestApproval(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesTogglePeerLinkRequestApproval_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesTogglePeerLinkRequestApproval(ctx, req.(*TLCommunitiesTogglePeerLinkRequestApproval))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesToggleAllPeerLinkRequestApproval_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesToggleAllPeerLinkRequestApproval)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesToggleAllPeerLinkRequestApproval(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesToggleAllPeerLinkRequestApproval_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesToggleAllPeerLinkRequestApproval(ctx, req.(*TLCommunitiesToggleAllPeerLinkRequestApproval))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesToggleParticipantBanned_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesToggleParticipantBanned)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesToggleParticipantBanned(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesToggleParticipantBanned_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesToggleParticipantBanned(ctx, req.(*TLCommunitiesToggleParticipantBanned))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCCommunities_CommunitiesGetParticipantJoinedChats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLCommunitiesGetParticipantJoinedChats)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCCommunitiesServer).CommunitiesGetParticipantJoinedChats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCCommunities_CommunitiesGetParticipantJoinedChats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCCommunitiesServer).CommunitiesGetParticipantJoinedChats(ctx, req.(*TLCommunitiesGetParticipantJoinedChats))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// RPCCommunities_ServiceDesc is the grpc.ServiceDesc for RPCCommunities service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var RPCCommunities_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "mtproto.RPCCommunities",
+	HandlerType: (*RPCCommunitiesServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "communities_create",
+			Handler:    _RPCCommunities_CommunitiesCreate_Handler,
+		},
+		{
+			MethodName: "communities_togglePeerLink",
+			Handler:    _RPCCommunities_CommunitiesTogglePeerLink_Handler,
+		},
+		{
+			MethodName: "communities_getJoinedCommunities",
+			Handler:    _RPCCommunities_CommunitiesGetJoinedCommunities_Handler,
+		},
+		{
+			MethodName: "communities_toggleCommunityCollapsedInDialogs",
+			Handler:    _RPCCommunities_CommunitiesToggleCommunityCollapsedInDialogs_Handler,
+		},
+		{
+			MethodName: "communities_getPeerLinkRequests",
+			Handler:    _RPCCommunities_CommunitiesGetPeerLinkRequests_Handler,
+		},
+		{
+			MethodName: "communities_togglePeerLinkRequestApproval",
+			Handler:    _RPCCommunities_CommunitiesTogglePeerLinkRequestApproval_Handler,
+		},
+		{
+			MethodName: "communities_toggleAllPeerLinkRequestApproval",
+			Handler:    _RPCCommunities_CommunitiesToggleAllPeerLinkRequestApproval_Handler,
+		},
+		{
+			MethodName: "communities_toggleParticipantBanned",
+			Handler:    _RPCCommunities_CommunitiesToggleParticipantBanned_Handler,
+		},
+		{
+			MethodName: "communities_getParticipantJoinedChats",
+			Handler:    _RPCCommunities_CommunitiesGetParticipantJoinedChats_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "schema.tl.sync_service.proto",
+}
+
+const (
 	RPCConferenceCalls_PhoneCreateConferenceCall7D0444BB_FullMethodName     = "/mtproto.RPCConferenceCalls/phone_createConferenceCall7D0444BB"
 	RPCConferenceCalls_PhoneDeleteConferenceCallParticipants_FullMethodName = "/mtproto.RPCConferenceCalls/phone_deleteConferenceCallParticipants"
 	RPCConferenceCalls_PhoneSendConferenceCallBroadcast_FullMethodName      = "/mtproto.RPCConferenceCalls/phone_sendConferenceCallBroadcast"
@@ -13045,6 +13449,220 @@ var RPCEmojiStatus_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "bots_toggleUserEmojiStatusPermission",
 			Handler:    _RPCEmojiStatus_BotsToggleUserEmojiStatusPermission_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "schema.tl.sync_service.proto",
+}
+
+const (
+	RPCEphemeral_EphemeralSendMessage_FullMethodName       = "/mtproto.RPCEphemeral/ephemeral_sendMessage"
+	RPCEphemeral_EphemeralDeleteMessage_FullMethodName     = "/mtproto.RPCEphemeral/ephemeral_deleteMessage"
+	RPCEphemeral_EphemeralReportMessage_FullMethodName     = "/mtproto.RPCEphemeral/ephemeral_reportMessage"
+	RPCEphemeral_EphemeralGetCallbackAnswer_FullMethodName = "/mtproto.RPCEphemeral/ephemeral_getCallbackAnswer"
+)
+
+// RPCEphemeralClient is the client API for RPCEphemeral service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type RPCEphemeralClient interface {
+	EphemeralSendMessage(ctx context.Context, in *TLEphemeralSendMessage, opts ...grpc.CallOption) (*Updates, error)
+	EphemeralDeleteMessage(ctx context.Context, in *TLEphemeralDeleteMessage, opts ...grpc.CallOption) (*Bool, error)
+	EphemeralReportMessage(ctx context.Context, in *TLEphemeralReportMessage, opts ...grpc.CallOption) (*ReportResult, error)
+	EphemeralGetCallbackAnswer(ctx context.Context, in *TLEphemeralGetCallbackAnswer, opts ...grpc.CallOption) (*Messages_BotCallbackAnswer, error)
+}
+
+type rPCEphemeralClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewRPCEphemeralClient(cc grpc.ClientConnInterface) RPCEphemeralClient {
+	return &rPCEphemeralClient{cc}
+}
+
+func (c *rPCEphemeralClient) EphemeralSendMessage(ctx context.Context, in *TLEphemeralSendMessage, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralSendMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCEphemeralClient) EphemeralDeleteMessage(ctx context.Context, in *TLEphemeralDeleteMessage, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralDeleteMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCEphemeralClient) EphemeralReportMessage(ctx context.Context, in *TLEphemeralReportMessage, opts ...grpc.CallOption) (*ReportResult, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReportResult)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralReportMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCEphemeralClient) EphemeralGetCallbackAnswer(ctx context.Context, in *TLEphemeralGetCallbackAnswer, opts ...grpc.CallOption) (*Messages_BotCallbackAnswer, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_BotCallbackAnswer)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralGetCallbackAnswer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// RPCEphemeralServer is the server API for RPCEphemeral service.
+// All implementations should embed UnimplementedRPCEphemeralServer
+// for forward compatibility.
+type RPCEphemeralServer interface {
+	EphemeralSendMessage(context.Context, *TLEphemeralSendMessage) (*Updates, error)
+	EphemeralDeleteMessage(context.Context, *TLEphemeralDeleteMessage) (*Bool, error)
+	EphemeralReportMessage(context.Context, *TLEphemeralReportMessage) (*ReportResult, error)
+	EphemeralGetCallbackAnswer(context.Context, *TLEphemeralGetCallbackAnswer) (*Messages_BotCallbackAnswer, error)
+}
+
+// UnimplementedRPCEphemeralServer should be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedRPCEphemeralServer struct{}
+
+func (UnimplementedRPCEphemeralServer) EphemeralSendMessage(context.Context, *TLEphemeralSendMessage) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralSendMessage not implemented")
+}
+func (UnimplementedRPCEphemeralServer) EphemeralDeleteMessage(context.Context, *TLEphemeralDeleteMessage) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralDeleteMessage not implemented")
+}
+func (UnimplementedRPCEphemeralServer) EphemeralReportMessage(context.Context, *TLEphemeralReportMessage) (*ReportResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralReportMessage not implemented")
+}
+func (UnimplementedRPCEphemeralServer) EphemeralGetCallbackAnswer(context.Context, *TLEphemeralGetCallbackAnswer) (*Messages_BotCallbackAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralGetCallbackAnswer not implemented")
+}
+func (UnimplementedRPCEphemeralServer) testEmbeddedByValue() {}
+
+// UnsafeRPCEphemeralServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to RPCEphemeralServer will
+// result in compilation errors.
+type UnsafeRPCEphemeralServer interface {
+	mustEmbedUnimplementedRPCEphemeralServer()
+}
+
+func RegisterRPCEphemeralServer(s grpc.ServiceRegistrar, srv RPCEphemeralServer) {
+	// If the following call pancis, it indicates UnimplementedRPCEphemeralServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&RPCEphemeral_ServiceDesc, srv)
+}
+
+func _RPCEphemeral_EphemeralSendMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralSendMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralSendMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralSendMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralSendMessage(ctx, req.(*TLEphemeralSendMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCEphemeral_EphemeralDeleteMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralDeleteMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralDeleteMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralDeleteMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralDeleteMessage(ctx, req.(*TLEphemeralDeleteMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCEphemeral_EphemeralReportMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralReportMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralReportMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralReportMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralReportMessage(ctx, req.(*TLEphemeralReportMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCEphemeral_EphemeralGetCallbackAnswer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralGetCallbackAnswer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralGetCallbackAnswer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralGetCallbackAnswer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralGetCallbackAnswer(ctx, req.(*TLEphemeralGetCallbackAnswer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// RPCEphemeral_ServiceDesc is the grpc.ServiceDesc for RPCEphemeral service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var RPCEphemeral_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "mtproto.RPCEphemeral",
+	HandlerType: (*RPCEphemeralServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ephemeral_sendMessage",
+			Handler:    _RPCEphemeral_EphemeralSendMessage_Handler,
+		},
+		{
+			MethodName: "ephemeral_deleteMessage",
+			Handler:    _RPCEphemeral_EphemeralDeleteMessage_Handler,
+		},
+		{
+			MethodName: "ephemeral_reportMessage",
+			Handler:    _RPCEphemeral_EphemeralReportMessage_Handler,
+		},
+		{
+			MethodName: "ephemeral_getCallbackAnswer",
+			Handler:    _RPCEphemeral_EphemeralGetCallbackAnswer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -20678,6 +21296,8 @@ const (
 	RPCMessages_MessagesGetOutboxReadDate_FullMethodName         = "/mtproto.RPCMessages/messages_getOutboxReadDate"
 	RPCMessages_MessagesSummarizeText_FullMethodName             = "/mtproto.RPCMessages/messages_summarizeText"
 	RPCMessages_MessagesGetRichMessage_FullMethodName            = "/mtproto.RPCMessages/messages_getRichMessage"
+	RPCMessages_MessagesTranslateRichMessage_FullMethodName      = "/mtproto.RPCMessages/messages_translateRichMessage"
+	RPCMessages_MessagesComposeRichMessageWithAI_FullMethodName  = "/mtproto.RPCMessages/messages_composeRichMessageWithAI"
 	RPCMessages_ChannelsGetSendAs_FullMethodName                 = "/mtproto.RPCMessages/channels_getSendAs"
 	RPCMessages_ChannelsSearchPosts_FullMethodName               = "/mtproto.RPCMessages/channels_searchPosts"
 	RPCMessages_ChannelsCheckSearchPostsFlood_FullMethodName     = "/mtproto.RPCMessages/channels_checkSearchPostsFlood"
@@ -20717,6 +21337,8 @@ type RPCMessagesClient interface {
 	MessagesGetOutboxReadDate(ctx context.Context, in *TLMessagesGetOutboxReadDate, opts ...grpc.CallOption) (*OutboxReadDate, error)
 	MessagesSummarizeText(ctx context.Context, in *TLMessagesSummarizeText, opts ...grpc.CallOption) (*TextWithEntities, error)
 	MessagesGetRichMessage(ctx context.Context, in *TLMessagesGetRichMessage, opts ...grpc.CallOption) (*Messages_Messages, error)
+	MessagesTranslateRichMessage(ctx context.Context, in *TLMessagesTranslateRichMessage, opts ...grpc.CallOption) (*Messages_TranslatedRichMessage, error)
+	MessagesComposeRichMessageWithAI(ctx context.Context, in *TLMessagesComposeRichMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedRichMessageWithAI, error)
 	ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(ctx context.Context, in *TLChannelsSearchPosts, opts ...grpc.CallOption) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(ctx context.Context, in *TLChannelsCheckSearchPostsFlood, opts ...grpc.CallOption) (*SearchPostsFlood, error)
@@ -21030,6 +21652,26 @@ func (c *rPCMessagesClient) MessagesGetRichMessage(ctx context.Context, in *TLMe
 	return out, nil
 }
 
+func (c *rPCMessagesClient) MessagesTranslateRichMessage(ctx context.Context, in *TLMessagesTranslateRichMessage, opts ...grpc.CallOption) (*Messages_TranslatedRichMessage, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_TranslatedRichMessage)
+	err := c.cc.Invoke(ctx, RPCMessages_MessagesTranslateRichMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMessagesClient) MessagesComposeRichMessageWithAI(ctx context.Context, in *TLMessagesComposeRichMessageWithAI, opts ...grpc.CallOption) (*Messages_ComposedRichMessageWithAI, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_ComposedRichMessageWithAI)
+	err := c.cc.Invoke(ctx, RPCMessages_MessagesComposeRichMessageWithAI_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCMessagesClient) ChannelsGetSendAs(ctx context.Context, in *TLChannelsGetSendAs, opts ...grpc.CallOption) (*Channels_SendAsPeers, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Channels_SendAsPeers)
@@ -21094,6 +21736,8 @@ type RPCMessagesServer interface {
 	MessagesGetOutboxReadDate(context.Context, *TLMessagesGetOutboxReadDate) (*OutboxReadDate, error)
 	MessagesSummarizeText(context.Context, *TLMessagesSummarizeText) (*TextWithEntities, error)
 	MessagesGetRichMessage(context.Context, *TLMessagesGetRichMessage) (*Messages_Messages, error)
+	MessagesTranslateRichMessage(context.Context, *TLMessagesTranslateRichMessage) (*Messages_TranslatedRichMessage, error)
+	MessagesComposeRichMessageWithAI(context.Context, *TLMessagesComposeRichMessageWithAI) (*Messages_ComposedRichMessageWithAI, error)
 	ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error)
 	ChannelsSearchPosts(context.Context, *TLChannelsSearchPosts) (*Messages_Messages, error)
 	ChannelsCheckSearchPostsFlood(context.Context, *TLChannelsCheckSearchPostsFlood) (*SearchPostsFlood, error)
@@ -21195,6 +21839,12 @@ func (UnimplementedRPCMessagesServer) MessagesSummarizeText(context.Context, *TL
 }
 func (UnimplementedRPCMessagesServer) MessagesGetRichMessage(context.Context, *TLMessagesGetRichMessage) (*Messages_Messages, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetRichMessage not implemented")
+}
+func (UnimplementedRPCMessagesServer) MessagesTranslateRichMessage(context.Context, *TLMessagesTranslateRichMessage) (*Messages_TranslatedRichMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesTranslateRichMessage not implemented")
+}
+func (UnimplementedRPCMessagesServer) MessagesComposeRichMessageWithAI(context.Context, *TLMessagesComposeRichMessageWithAI) (*Messages_ComposedRichMessageWithAI, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesComposeRichMessageWithAI not implemented")
 }
 func (UnimplementedRPCMessagesServer) ChannelsGetSendAs(context.Context, *TLChannelsGetSendAs) (*Channels_SendAsPeers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChannelsGetSendAs not implemented")
@@ -21765,6 +22415,42 @@ func _RPCMessages_MessagesGetRichMessage_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMessages_MessagesTranslateRichMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesTranslateRichMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMessagesServer).MessagesTranslateRichMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMessages_MessagesTranslateRichMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMessagesServer).MessagesTranslateRichMessage(ctx, req.(*TLMessagesTranslateRichMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMessages_MessagesComposeRichMessageWithAI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesComposeRichMessageWithAI)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMessagesServer).MessagesComposeRichMessageWithAI(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMessages_MessagesComposeRichMessageWithAI_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMessagesServer).MessagesComposeRichMessageWithAI(ctx, req.(*TLMessagesComposeRichMessageWithAI))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCMessages_ChannelsGetSendAs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLChannelsGetSendAs)
 	if err := dec(in); err != nil {
@@ -21947,6 +22633,14 @@ var RPCMessages_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCMessages_MessagesGetRichMessage_Handler,
 		},
 		{
+			MethodName: "messages_translateRichMessage",
+			Handler:    _RPCMessages_MessagesTranslateRichMessage_Handler,
+		},
+		{
+			MethodName: "messages_composeRichMessageWithAI",
+			Handler:    _RPCMessages_MessagesComposeRichMessageWithAI_Handler,
+		},
+		{
 			MethodName: "channels_getSendAs",
 			Handler:    _RPCMessages_ChannelsGetSendAs_Handler,
 		},
@@ -21971,6 +22665,7 @@ const (
 	RPCMiniBotApps_MessagesSendWebViewData_FullMethodName              = "/mtproto.RPCMiniBotApps/messages_sendWebViewData"
 	RPCMiniBotApps_MessagesGetBotApp_FullMethodName                    = "/mtproto.RPCMiniBotApps/messages_getBotApp"
 	RPCMiniBotApps_MessagesRequestAppWebView53618BCE_FullMethodName    = "/mtproto.RPCMiniBotApps/messages_requestAppWebView53618BCE"
+	RPCMiniBotApps_MessagesRequestChatJoinWebView_FullMethodName       = "/mtproto.RPCMiniBotApps/messages_requestChatJoinWebView"
 	RPCMiniBotApps_BotsCanSendMessage_FullMethodName                   = "/mtproto.RPCMiniBotApps/bots_canSendMessage"
 	RPCMiniBotApps_BotsAllowSendMessage_FullMethodName                 = "/mtproto.RPCMiniBotApps/bots_allowSendMessage"
 	RPCMiniBotApps_BotsInvokeWebViewCustomMethod_FullMethodName        = "/mtproto.RPCMiniBotApps/bots_invokeWebViewCustomMethod"
@@ -21994,6 +22689,7 @@ type RPCMiniBotAppsClient interface {
 	MessagesSendWebViewData(ctx context.Context, in *TLMessagesSendWebViewData, opts ...grpc.CallOption) (*Updates, error)
 	MessagesGetBotApp(ctx context.Context, in *TLMessagesGetBotApp, opts ...grpc.CallOption) (*Messages_BotApp, error)
 	MessagesRequestAppWebView53618BCE(ctx context.Context, in *TLMessagesRequestAppWebView53618BCE, opts ...grpc.CallOption) (*WebViewResult, error)
+	MessagesRequestChatJoinWebView(ctx context.Context, in *TLMessagesRequestChatJoinWebView, opts ...grpc.CallOption) (*WebViewResult, error)
 	BotsCanSendMessage(ctx context.Context, in *TLBotsCanSendMessage, opts ...grpc.CallOption) (*Bool, error)
 	BotsAllowSendMessage(ctx context.Context, in *TLBotsAllowSendMessage, opts ...grpc.CallOption) (*Updates, error)
 	BotsInvokeWebViewCustomMethod(ctx context.Context, in *TLBotsInvokeWebViewCustomMethod, opts ...grpc.CallOption) (*DataJSON, error)
@@ -22078,6 +22774,16 @@ func (c *rPCMiniBotAppsClient) MessagesRequestAppWebView53618BCE(ctx context.Con
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(WebViewResult)
 	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesRequestAppWebView53618BCE_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) MessagesRequestChatJoinWebView(ctx context.Context, in *TLMessagesRequestChatJoinWebView, opts ...grpc.CallOption) (*WebViewResult, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WebViewResult)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesRequestChatJoinWebView_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -22195,6 +22901,7 @@ type RPCMiniBotAppsServer interface {
 	MessagesSendWebViewData(context.Context, *TLMessagesSendWebViewData) (*Updates, error)
 	MessagesGetBotApp(context.Context, *TLMessagesGetBotApp) (*Messages_BotApp, error)
 	MessagesRequestAppWebView53618BCE(context.Context, *TLMessagesRequestAppWebView53618BCE) (*WebViewResult, error)
+	MessagesRequestChatJoinWebView(context.Context, *TLMessagesRequestChatJoinWebView) (*WebViewResult, error)
 	BotsCanSendMessage(context.Context, *TLBotsCanSendMessage) (*Bool, error)
 	BotsAllowSendMessage(context.Context, *TLBotsAllowSendMessage) (*Updates, error)
 	BotsInvokeWebViewCustomMethod(context.Context, *TLBotsInvokeWebViewCustomMethod) (*DataJSON, error)
@@ -22234,6 +22941,9 @@ func (UnimplementedRPCMiniBotAppsServer) MessagesGetBotApp(context.Context, *TLM
 }
 func (UnimplementedRPCMiniBotAppsServer) MessagesRequestAppWebView53618BCE(context.Context, *TLMessagesRequestAppWebView53618BCE) (*WebViewResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesRequestAppWebView53618BCE not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) MessagesRequestChatJoinWebView(context.Context, *TLMessagesRequestChatJoinWebView) (*WebViewResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesRequestChatJoinWebView not implemented")
 }
 func (UnimplementedRPCMiniBotAppsServer) BotsCanSendMessage(context.Context, *TLBotsCanSendMessage) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsCanSendMessage not implemented")
@@ -22407,6 +23117,24 @@ func _RPCMiniBotApps_MessagesRequestAppWebView53618BCE_Handler(srv interface{}, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCMiniBotAppsServer).MessagesRequestAppWebView53618BCE(ctx, req.(*TLMessagesRequestAppWebView53618BCE))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_MessagesRequestChatJoinWebView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesRequestChatJoinWebView)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).MessagesRequestChatJoinWebView(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_MessagesRequestChatJoinWebView_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).MessagesRequestChatJoinWebView(ctx, req.(*TLMessagesRequestChatJoinWebView))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -22625,6 +23353,10 @@ var RPCMiniBotApps_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_requestAppWebView53618BCE",
 			Handler:    _RPCMiniBotApps_MessagesRequestAppWebView53618BCE_Handler,
+		},
+		{
+			MethodName: "messages_requestChatJoinWebView",
+			Handler:    _RPCMiniBotApps_MessagesRequestChatJoinWebView_Handler,
 		},
 		{
 			MethodName: "bots_canSendMessage",
