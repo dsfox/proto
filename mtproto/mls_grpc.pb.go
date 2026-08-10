@@ -32,6 +32,9 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	RPCMls_MlsPublishKeyPackages_FullMethodName = "/mtproto.RPCMls/mls_publishKeyPackages"
 	RPCMls_MlsClaimKeyPackages_FullMethodName   = "/mtproto.RPCMls/mls_claimKeyPackages"
+	RPCMls_MlsSendWelcome_FullMethodName        = "/mtproto.RPCMls/mls_sendWelcome"
+	RPCMls_MlsGetWelcomes_FullMethodName        = "/mtproto.RPCMls/mls_getWelcomes"
+	RPCMls_MlsConfirmWelcomes_FullMethodName    = "/mtproto.RPCMls/mls_confirmWelcomes"
 )
 
 // RPCMlsClient is the client API for RPCMls service.
@@ -40,6 +43,9 @@ const (
 type RPCMlsClient interface {
 	MlsPublishKeyPackages(ctx context.Context, in *TLMlsPublishKeyPackages, opts ...grpc.CallOption) (*Mls_PublishResult, error)
 	MlsClaimKeyPackages(ctx context.Context, in *TLMlsClaimKeyPackages, opts ...grpc.CallOption) (*Mls_KeyPackages, error)
+	MlsSendWelcome(ctx context.Context, in *TLMlsSendWelcome, opts ...grpc.CallOption) (*Mls_Ok, error)
+	MlsGetWelcomes(ctx context.Context, in *TLMlsGetWelcomes, opts ...grpc.CallOption) (*Mls_Welcomes, error)
+	MlsConfirmWelcomes(ctx context.Context, in *TLMlsConfirmWelcomes, opts ...grpc.CallOption) (*Mls_Ok, error)
 }
 
 type rPCMlsClient struct {
@@ -70,12 +76,45 @@ func (c *rPCMlsClient) MlsClaimKeyPackages(ctx context.Context, in *TLMlsClaimKe
 	return out, nil
 }
 
+func (c *rPCMlsClient) MlsSendWelcome(ctx context.Context, in *TLMlsSendWelcome, opts ...grpc.CallOption) (*Mls_Ok, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_Ok)
+	err := c.cc.Invoke(ctx, RPCMls_MlsSendWelcome_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMlsClient) MlsGetWelcomes(ctx context.Context, in *TLMlsGetWelcomes, opts ...grpc.CallOption) (*Mls_Welcomes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_Welcomes)
+	err := c.cc.Invoke(ctx, RPCMls_MlsGetWelcomes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMlsClient) MlsConfirmWelcomes(ctx context.Context, in *TLMlsConfirmWelcomes, opts ...grpc.CallOption) (*Mls_Ok, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_Ok)
+	err := c.cc.Invoke(ctx, RPCMls_MlsConfirmWelcomes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCMlsServer is the server API for RPCMls service.
 // All implementations must embed UnimplementedRPCMlsServer
 // for forward compatibility.
 type RPCMlsServer interface {
 	MlsPublishKeyPackages(context.Context, *TLMlsPublishKeyPackages) (*Mls_PublishResult, error)
 	MlsClaimKeyPackages(context.Context, *TLMlsClaimKeyPackages) (*Mls_KeyPackages, error)
+	MlsSendWelcome(context.Context, *TLMlsSendWelcome) (*Mls_Ok, error)
+	MlsGetWelcomes(context.Context, *TLMlsGetWelcomes) (*Mls_Welcomes, error)
+	MlsConfirmWelcomes(context.Context, *TLMlsConfirmWelcomes) (*Mls_Ok, error)
 	mustEmbedUnimplementedRPCMlsServer()
 }
 
@@ -91,6 +130,15 @@ func (UnimplementedRPCMlsServer) MlsPublishKeyPackages(context.Context, *TLMlsPu
 }
 func (UnimplementedRPCMlsServer) MlsClaimKeyPackages(context.Context, *TLMlsClaimKeyPackages) (*Mls_KeyPackages, error) {
 	return nil, status.Error(codes.Unimplemented, "method MlsClaimKeyPackages not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsSendWelcome(context.Context, *TLMlsSendWelcome) (*Mls_Ok, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsSendWelcome not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsGetWelcomes(context.Context, *TLMlsGetWelcomes) (*Mls_Welcomes, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsGetWelcomes not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsConfirmWelcomes(context.Context, *TLMlsConfirmWelcomes) (*Mls_Ok, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsConfirmWelcomes not implemented")
 }
 func (UnimplementedRPCMlsServer) mustEmbedUnimplementedRPCMlsServer() {}
 func (UnimplementedRPCMlsServer) testEmbeddedByValue()                {}
@@ -149,6 +197,60 @@ func _RPCMls_MlsClaimKeyPackages_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMls_MlsSendWelcome_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsSendWelcome)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsSendWelcome(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsSendWelcome_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsSendWelcome(ctx, req.(*TLMlsSendWelcome))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMls_MlsGetWelcomes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsGetWelcomes)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsGetWelcomes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsGetWelcomes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsGetWelcomes(ctx, req.(*TLMlsGetWelcomes))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMls_MlsConfirmWelcomes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsConfirmWelcomes)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsConfirmWelcomes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsConfirmWelcomes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsConfirmWelcomes(ctx, req.(*TLMlsConfirmWelcomes))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCMls_ServiceDesc is the grpc.ServiceDesc for RPCMls service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -163,6 +265,18 @@ var RPCMls_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "mls_claimKeyPackages",
 			Handler:    _RPCMls_MlsClaimKeyPackages_Handler,
+		},
+		{
+			MethodName: "mls_sendWelcome",
+			Handler:    _RPCMls_MlsSendWelcome_Handler,
+		},
+		{
+			MethodName: "mls_getWelcomes",
+			Handler:    _RPCMls_MlsGetWelcomes_Handler,
+		},
+		{
+			MethodName: "mls_confirmWelcomes",
+			Handler:    _RPCMls_MlsConfirmWelcomes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

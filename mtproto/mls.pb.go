@@ -244,6 +244,298 @@ func (x *Mls_KeyPackages) GetPackages() [][]byte {
 	return nil
 }
 
+// A welcome is what lets a device into a conversation somebody started with it.
+//
+// It travels here rather than as a message, so that no client has to hide
+// anything from a chat list: handshake traffic never touches the message
+// pipeline at all. The server holds each one until the device says it has read
+// it - a welcome lost in transit is a conversation that exists on one side and
+// not the other, which shows up much later as messages that will not open.
+type TLMlsSendWelcome struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Welcome       []byte                 `protobuf:"bytes,2,opt,name=welcome,proto3" json:"welcome,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsSendWelcome) Reset() {
+	*x = TLMlsSendWelcome{}
+	mi := &file_mls_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsSendWelcome) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsSendWelcome) ProtoMessage() {}
+
+func (x *TLMlsSendWelcome) ProtoReflect() protoreflect.Message {
+	mi := &file_mls_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsSendWelcome.ProtoReflect.Descriptor instead.
+func (*TLMlsSendWelcome) Descriptor() ([]byte, []int) {
+	return file_mls_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TLMlsSendWelcome) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *TLMlsSendWelcome) GetWelcome() []byte {
+	if x != nil {
+		return x.Welcome
+	}
+	return nil
+}
+
+type TLMlsGetWelcomes struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsGetWelcomes) Reset() {
+	*x = TLMlsGetWelcomes{}
+	mi := &file_mls_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsGetWelcomes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsGetWelcomes) ProtoMessage() {}
+
+func (x *TLMlsGetWelcomes) ProtoReflect() protoreflect.Message {
+	mi := &file_mls_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsGetWelcomes.ProtoReflect.Descriptor instead.
+func (*TLMlsGetWelcomes) Descriptor() ([]byte, []int) {
+	return file_mls_proto_rawDescGZIP(), []int{5}
+}
+
+// Ours rather than the schema's Bool, so this file needs nothing from the
+// generated schema and survives its regeneration untouched.
+type Mls_Ok struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ok            bool                   `protobuf:"varint,1,opt,name=ok,proto3" json:"ok,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_Ok) Reset() {
+	*x = Mls_Ok{}
+	mi := &file_mls_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_Ok) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_Ok) ProtoMessage() {}
+
+func (x *Mls_Ok) ProtoReflect() protoreflect.Message {
+	mi := &file_mls_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_Ok.ProtoReflect.Descriptor instead.
+func (*Mls_Ok) Descriptor() ([]byte, []int) {
+	return file_mls_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Mls_Ok) GetOk() bool {
+	if x != nil {
+		return x.Ok
+	}
+	return false
+}
+
+type Mls_Welcome struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FromId        int64                  `protobuf:"varint,2,opt,name=from_id,json=fromId,proto3" json:"from_id,omitempty"`
+	Welcome       []byte                 `protobuf:"bytes,3,opt,name=welcome,proto3" json:"welcome,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_Welcome) Reset() {
+	*x = Mls_Welcome{}
+	mi := &file_mls_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_Welcome) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_Welcome) ProtoMessage() {}
+
+func (x *Mls_Welcome) ProtoReflect() protoreflect.Message {
+	mi := &file_mls_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_Welcome.ProtoReflect.Descriptor instead.
+func (*Mls_Welcome) Descriptor() ([]byte, []int) {
+	return file_mls_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *Mls_Welcome) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Mls_Welcome) GetFromId() int64 {
+	if x != nil {
+		return x.FromId
+	}
+	return 0
+}
+
+func (x *Mls_Welcome) GetWelcome() []byte {
+	if x != nil {
+		return x.Welcome
+	}
+	return nil
+}
+
+type Mls_Welcomes struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Welcomes      []*Mls_Welcome         `protobuf:"bytes,1,rep,name=welcomes,proto3" json:"welcomes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_Welcomes) Reset() {
+	*x = Mls_Welcomes{}
+	mi := &file_mls_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_Welcomes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_Welcomes) ProtoMessage() {}
+
+func (x *Mls_Welcomes) ProtoReflect() protoreflect.Message {
+	mi := &file_mls_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_Welcomes.ProtoReflect.Descriptor instead.
+func (*Mls_Welcomes) Descriptor() ([]byte, []int) {
+	return file_mls_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *Mls_Welcomes) GetWelcomes() []*Mls_Welcome {
+	if x != nil {
+		return x.Welcomes
+	}
+	return nil
+}
+
+// Read is not the same as delivered. A device confirms only after the
+// conversation is open and saved, so a crash in between costs a retry rather
+// than the conversation.
+type TLMlsConfirmWelcomes struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ids           []int64                `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsConfirmWelcomes) Reset() {
+	*x = TLMlsConfirmWelcomes{}
+	mi := &file_mls_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsConfirmWelcomes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsConfirmWelcomes) ProtoMessage() {}
+
+func (x *TLMlsConfirmWelcomes) ProtoReflect() protoreflect.Message {
+	mi := &file_mls_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsConfirmWelcomes.ProtoReflect.Descriptor instead.
+func (*TLMlsConfirmWelcomes) Descriptor() ([]byte, []int) {
+	return file_mls_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *TLMlsConfirmWelcomes) GetIds() []int64 {
+	if x != nil {
+		return x.Ids
+	}
+	return nil
+}
+
 var File_mls_proto protoreflect.FileDescriptor
 
 const file_mls_proto_rawDesc = "" +
@@ -260,10 +552,27 @@ const file_mls_proto_rawDesc = "" +
 	"\x17TL_mls_claimKeyPackages\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"-\n" +
 	"\x0fmls_KeyPackages\x12\x1a\n" +
-	"\bpackages\x18\x01 \x03(\fR\bpackages2\xba\x01\n" +
+	"\bpackages\x18\x01 \x03(\fR\bpackages\"G\n" +
+	"\x12TL_mls_sendWelcome\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x18\n" +
+	"\awelcome\x18\x02 \x01(\fR\awelcome\"\x14\n" +
+	"\x12TL_mls_getWelcomes\"\x18\n" +
+	"\x06mls_Ok\x12\x0e\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok\"P\n" +
+	"\vmls_Welcome\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x17\n" +
+	"\afrom_id\x18\x02 \x01(\x03R\x06fromId\x12\x18\n" +
+	"\awelcome\x18\x03 \x01(\fR\awelcome\"@\n" +
+	"\fmls_Welcomes\x120\n" +
+	"\bwelcomes\x18\x01 \x03(\v2\x14.mtproto.mls_WelcomeR\bwelcomes\"*\n" +
+	"\x16TL_mls_confirmWelcomes\x12\x10\n" +
+	"\x03ids\x18\x01 \x03(\x03R\x03ids2\x91\x03\n" +
 	"\x06RPCMls\x12Z\n" +
 	"\x16mls_publishKeyPackages\x12\".mtproto.TL_mls_publishKeyPackages\x1a\x1a.mtproto.mls_PublishResult\"\x00\x12T\n" +
-	"\x14mls_claimKeyPackages\x12 .mtproto.TL_mls_claimKeyPackages\x1a\x18.mtproto.mls_KeyPackages\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
+	"\x14mls_claimKeyPackages\x12 .mtproto.TL_mls_claimKeyPackages\x1a\x18.mtproto.mls_KeyPackages\"\x00\x12A\n" +
+	"\x0fmls_sendWelcome\x12\x1b.mtproto.TL_mls_sendWelcome\x1a\x0f.mtproto.mls_Ok\"\x00\x12G\n" +
+	"\x0fmls_getWelcomes\x12\x1b.mtproto.TL_mls_getWelcomes\x1a\x15.mtproto.mls_Welcomes\"\x00\x12I\n" +
+	"\x13mls_confirmWelcomes\x12\x1f.mtproto.TL_mls_confirmWelcomes\x1a\x0f.mtproto.mls_Ok\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
 
 var (
 	file_mls_proto_rawDescOnce sync.Once
@@ -277,23 +586,36 @@ func file_mls_proto_rawDescGZIP() []byte {
 	return file_mls_proto_rawDescData
 }
 
-var file_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_mls_proto_goTypes = []any{
 	(*TLMlsPublishKeyPackages)(nil), // 0: mtproto.TL_mls_publishKeyPackages
 	(*Mls_PublishResult)(nil),       // 1: mtproto.mls_PublishResult
 	(*TLMlsClaimKeyPackages)(nil),   // 2: mtproto.TL_mls_claimKeyPackages
 	(*Mls_KeyPackages)(nil),         // 3: mtproto.mls_KeyPackages
+	(*TLMlsSendWelcome)(nil),        // 4: mtproto.TL_mls_sendWelcome
+	(*TLMlsGetWelcomes)(nil),        // 5: mtproto.TL_mls_getWelcomes
+	(*Mls_Ok)(nil),                  // 6: mtproto.mls_Ok
+	(*Mls_Welcome)(nil),             // 7: mtproto.mls_Welcome
+	(*Mls_Welcomes)(nil),            // 8: mtproto.mls_Welcomes
+	(*TLMlsConfirmWelcomes)(nil),    // 9: mtproto.TL_mls_confirmWelcomes
 }
 var file_mls_proto_depIdxs = []int32{
-	0, // 0: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
-	2, // 1: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
-	1, // 2: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
-	3, // 3: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	7, // 0: mtproto.mls_Welcomes.welcomes:type_name -> mtproto.mls_Welcome
+	0, // 1: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
+	2, // 2: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
+	4, // 3: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
+	5, // 4: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
+	9, // 5: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
+	1, // 6: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
+	3, // 7: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
+	6, // 8: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
+	8, // 9: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
+	6, // 10: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
+	6, // [6:11] is the sub-list for method output_type
+	1, // [1:6] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_mls_proto_init() }
@@ -307,7 +629,7 @@ func file_mls_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mls_proto_rawDesc), len(file_mls_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

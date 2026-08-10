@@ -64,6 +64,45 @@ func TestOurMethodsSurviveTheirOwnEncoding(t *testing.T) {
 		}
 	})
 
+	t.Run("sendWelcome", func(t *testing.T) {
+		original := &TLMlsSendWelcome{UserId: 136907759, Welcome: []byte{1, 2, 3, 4, 5}}
+
+		var decoded TLMlsSendWelcome
+		roundTrip(t, original, &decoded)
+
+		if decoded.UserId != original.UserId || !bytes.Equal(decoded.Welcome, original.Welcome) {
+			t.Fatalf("came back as %s", decoded.String())
+		}
+	})
+
+	t.Run("welcomes", func(t *testing.T) {
+		original := &Mls_Welcomes{Welcomes: []*Mls_Welcome{
+			{Id: 1, FromId: 7, Welcome: []byte{0xAA}},
+			{Id: 2, FromId: 8, Welcome: []byte{0xBB, 0xCC}},
+		}}
+
+		var decoded Mls_Welcomes
+		roundTrip(t, original, &decoded)
+
+		if len(decoded.Welcomes) != 2 {
+			t.Fatalf("came back with %d welcomes", len(decoded.Welcomes))
+		}
+		if decoded.Welcomes[1].FromId != 8 || !bytes.Equal(decoded.Welcomes[1].Welcome, []byte{0xBB, 0xCC}) {
+			t.Fatalf("the second one came back as %s", decoded.Welcomes[1].String())
+		}
+	})
+
+	t.Run("confirmWelcomes", func(t *testing.T) {
+		original := &TLMlsConfirmWelcomes{Ids: []int64{5, 6, 7}}
+
+		var decoded TLMlsConfirmWelcomes
+		roundTrip(t, original, &decoded)
+
+		if len(decoded.Ids) != 3 || decoded.Ids[2] != 7 {
+			t.Fatalf("came back as %v", decoded.Ids)
+		}
+	})
+
 	t.Run("keyPackages", func(t *testing.T) {
 		original := &Mls_KeyPackages{Packages: [][]byte{{0xAA}, {0xBB, 0xCC}}}
 
@@ -91,8 +130,8 @@ func TestOurMethodsAreInTheTableTheServerReadsFrom(t *testing.T) {
 // messages into the same message, and the failure is far from the cause.
 func TestOurConstructorIdsAreOurs(t *testing.T) {
 	ours := MlsConstructorNames()
-	if len(ours) != 4 {
-		t.Fatalf("expected four of our own, found %d", len(ours))
+	if len(ours) != 10 {
+		t.Fatalf("expected ten of our own, found %d", len(ours))
 	}
 
 	seen := map[int32]bool{}
@@ -152,6 +191,12 @@ func TestOurIdsAreTheCrc32OfTheirDeclarations(t *testing.T) {
 		CRC32_mls_publishResult:      "mls.publishResult added:int available:int should_refill:Bool = mls.PublishResult;",
 		CRC32_mls_claimKeyPackages:   "mls.claimKeyPackages user_id:long = mls.KeyPackages;",
 		CRC32_mls_keyPackages:        "mls.keyPackages packages:Vector<bytes> = mls.KeyPackages;",
+		CRC32_mls_sendWelcome:        "mls.sendWelcome user_id:long welcome:bytes = mls.Ok;",
+		CRC32_mls_ok:                 "mls.ok ok:Bool = mls.Ok;",
+		CRC32_mls_getWelcomes:        "mls.getWelcomes = mls.Welcomes;",
+		CRC32_mls_welcomes:           "mls.welcomes welcomes:Vector<mls.Welcome> = mls.Welcomes;",
+		CRC32_mls_welcome:            "mls.welcome id:long from_id:long welcome:bytes = mls.Welcome;",
+		CRC32_mls_confirmWelcomes:    "mls.confirmWelcomes ids:Vector<long> = mls.Ok;",
 	}
 
 	for id, declaration := range declarations {

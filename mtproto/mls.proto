@@ -46,9 +46,49 @@ message mls_KeyPackages {
   repeated bytes packages = 1;
 }
 
+// A welcome is what lets a device into a conversation somebody started with it.
+//
+// It travels here rather than as a message, so that no client has to hide
+// anything from a chat list: handshake traffic never touches the message
+// pipeline at all. The server holds each one until the device says it has read
+// it - a welcome lost in transit is a conversation that exists on one side and
+// not the other, which shows up much later as messages that will not open.
+message TL_mls_sendWelcome {
+  int64 user_id = 1;
+  bytes welcome = 2;
+}
+
+message TL_mls_getWelcomes {}
+
+// Ours rather than the schema's Bool, so this file needs nothing from the
+// generated schema and survives its regeneration untouched.
+message mls_Ok {
+  bool ok = 1;
+}
+
+message mls_Welcome {
+  int64 id = 1;
+  int64 from_id = 2;
+  bytes welcome = 3;
+}
+
+message mls_Welcomes {
+  repeated mls_Welcome welcomes = 1;
+}
+
+// Read is not the same as delivered. A device confirms only after the
+// conversation is open and saved, so a crash in between costs a retry rather
+// than the conversation.
+message TL_mls_confirmWelcomes {
+  repeated int64 ids = 1;
+}
+
 service RPCMls {
   rpc mls_publishKeyPackages(TL_mls_publishKeyPackages)
       returns (mls_PublishResult) {}
   rpc mls_claimKeyPackages(TL_mls_claimKeyPackages)
       returns (mls_KeyPackages) {}
+  rpc mls_sendWelcome(TL_mls_sendWelcome) returns (mls_Ok) {}
+  rpc mls_getWelcomes(TL_mls_getWelcomes) returns (mls_Welcomes) {}
+  rpc mls_confirmWelcomes(TL_mls_confirmWelcomes) returns (mls_Ok) {}
 }
