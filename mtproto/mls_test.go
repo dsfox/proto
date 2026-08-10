@@ -29,9 +29,9 @@ func TestOurMethodsSurviveTheirOwnEncoding(t *testing.T) {
 	})
 
 	t.Run("publishResult", func(t *testing.T) {
-		original := &TLMlsPublishResult{Added: 7, Available: 42, ShouldRefill: true}
+		original := &Mls_PublishResult{Added: 7, Available: 42, ShouldRefill: true}
 
-		var decoded TLMlsPublishResult
+		var decoded Mls_PublishResult
 		roundTrip(t, original, &decoded)
 
 		if decoded.Added != 7 || decoded.Available != 42 || !decoded.ShouldRefill {
@@ -42,9 +42,9 @@ func TestOurMethodsSurviveTheirOwnEncoding(t *testing.T) {
 	t.Run("publishResult without refill", func(t *testing.T) {
 		// The false case is worth its own test: a boolean encoded as a
 		// constructor is exactly where a wrong constant reads as true forever.
-		original := &TLMlsPublishResult{Added: 0, Available: 100, ShouldRefill: false}
+		original := &Mls_PublishResult{Added: 0, Available: 100, ShouldRefill: false}
 
-		var decoded TLMlsPublishResult
+		var decoded Mls_PublishResult
 		roundTrip(t, original, &decoded)
 
 		if decoded.ShouldRefill {
@@ -64,9 +64,9 @@ func TestOurMethodsSurviveTheirOwnEncoding(t *testing.T) {
 	})
 
 	t.Run("keyPackages", func(t *testing.T) {
-		original := &TLMlsKeyPackages{Packages: [][]byte{{0xAA}, {0xBB, 0xCC}}}
+		original := &Mls_KeyPackages{Packages: [][]byte{{0xAA}, {0xBB, 0xCC}}}
 
-		var decoded TLMlsKeyPackages
+		var decoded Mls_KeyPackages
 		roundTrip(t, original, &decoded)
 
 		if len(decoded.Packages) != 2 || !bytes.Equal(decoded.Packages[1], []byte{0xBB, 0xCC}) {
@@ -118,5 +118,21 @@ func roundTrip(t *testing.T, original, decoded TLObject) {
 	}
 	if err := decoded.Decode(dBuf); err != nil {
 		t.Fatalf("cannot decode: %v", err)
+	}
+}
+
+// A request with nowhere to go is answered "not found method", which names the
+// symptom and not the missing line - so the route is asserted rather than
+// assumed.
+func TestOurMethodsKnowWhereToGo(t *testing.T) {
+	for _, name := range []string{"TLMlsPublishKeyPackages", "TLMlsClaimKeyPackages"} {
+		tuple, ok := GetRPCContextRegisters()[name]
+		if !ok {
+			t.Errorf("%s has no route, so the proxy would refuse it", name)
+			continue
+		}
+		if tuple.Method == "" || tuple.NewReplyFunc == nil {
+			t.Errorf("%s is routed to %q with reply %v", name, tuple.Method, tuple.NewReplyFunc)
+		}
 	}
 }

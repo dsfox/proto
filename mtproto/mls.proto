@@ -1,0 +1,54 @@
+// Our own methods, for end-to-end encryption on MLS (2bytes #36).
+//
+// Kept in a file of its own rather than added to the generated schema, so that
+// regenerating that schema from upstream cannot quietly drop them, and so that
+// updating this module has exactly one file to carry across.
+//
+// The wire encoding these types use towards the phone is written by hand in
+// mls.go - MTProto, not protobuf. This file exists because the services inside
+// the server talk protobuf to each other, and a type that is not a protobuf
+// message cannot make that hop.
+
+syntax = "proto3";
+
+package mtproto;
+
+option go_package = "github.com/teamgram/proto/mtproto";
+
+// A device leaving a supply of key packages, so that somebody can start a
+// conversation with it while it is asleep.
+message TL_mls_publishKeyPackages {
+  repeated bytes key_packages = 1;
+  // May be empty. When it is not, it is the one package handed out repeatedly
+  // once the supply runs dry - the weaker path, taken so that a conversation
+  // can still start.
+  bytes last_resort = 2;
+}
+
+// What was taken, and whether the device should make more. The decision to
+// refill stays with the only party that can make packages.
+message mls_PublishResult {
+  int32 added = 1;
+  int32 available = 2;
+  bool should_refill = 3;
+}
+
+// Asks for one package per device of a person, which is what starting a
+// conversation with them needs: each device is a member of its own.
+message TL_mls_claimKeyPackages {
+  int64 user_id = 1;
+}
+
+// One package per device that had something. A device with nothing left is
+// missing from here rather than failing the request - one silent device must
+// not stop a conversation with the rest.
+message mls_KeyPackages {
+  repeated bytes packages = 1;
+}
+
+service RPCMls {
+  rpc mls_publishKeyPackages(TL_mls_publishKeyPackages)
+      returns (mls_PublishResult) {}
+  rpc mls_claimKeyPackages(TL_mls_claimKeyPackages)
+      returns (mls_KeyPackages) {}
+}

@@ -30,17 +30,6 @@ const (
 	CRC32_mls_keyPackages = int32(-548557587) // 0xdf5408ed
 )
 
-// TLMlsPublishKeyPackages is a device leaving a supply of key packages, so that
-// somebody can start a conversation with it while it is asleep.
-//
-// last_resort may be empty. When it is not, it is the one package that is handed
-// out repeatedly once the supply runs dry - the weaker path, taken so that a
-// conversation can still start.
-type TLMlsPublishKeyPackages struct {
-	KeyPackages [][]byte
-	LastResort  []byte
-}
-
 func (m *TLMlsPublishKeyPackages) Encode(x *EncodeBuf, layer int32) error {
 	x.Int(CRC32_mls_publishKeyPackages)
 	x.Int(int32(0x1cb5c415)) // vector
@@ -69,20 +58,7 @@ func (m *TLMlsPublishKeyPackages) Decode(dBuf *DecodeBuf) error {
 	return dBuf.err
 }
 
-func (m *TLMlsPublishKeyPackages) String() string {
-	return fmt.Sprintf("mls.publishKeyPackages{key_packages: %d, last_resort: %d bytes}",
-		len(m.KeyPackages), len(m.LastResort))
-}
-
-// TLMlsPublishResult tells the device what was taken and whether to make more.
-// The decision to refill stays with the only party that can make packages.
-type TLMlsPublishResult struct {
-	Added        int32
-	Available    int32
-	ShouldRefill bool
-}
-
-func (m *TLMlsPublishResult) Encode(x *EncodeBuf, layer int32) error {
+func (m *Mls_PublishResult) Encode(x *EncodeBuf, layer int32) error {
 	x.Int(CRC32_mls_publishResult)
 	x.Int(m.Added)
 	x.Int(m.Available)
@@ -94,23 +70,11 @@ func (m *TLMlsPublishResult) Encode(x *EncodeBuf, layer int32) error {
 	return nil
 }
 
-func (m *TLMlsPublishResult) Decode(dBuf *DecodeBuf) error {
+func (m *Mls_PublishResult) Decode(dBuf *DecodeBuf) error {
 	m.Added = dBuf.Int()
 	m.Available = dBuf.Int()
 	m.ShouldRefill = dBuf.Int() == int32(-1720552011)
 	return dBuf.err
-}
-
-func (m *TLMlsPublishResult) String() string {
-	return fmt.Sprintf("mls.publishResult{added: %d, available: %d, should_refill: %v}",
-		m.Added, m.Available, m.ShouldRefill)
-}
-
-// TLMlsClaimKeyPackages asks for one package per device of a person, which is
-// what starting a conversation with them needs: each device is a member of its
-// own, which is the thing MTProto secret chats cannot do.
-type TLMlsClaimKeyPackages struct {
-	UserId int64
 }
 
 func (m *TLMlsClaimKeyPackages) Encode(x *EncodeBuf, layer int32) error {
@@ -124,18 +88,7 @@ func (m *TLMlsClaimKeyPackages) Decode(dBuf *DecodeBuf) error {
 	return dBuf.err
 }
 
-func (m *TLMlsClaimKeyPackages) String() string {
-	return fmt.Sprintf("mls.claimKeyPackages{user_id: %d}", m.UserId)
-}
-
-// TLMlsKeyPackages is the answer: one package per device that had something.
-// A device with nothing left is missing from here rather than failing the whole
-// request - one silent device must not stop a conversation with the rest.
-type TLMlsKeyPackages struct {
-	Packages [][]byte
-}
-
-func (m *TLMlsKeyPackages) Encode(x *EncodeBuf, layer int32) error {
+func (m *Mls_KeyPackages) Encode(x *EncodeBuf, layer int32) error {
 	x.Int(CRC32_mls_keyPackages)
 	x.Int(int32(0x1cb5c415))
 	x.Int(int32(len(m.Packages)))
@@ -145,7 +98,7 @@ func (m *TLMlsKeyPackages) Encode(x *EncodeBuf, layer int32) error {
 	return nil
 }
 
-func (m *TLMlsKeyPackages) Decode(dBuf *DecodeBuf) error {
+func (m *Mls_KeyPackages) Decode(dBuf *DecodeBuf) error {
 	if v := dBuf.Int(); v != int32(0x1cb5c415) {
 		return fmt.Errorf("mls.keyPackages: expected a vector, got %d", v)
 	}
@@ -160,21 +113,25 @@ func (m *TLMlsKeyPackages) Decode(dBuf *DecodeBuf) error {
 	return dBuf.err
 }
 
-func (m *TLMlsKeyPackages) String() string {
-	total := 0
-	for _, p := range m.Packages {
-		total += len(p)
-	}
-	return fmt.Sprintf("mls.keyPackages{packages: %d, %d bytes}", len(m.Packages), total)
-}
-
 // Registered here rather than in the generated table, so that regenerating that
 // table from upstream cannot silently drop them.
 func init() {
 	clazzIdRegisters2[CRC32_mls_publishKeyPackages] = func() TLObject { return &TLMlsPublishKeyPackages{} }
-	clazzIdRegisters2[CRC32_mls_publishResult] = func() TLObject { return &TLMlsPublishResult{} }
+	clazzIdRegisters2[CRC32_mls_publishResult] = func() TLObject { return &Mls_PublishResult{} }
 	clazzIdRegisters2[CRC32_mls_claimKeyPackages] = func() TLObject { return &TLMlsClaimKeyPackages{} }
-	clazzIdRegisters2[CRC32_mls_keyPackages] = func() TLObject { return &TLMlsKeyPackages{} }
+	clazzIdRegisters2[CRC32_mls_keyPackages] = func() TLObject { return &Mls_KeyPackages{} }
+
+	// And where each request goes. Without this the proxy has nowhere to send
+	// them and answers "not found method", which names the symptom and not the
+	// missing line.
+	rpcContextRegisters["TLMlsPublishKeyPackages"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_publishKeyPackages",
+		func() interface{} { return new(Mls_PublishResult) },
+	}
+	rpcContextRegisters["TLMlsClaimKeyPackages"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_claimKeyPackages",
+		func() interface{} { return new(Mls_KeyPackages) },
+	}
 }
 
 // MlsConstructorNames is what the log and the tests use to name our methods,
