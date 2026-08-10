@@ -2,6 +2,7 @@ package mtproto
 
 import (
 	"bytes"
+	"hash/crc32"
 	"testing"
 )
 
@@ -133,6 +134,31 @@ func TestOurMethodsKnowWhereToGo(t *testing.T) {
 		}
 		if tuple.Method == "" || tuple.NewReplyFunc == nil {
 			t.Errorf("%s is routed to %q with reply %v", name, tuple.Method, tuple.NewReplyFunc)
+		}
+	}
+}
+
+// Each id must be the CRC32 of the declaration written above it. That is how TL
+// makes them, and it is what lets anybody recompute them from the text rather
+// than trust a number.
+//
+// Written after getting it wrong: two of the four were converted to signed by
+// hand and came out different from their own comments. The server stayed
+// consistent with itself, so everything worked and nothing matched the text -
+// which is worse than a failure, because it survives.
+func TestOurIdsAreTheCrc32OfTheirDeclarations(t *testing.T) {
+	declarations := map[int32]string{
+		CRC32_mls_publishKeyPackages: "mls.publishKeyPackages key_packages:Vector<bytes> last_resort:bytes = mls.PublishResult;",
+		CRC32_mls_publishResult:      "mls.publishResult added:int available:int should_refill:Bool = mls.PublishResult;",
+		CRC32_mls_claimKeyPackages:   "mls.claimKeyPackages user_id:long = mls.KeyPackages;",
+		CRC32_mls_keyPackages:        "mls.keyPackages packages:Vector<bytes> = mls.KeyPackages;",
+	}
+
+	for id, declaration := range declarations {
+		want := int32(crc32.ChecksumIEEE([]byte(declaration)))
+		if id != want {
+			t.Errorf("%q\n  is 0x%08x by CRC32 and 0x%08x in the code",
+				declaration, uint32(want), uint32(id))
 		}
 	}
 }

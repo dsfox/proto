@@ -18,16 +18,16 @@ import "fmt"
 
 const (
 	// mls.publishKeyPackages key_packages:Vector<bytes> last_resort:bytes = mls.PublishResult;
-	CRC32_mls_publishKeyPackages = int32(0x38115310)
+	CRC32_mls_publishKeyPackages = int32(940659472) // 0x38115310
 
 	// mls.publishResult added:int available:int should_refill:Bool = mls.PublishResult;
-	CRC32_mls_publishResult = int32(-1429076441) // 0xaacbf827
+	CRC32_mls_publishResult = int32(-1429473241) // 0xaacbf827
 
 	// mls.claimKeyPackages user_id:long = mls.KeyPackages;
-	CRC32_mls_claimKeyPackages = int32(0x054c3049)
+	CRC32_mls_claimKeyPackages = int32(88879177) // 0x054c3049
 
 	// mls.keyPackages packages:Vector<bytes> = mls.KeyPackages;
-	CRC32_mls_keyPackages = int32(-548557587) // 0xdf5408ed
+	CRC32_mls_keyPackages = int32(-548140819) // 0xdf5408ed
 )
 
 func (m *TLMlsPublishKeyPackages) Encode(x *EncodeBuf, layer int32) error {
