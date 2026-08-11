@@ -91,4 +91,19 @@ service RPCMls {
   rpc mls_sendWelcome(TL_mls_sendWelcome) returns (mls_Ok) {}
   rpc mls_getWelcomes(TL_mls_getWelcomes) returns (mls_Welcomes) {}
   rpc mls_confirmWelcomes(TL_mls_confirmWelcomes) returns (mls_Ok) {}
+  rpc mls_setRecoverySecret(TL_mls_setRecoverySecret) returns (mls_Ok) {}
+}
+
+// A device registering the way back into its own account.
+//
+// What arrives is not the recovery phrase: it is a one-way derivation of the
+// words, made on the phone. The words are made there too and never travel,
+// because a phrase signs in without a code - it is the whole account - and the
+// server holding a copy of one is the server holding the account.
+//
+// It also decides whether an encrypted history backup means anything: the
+// backup key comes from the same words by a different derivation, so a server
+// that never sees the words cannot read the backup either.
+message TL_mls_setRecoverySecret {
+  string secret = 1;
 }

@@ -13,7 +13,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             v7.35.1
-// source: mls.proto
+// source: mtproto/mls.proto
 
 package mtproto
 
@@ -35,6 +35,7 @@ const (
 	RPCMls_MlsSendWelcome_FullMethodName        = "/mtproto.RPCMls/mls_sendWelcome"
 	RPCMls_MlsGetWelcomes_FullMethodName        = "/mtproto.RPCMls/mls_getWelcomes"
 	RPCMls_MlsConfirmWelcomes_FullMethodName    = "/mtproto.RPCMls/mls_confirmWelcomes"
+	RPCMls_MlsSetRecoverySecret_FullMethodName  = "/mtproto.RPCMls/mls_setRecoverySecret"
 )
 
 // RPCMlsClient is the client API for RPCMls service.
@@ -46,6 +47,7 @@ type RPCMlsClient interface {
 	MlsSendWelcome(ctx context.Context, in *TLMlsSendWelcome, opts ...grpc.CallOption) (*Mls_Ok, error)
 	MlsGetWelcomes(ctx context.Context, in *TLMlsGetWelcomes, opts ...grpc.CallOption) (*Mls_Welcomes, error)
 	MlsConfirmWelcomes(ctx context.Context, in *TLMlsConfirmWelcomes, opts ...grpc.CallOption) (*Mls_Ok, error)
+	MlsSetRecoverySecret(ctx context.Context, in *TLMlsSetRecoverySecret, opts ...grpc.CallOption) (*Mls_Ok, error)
 }
 
 type rPCMlsClient struct {
@@ -106,6 +108,16 @@ func (c *rPCMlsClient) MlsConfirmWelcomes(ctx context.Context, in *TLMlsConfirmW
 	return out, nil
 }
 
+func (c *rPCMlsClient) MlsSetRecoverySecret(ctx context.Context, in *TLMlsSetRecoverySecret, opts ...grpc.CallOption) (*Mls_Ok, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_Ok)
+	err := c.cc.Invoke(ctx, RPCMls_MlsSetRecoverySecret_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCMlsServer is the server API for RPCMls service.
 // All implementations must embed UnimplementedRPCMlsServer
 // for forward compatibility.
@@ -115,6 +127,7 @@ type RPCMlsServer interface {
 	MlsSendWelcome(context.Context, *TLMlsSendWelcome) (*Mls_Ok, error)
 	MlsGetWelcomes(context.Context, *TLMlsGetWelcomes) (*Mls_Welcomes, error)
 	MlsConfirmWelcomes(context.Context, *TLMlsConfirmWelcomes) (*Mls_Ok, error)
+	MlsSetRecoverySecret(context.Context, *TLMlsSetRecoverySecret) (*Mls_Ok, error)
 	mustEmbedUnimplementedRPCMlsServer()
 }
 
@@ -139,6 +152,9 @@ func (UnimplementedRPCMlsServer) MlsGetWelcomes(context.Context, *TLMlsGetWelcom
 }
 func (UnimplementedRPCMlsServer) MlsConfirmWelcomes(context.Context, *TLMlsConfirmWelcomes) (*Mls_Ok, error) {
 	return nil, status.Error(codes.Unimplemented, "method MlsConfirmWelcomes not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsSetRecoverySecret(context.Context, *TLMlsSetRecoverySecret) (*Mls_Ok, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsSetRecoverySecret not implemented")
 }
 func (UnimplementedRPCMlsServer) mustEmbedUnimplementedRPCMlsServer() {}
 func (UnimplementedRPCMlsServer) testEmbeddedByValue()                {}
@@ -251,6 +267,24 @@ func _RPCMls_MlsConfirmWelcomes_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMls_MlsSetRecoverySecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsSetRecoverySecret)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsSetRecoverySecret(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsSetRecoverySecret_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsSetRecoverySecret(ctx, req.(*TLMlsSetRecoverySecret))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCMls_ServiceDesc is the grpc.ServiceDesc for RPCMls service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,7 +312,11 @@ var RPCMls_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "mls_confirmWelcomes",
 			Handler:    _RPCMls_MlsConfirmWelcomes_Handler,
 		},
+		{
+			MethodName: "mls_setRecoverySecret",
+			Handler:    _RPCMls_MlsSetRecoverySecret_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "mls.proto",
+	Metadata: "mtproto/mls.proto",
 }

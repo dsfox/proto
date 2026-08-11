@@ -46,6 +46,9 @@ const (
 
 	// mls.confirmWelcomes ids:Vector<long> = mls.Ok;
 	CRC32_mls_confirmWelcomes = int32(-1226029994) // 0xb6ec4456
+
+	// mls.setRecoverySecret secret:string = mls.Ok;
+	CRC32_mls_setRecoverySecret = int32(-369099376) // 0xe9fffd90
 )
 
 // A welcome is what lets a device into a conversation somebody started with it.
@@ -62,6 +65,19 @@ func (m *TLMlsSendWelcome) Encode(x *EncodeBuf, layer int32) error {
 func (m *TLMlsSendWelcome) Decode(dBuf *DecodeBuf) error {
 	m.UserId = dBuf.Long()
 	m.Welcome = dBuf.StringBytes()
+	return dBuf.err
+}
+
+// What a phone hands over in place of its recovery phrase: a derivation of the
+// words, which is enough to recognise somebody typing them and nothing else.
+func (m *TLMlsSetRecoverySecret) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_setRecoverySecret)
+	x.String(m.Secret)
+	return nil
+}
+
+func (m *TLMlsSetRecoverySecret) Decode(dBuf *DecodeBuf) error {
+	m.Secret = dBuf.String()
 	return dBuf.err
 }
 
@@ -254,6 +270,7 @@ func init() {
 	clazzIdRegisters2[CRC32_mls_claimKeyPackages] = func() TLObject { return &TLMlsClaimKeyPackages{} }
 	clazzIdRegisters2[CRC32_mls_keyPackages] = func() TLObject { return &Mls_KeyPackages{} }
 	clazzIdRegisters2[CRC32_mls_sendWelcome] = func() TLObject { return &TLMlsSendWelcome{} }
+	clazzIdRegisters2[CRC32_mls_setRecoverySecret] = func() TLObject { return &TLMlsSetRecoverySecret{} }
 	clazzIdRegisters2[CRC32_mls_ok] = func() TLObject { return &Mls_Ok{} }
 	clazzIdRegisters2[CRC32_mls_getWelcomes] = func() TLObject { return &TLMlsGetWelcomes{} }
 	clazzIdRegisters2[CRC32_mls_welcomes] = func() TLObject { return &Mls_Welcomes{} }
@@ -283,6 +300,10 @@ func init() {
 		"/mtproto.RPCMls/mls_confirmWelcomes",
 		func() interface{} { return new(Mls_Ok) },
 	}
+	rpcContextRegisters["TLMlsSetRecoverySecret"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_setRecoverySecret",
+		func() interface{} { return new(Mls_Ok) },
+	}
 }
 
 // MlsConstructorNames is what the log and the tests use to name our methods,
@@ -299,5 +320,6 @@ func MlsConstructorNames() map[int32]string {
 		CRC32_mls_welcomes:           "mls.welcomes",
 		CRC32_mls_welcome:            "mls.welcome",
 		CRC32_mls_confirmWelcomes:    "mls.confirmWelcomes",
+		CRC32_mls_setRecoverySecret:  "mls.setRecoverySecret",
 	}
 }
