@@ -130,8 +130,8 @@ func TestOurMethodsAreInTheTableTheServerReadsFrom(t *testing.T) {
 // messages into the same message, and the failure is far from the cause.
 func TestOurConstructorIdsAreOurs(t *testing.T) {
 	ours := MlsConstructorNames()
-	if len(ours) != 10 {
-		t.Fatalf("expected ten of our own, found %d", len(ours))
+	if len(ours) != 11 {
+		t.Fatalf("expected eleven of our own, found %d", len(ours))
 	}
 
 	seen := map[int32]bool{}
