@@ -536,6 +536,341 @@ func (x *TLMlsConfirmWelcomes) GetIds() []int64 {
 	return nil
 }
 
+// A commit is what moves a conversation from one epoch to the next: somebody
+// added, somebody removed. MLS validates it against the epoch it was made from,
+// so of two commits made from the same epoch exactly one can be taken - the
+// server keeps that order, which RFC 9420 gives to the delivery service.
+//
+// The members are named because the server does not know who is in a group and
+// must not: it is told where to leave the commit, not asked who belongs.
+type TLMlsSendCommit struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       []byte                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	Epoch         int64                  `protobuf:"varint,2,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	Members       []int64                `protobuf:"varint,3,rep,packed,name=members,proto3" json:"members,omitempty"`
+	Commit        []byte                 `protobuf:"bytes,4,opt,name=commit,proto3" json:"commit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsSendCommit) Reset() {
+	*x = TLMlsSendCommit{}
+	mi := &file_mtproto_mls_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsSendCommit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsSendCommit) ProtoMessage() {}
+
+func (x *TLMlsSendCommit) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsSendCommit.ProtoReflect.Descriptor instead.
+func (*TLMlsSendCommit) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *TLMlsSendCommit) GetGroupId() []byte {
+	if x != nil {
+		return x.GroupId
+	}
+	return nil
+}
+
+func (x *TLMlsSendCommit) GetEpoch() int64 {
+	if x != nil {
+		return x.Epoch
+	}
+	return 0
+}
+
+func (x *TLMlsSendCommit) GetMembers() []int64 {
+	if x != nil {
+		return x.Members
+	}
+	return nil
+}
+
+func (x *TLMlsSendCommit) GetCommit() []byte {
+	if x != nil {
+		return x.Commit
+	}
+	return nil
+}
+
+// Whether the commit was taken, and which epoch the conversation is really on.
+//
+// The epoch comes back on refusal as well, so the loser of a race knows how far
+// behind it is without another round trip - it has to catch up, rebuild its
+// change on top of the winner and send again.
+type Mls_CommitResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Accepted      bool                   `protobuf:"varint,1,opt,name=accepted,proto3" json:"accepted,omitempty"`
+	Epoch         int64                  `protobuf:"varint,2,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_CommitResult) Reset() {
+	*x = Mls_CommitResult{}
+	mi := &file_mtproto_mls_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_CommitResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_CommitResult) ProtoMessage() {}
+
+func (x *Mls_CommitResult) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_CommitResult.ProtoReflect.Descriptor instead.
+func (*Mls_CommitResult) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *Mls_CommitResult) GetAccepted() bool {
+	if x != nil {
+		return x.Accepted
+	}
+	return false
+}
+
+func (x *Mls_CommitResult) GetEpoch() int64 {
+	if x != nil {
+		return x.Epoch
+	}
+	return 0
+}
+
+type TLMlsGetCommits struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsGetCommits) Reset() {
+	*x = TLMlsGetCommits{}
+	mi := &file_mtproto_mls_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsGetCommits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsGetCommits) ProtoMessage() {}
+
+func (x *TLMlsGetCommits) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsGetCommits.ProtoReflect.Descriptor instead.
+func (*TLMlsGetCommits) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{12}
+}
+
+type Mls_Commit struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FromId        int64                  `protobuf:"varint,2,opt,name=from_id,json=fromId,proto3" json:"from_id,omitempty"`
+	GroupId       []byte                 `protobuf:"bytes,3,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	Epoch         int64                  `protobuf:"varint,4,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	Commit        []byte                 `protobuf:"bytes,5,opt,name=commit,proto3" json:"commit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_Commit) Reset() {
+	*x = Mls_Commit{}
+	mi := &file_mtproto_mls_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_Commit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_Commit) ProtoMessage() {}
+
+func (x *Mls_Commit) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_Commit.ProtoReflect.Descriptor instead.
+func (*Mls_Commit) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *Mls_Commit) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Mls_Commit) GetFromId() int64 {
+	if x != nil {
+		return x.FromId
+	}
+	return 0
+}
+
+func (x *Mls_Commit) GetGroupId() []byte {
+	if x != nil {
+		return x.GroupId
+	}
+	return nil
+}
+
+func (x *Mls_Commit) GetEpoch() int64 {
+	if x != nil {
+		return x.Epoch
+	}
+	return 0
+}
+
+func (x *Mls_Commit) GetCommit() []byte {
+	if x != nil {
+		return x.Commit
+	}
+	return nil
+}
+
+type Mls_Commits struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Commits       []*Mls_Commit          `protobuf:"bytes,1,rep,name=commits,proto3" json:"commits,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_Commits) Reset() {
+	*x = Mls_Commits{}
+	mi := &file_mtproto_mls_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_Commits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_Commits) ProtoMessage() {}
+
+func (x *Mls_Commits) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_Commits.ProtoReflect.Descriptor instead.
+func (*Mls_Commits) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *Mls_Commits) GetCommits() []*Mls_Commit {
+	if x != nil {
+		return x.Commits
+	}
+	return nil
+}
+
+// Applied, not received. A device that took a commit and stopped before saving
+// the state it produced must be given it again, or it sits an epoch behind and
+// the conversation goes quiet for that person alone.
+type TLMlsConfirmCommits struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Ids           []int64                `protobuf:"varint,1,rep,packed,name=ids,proto3" json:"ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsConfirmCommits) Reset() {
+	*x = TLMlsConfirmCommits{}
+	mi := &file_mtproto_mls_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsConfirmCommits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsConfirmCommits) ProtoMessage() {}
+
+func (x *TLMlsConfirmCommits) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsConfirmCommits.ProtoReflect.Descriptor instead.
+func (*TLMlsConfirmCommits) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *TLMlsConfirmCommits) GetIds() []int64 {
+	if x != nil {
+		return x.Ids
+	}
+	return nil
+}
+
 // A device registering the way back into its own account.
 //
 // What arrives is not the recovery phrase: it is a one-way derivation of the
@@ -555,7 +890,7 @@ type TLMlsSetRecoverySecret struct {
 
 func (x *TLMlsSetRecoverySecret) Reset() {
 	*x = TLMlsSetRecoverySecret{}
-	mi := &file_mtproto_mls_proto_msgTypes[10]
+	mi := &file_mtproto_mls_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -567,7 +902,7 @@ func (x *TLMlsSetRecoverySecret) String() string {
 func (*TLMlsSetRecoverySecret) ProtoMessage() {}
 
 func (x *TLMlsSetRecoverySecret) ProtoReflect() protoreflect.Message {
-	mi := &file_mtproto_mls_proto_msgTypes[10]
+	mi := &file_mtproto_mls_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -580,7 +915,7 @@ func (x *TLMlsSetRecoverySecret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsSetRecoverySecret.ProtoReflect.Descriptor instead.
 func (*TLMlsSetRecoverySecret) Descriptor() ([]byte, []int) {
-	return file_mtproto_mls_proto_rawDescGZIP(), []int{10}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *TLMlsSetRecoverySecret) GetSecret() string {
@@ -620,16 +955,39 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\fmls_Welcomes\x120\n" +
 	"\bwelcomes\x18\x01 \x03(\v2\x14.mtproto.mls_WelcomeR\bwelcomes\"*\n" +
 	"\x16TL_mls_confirmWelcomes\x12\x10\n" +
+	"\x03ids\x18\x01 \x03(\x03R\x03ids\"v\n" +
+	"\x11TL_mls_sendCommit\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\fR\agroupId\x12\x14\n" +
+	"\x05epoch\x18\x02 \x01(\x03R\x05epoch\x12\x18\n" +
+	"\amembers\x18\x03 \x03(\x03R\amembers\x12\x16\n" +
+	"\x06commit\x18\x04 \x01(\fR\x06commit\"D\n" +
+	"\x10mls_CommitResult\x12\x1a\n" +
+	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x14\n" +
+	"\x05epoch\x18\x02 \x01(\x03R\x05epoch\"\x13\n" +
+	"\x11TL_mls_getCommits\"~\n" +
+	"\n" +
+	"mls_Commit\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x17\n" +
+	"\afrom_id\x18\x02 \x01(\x03R\x06fromId\x12\x19\n" +
+	"\bgroup_id\x18\x03 \x01(\fR\agroupId\x12\x14\n" +
+	"\x05epoch\x18\x04 \x01(\x03R\x05epoch\x12\x16\n" +
+	"\x06commit\x18\x05 \x01(\fR\x06commit\"<\n" +
+	"\vmls_Commits\x12-\n" +
+	"\acommits\x18\x01 \x03(\v2\x13.mtproto.mls_CommitR\acommits\")\n" +
+	"\x15TL_mls_confirmCommits\x12\x10\n" +
 	"\x03ids\x18\x01 \x03(\x03R\x03ids\"2\n" +
 	"\x18TL_mls_setRecoverySecret\x12\x16\n" +
-	"\x06secret\x18\x01 \x01(\tR\x06secret2\xe0\x03\n" +
+	"\x06secret\x18\x01 \x01(\tR\x06secret2\xba\x05\n" +
 	"\x06RPCMls\x12Z\n" +
 	"\x16mls_publishKeyPackages\x12\".mtproto.TL_mls_publishKeyPackages\x1a\x1a.mtproto.mls_PublishResult\"\x00\x12T\n" +
 	"\x14mls_claimKeyPackages\x12 .mtproto.TL_mls_claimKeyPackages\x1a\x18.mtproto.mls_KeyPackages\"\x00\x12A\n" +
 	"\x0fmls_sendWelcome\x12\x1b.mtproto.TL_mls_sendWelcome\x1a\x0f.mtproto.mls_Ok\"\x00\x12G\n" +
 	"\x0fmls_getWelcomes\x12\x1b.mtproto.TL_mls_getWelcomes\x1a\x15.mtproto.mls_Welcomes\"\x00\x12I\n" +
 	"\x13mls_confirmWelcomes\x12\x1f.mtproto.TL_mls_confirmWelcomes\x1a\x0f.mtproto.mls_Ok\"\x00\x12M\n" +
-	"\x15mls_setRecoverySecret\x12!.mtproto.TL_mls_setRecoverySecret\x1a\x0f.mtproto.mls_Ok\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
+	"\x15mls_setRecoverySecret\x12!.mtproto.TL_mls_setRecoverySecret\x1a\x0f.mtproto.mls_Ok\"\x00\x12I\n" +
+	"\x0emls_sendCommit\x12\x1a.mtproto.TL_mls_sendCommit\x1a\x19.mtproto.mls_CommitResult\"\x00\x12D\n" +
+	"\x0emls_getCommits\x12\x1a.mtproto.TL_mls_getCommits\x1a\x14.mtproto.mls_Commits\"\x00\x12G\n" +
+	"\x12mls_confirmCommits\x12\x1e.mtproto.TL_mls_confirmCommits\x1a\x0f.mtproto.mls_Ok\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
 
 var (
 	file_mtproto_mls_proto_rawDescOnce sync.Once
@@ -643,7 +1001,7 @@ func file_mtproto_mls_proto_rawDescGZIP() []byte {
 	return file_mtproto_mls_proto_rawDescData
 }
 
-var file_mtproto_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_mtproto_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_mtproto_mls_proto_goTypes = []any{
 	(*TLMlsPublishKeyPackages)(nil), // 0: mtproto.TL_mls_publishKeyPackages
 	(*Mls_PublishResult)(nil),       // 1: mtproto.mls_PublishResult
@@ -655,27 +1013,40 @@ var file_mtproto_mls_proto_goTypes = []any{
 	(*Mls_Welcome)(nil),             // 7: mtproto.mls_Welcome
 	(*Mls_Welcomes)(nil),            // 8: mtproto.mls_Welcomes
 	(*TLMlsConfirmWelcomes)(nil),    // 9: mtproto.TL_mls_confirmWelcomes
-	(*TLMlsSetRecoverySecret)(nil),  // 10: mtproto.TL_mls_setRecoverySecret
+	(*TLMlsSendCommit)(nil),         // 10: mtproto.TL_mls_sendCommit
+	(*Mls_CommitResult)(nil),        // 11: mtproto.mls_CommitResult
+	(*TLMlsGetCommits)(nil),         // 12: mtproto.TL_mls_getCommits
+	(*Mls_Commit)(nil),              // 13: mtproto.mls_Commit
+	(*Mls_Commits)(nil),             // 14: mtproto.mls_Commits
+	(*TLMlsConfirmCommits)(nil),     // 15: mtproto.TL_mls_confirmCommits
+	(*TLMlsSetRecoverySecret)(nil),  // 16: mtproto.TL_mls_setRecoverySecret
 }
 var file_mtproto_mls_proto_depIdxs = []int32{
 	7,  // 0: mtproto.mls_Welcomes.welcomes:type_name -> mtproto.mls_Welcome
-	0,  // 1: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
-	2,  // 2: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
-	4,  // 3: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
-	5,  // 4: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
-	9,  // 5: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
-	10, // 6: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
-	1,  // 7: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
-	3,  // 8: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
-	6,  // 9: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
-	8,  // 10: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
-	6,  // 11: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
-	6,  // 12: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
-	7,  // [7:13] is the sub-list for method output_type
-	1,  // [1:7] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	13, // 1: mtproto.mls_Commits.commits:type_name -> mtproto.mls_Commit
+	0,  // 2: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
+	2,  // 3: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
+	4,  // 4: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
+	5,  // 5: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
+	9,  // 6: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
+	16, // 7: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
+	10, // 8: mtproto.RPCMls.mls_sendCommit:input_type -> mtproto.TL_mls_sendCommit
+	12, // 9: mtproto.RPCMls.mls_getCommits:input_type -> mtproto.TL_mls_getCommits
+	15, // 10: mtproto.RPCMls.mls_confirmCommits:input_type -> mtproto.TL_mls_confirmCommits
+	1,  // 11: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
+	3,  // 12: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
+	6,  // 13: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
+	8,  // 14: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
+	6,  // 15: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
+	6,  // 16: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
+	11, // 17: mtproto.RPCMls.mls_sendCommit:output_type -> mtproto.mls_CommitResult
+	14, // 18: mtproto.RPCMls.mls_getCommits:output_type -> mtproto.mls_Commits
+	6,  // 19: mtproto.RPCMls.mls_confirmCommits:output_type -> mtproto.mls_Ok
+	11, // [11:20] is the sub-list for method output_type
+	2,  // [2:11] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_mtproto_mls_proto_init() }
@@ -689,7 +1060,7 @@ func file_mtproto_mls_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mtproto_mls_proto_rawDesc), len(file_mtproto_mls_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

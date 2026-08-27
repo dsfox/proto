@@ -49,6 +49,24 @@ const (
 
 	// mls.setRecoverySecret secret:string = mls.Ok;
 	CRC32_mls_setRecoverySecret = int32(-369099376) // 0xe9fffd90
+
+	// mls.sendCommit group_id:bytes epoch:long members:Vector<long> commit:bytes = mls.CommitResult;
+	CRC32_mls_sendCommit = int32(-945155929) // 0xc7aa10a7
+
+	// mls.commitResult accepted:Bool epoch:long = mls.CommitResult;
+	CRC32_mls_commitResult = int32(191372459) // 0x0b681cab
+
+	// mls.getCommits = mls.Commits;
+	CRC32_mls_getCommits = int32(1356576713) // 0x50dbb7c9
+
+	// mls.commits commits:Vector<mls.Commit> = mls.Commits;
+	CRC32_mls_commits = int32(-902742102) // 0xca313faa
+
+	// mls.commit id:long from_id:long group_id:bytes epoch:long commit:bytes = mls.Commit;
+	CRC32_mls_commit = int32(-130530128) // 0xf83844b0
+
+	// mls.confirmCommits ids:Vector<long> = mls.Ok;
+	CRC32_mls_confirmCommits = int32(96655983) // 0x05c2da6f
 )
 
 // A welcome is what lets a device into a conversation somebody started with it.
@@ -264,6 +282,145 @@ func (m *Mls_KeyPackages) Decode(dBuf *DecodeBuf) error {
 
 // Registered here rather than in the generated table, so that regenerating that
 // table from upstream cannot silently drop them.
+// A commit moves a conversation to its next epoch. It travels through its own
+// methods for the same reason a welcome does: handshake traffic never touches
+// the message pipeline, so no client has to hide it from a chat list.
+
+func (m *TLMlsSendCommit) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_sendCommit)
+	x.StringBytes(m.GroupId)
+	x.Long(m.Epoch)
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Members)))
+	for _, id := range m.Members {
+		x.Long(id)
+	}
+	x.StringBytes(m.Commit)
+	return nil
+}
+
+func (m *TLMlsSendCommit) Decode(dBuf *DecodeBuf) error {
+	m.GroupId = dBuf.StringBytes()
+	m.Epoch = dBuf.Long()
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.sendCommit: expected a vector, got %d", v)
+	}
+	count := dBuf.Int()
+	if count < 0 || count > 1000 {
+		return fmt.Errorf("mls.sendCommit: %d members is not a number of members", count)
+	}
+	m.Members = make([]int64, 0, count)
+	for i := int32(0); i < count; i++ {
+		m.Members = append(m.Members, dBuf.Long())
+	}
+	m.Commit = dBuf.StringBytes()
+	return dBuf.err
+}
+
+func (m *Mls_CommitResult) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_commitResult)
+	if m.Accepted {
+		x.Int(int32(-1720552011)) // boolTrue
+	} else {
+		x.Int(int32(-1132882121)) // boolFalse
+	}
+	x.Long(m.Epoch)
+	return nil
+}
+
+func (m *Mls_CommitResult) Decode(dBuf *DecodeBuf) error {
+	m.Accepted = dBuf.Int() == int32(-1720552011)
+	m.Epoch = dBuf.Long()
+	return dBuf.err
+}
+
+func (m *TLMlsGetCommits) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_getCommits)
+	return nil
+}
+
+func (m *TLMlsGetCommits) Decode(dBuf *DecodeBuf) error {
+	return dBuf.err
+}
+
+func (m *Mls_Commit) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_commit)
+	x.Long(m.Id)
+	x.Long(m.FromId)
+	x.StringBytes(m.GroupId)
+	x.Long(m.Epoch)
+	x.StringBytes(m.Commit)
+	return nil
+}
+
+func (m *Mls_Commit) Decode(dBuf *DecodeBuf) error {
+	m.Id = dBuf.Long()
+	m.FromId = dBuf.Long()
+	m.GroupId = dBuf.StringBytes()
+	m.Epoch = dBuf.Long()
+	m.Commit = dBuf.StringBytes()
+	return dBuf.err
+}
+
+func (m *Mls_Commits) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_commits)
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Commits)))
+	for _, c := range m.Commits {
+		if err := c.Encode(x, layer); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m *Mls_Commits) Decode(dBuf *DecodeBuf) error {
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.commits: expected a vector, got %d", v)
+	}
+	count := dBuf.Int()
+	if count < 0 || count > 1000 {
+		return fmt.Errorf("mls.commits: %d commits is not a number of commits", count)
+	}
+	m.Commits = make([]*Mls_Commit, 0, count)
+	for i := int32(0); i < count; i++ {
+		if id := dBuf.Int(); id != CRC32_mls_commit {
+			return fmt.Errorf("mls.commits: expected a commit, got %d", id)
+		}
+		c := &Mls_Commit{}
+		if err := c.Decode(dBuf); err != nil {
+			return err
+		}
+		m.Commits = append(m.Commits, c)
+	}
+	return dBuf.err
+}
+
+func (m *TLMlsConfirmCommits) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_confirmCommits)
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Ids)))
+	for _, id := range m.Ids {
+		x.Long(id)
+	}
+	return nil
+}
+
+func (m *TLMlsConfirmCommits) Decode(dBuf *DecodeBuf) error {
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.confirmCommits: expected a vector, got %d", v)
+	}
+	count := dBuf.Int()
+	if count < 0 || count > 1000 {
+		return fmt.Errorf("mls.confirmCommits: %d ids is not a number of ids", count)
+	}
+	m.Ids = make([]int64, 0, count)
+	for i := int32(0); i < count; i++ {
+		m.Ids = append(m.Ids, dBuf.Long())
+	}
+	return dBuf.err
+}
+
 func init() {
 	clazzIdRegisters2[CRC32_mls_publishKeyPackages] = func() TLObject { return &TLMlsPublishKeyPackages{} }
 	clazzIdRegisters2[CRC32_mls_publishResult] = func() TLObject { return &Mls_PublishResult{} }
@@ -276,6 +433,12 @@ func init() {
 	clazzIdRegisters2[CRC32_mls_welcomes] = func() TLObject { return &Mls_Welcomes{} }
 	clazzIdRegisters2[CRC32_mls_welcome] = func() TLObject { return &Mls_Welcome{} }
 	clazzIdRegisters2[CRC32_mls_confirmWelcomes] = func() TLObject { return &TLMlsConfirmWelcomes{} }
+	clazzIdRegisters2[CRC32_mls_sendCommit] = func() TLObject { return &TLMlsSendCommit{} }
+	clazzIdRegisters2[CRC32_mls_commitResult] = func() TLObject { return &Mls_CommitResult{} }
+	clazzIdRegisters2[CRC32_mls_getCommits] = func() TLObject { return &TLMlsGetCommits{} }
+	clazzIdRegisters2[CRC32_mls_commits] = func() TLObject { return &Mls_Commits{} }
+	clazzIdRegisters2[CRC32_mls_commit] = func() TLObject { return &Mls_Commit{} }
+	clazzIdRegisters2[CRC32_mls_confirmCommits] = func() TLObject { return &TLMlsConfirmCommits{} }
 
 	// And where each request goes. Without this the proxy has nowhere to send
 	// them and answers "not found method", which names the symptom and not the
@@ -295,6 +458,18 @@ func init() {
 	rpcContextRegisters["TLMlsGetWelcomes"] = RPCContextTuple{
 		"/mtproto.RPCMls/mls_getWelcomes",
 		func() interface{} { return new(Mls_Welcomes) },
+	}
+	rpcContextRegisters["TLMlsSendCommit"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_sendCommit",
+		func() interface{} { return new(Mls_CommitResult) },
+	}
+	rpcContextRegisters["TLMlsGetCommits"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_getCommits",
+		func() interface{} { return new(Mls_Commits) },
+	}
+	rpcContextRegisters["TLMlsConfirmCommits"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_confirmCommits",
+		func() interface{} { return new(Mls_Ok) },
 	}
 	rpcContextRegisters["TLMlsConfirmWelcomes"] = RPCContextTuple{
 		"/mtproto.RPCMls/mls_confirmWelcomes",
@@ -321,5 +496,11 @@ func MlsConstructorNames() map[int32]string {
 		CRC32_mls_welcome:            "mls.welcome",
 		CRC32_mls_confirmWelcomes:    "mls.confirmWelcomes",
 		CRC32_mls_setRecoverySecret:  "mls.setRecoverySecret",
+		CRC32_mls_sendCommit:         "mls.sendCommit",
+		CRC32_mls_commitResult:       "mls.commitResult",
+		CRC32_mls_getCommits:         "mls.getCommits",
+		CRC32_mls_commits:            "mls.commits",
+		CRC32_mls_commit:             "mls.commit",
+		CRC32_mls_confirmCommits:     "mls.confirmCommits",
 	}
 }

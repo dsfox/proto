@@ -36,6 +36,9 @@ const (
 	RPCMls_MlsGetWelcomes_FullMethodName        = "/mtproto.RPCMls/mls_getWelcomes"
 	RPCMls_MlsConfirmWelcomes_FullMethodName    = "/mtproto.RPCMls/mls_confirmWelcomes"
 	RPCMls_MlsSetRecoverySecret_FullMethodName  = "/mtproto.RPCMls/mls_setRecoverySecret"
+	RPCMls_MlsSendCommit_FullMethodName         = "/mtproto.RPCMls/mls_sendCommit"
+	RPCMls_MlsGetCommits_FullMethodName         = "/mtproto.RPCMls/mls_getCommits"
+	RPCMls_MlsConfirmCommits_FullMethodName     = "/mtproto.RPCMls/mls_confirmCommits"
 )
 
 // RPCMlsClient is the client API for RPCMls service.
@@ -48,6 +51,9 @@ type RPCMlsClient interface {
 	MlsGetWelcomes(ctx context.Context, in *TLMlsGetWelcomes, opts ...grpc.CallOption) (*Mls_Welcomes, error)
 	MlsConfirmWelcomes(ctx context.Context, in *TLMlsConfirmWelcomes, opts ...grpc.CallOption) (*Mls_Ok, error)
 	MlsSetRecoverySecret(ctx context.Context, in *TLMlsSetRecoverySecret, opts ...grpc.CallOption) (*Mls_Ok, error)
+	MlsSendCommit(ctx context.Context, in *TLMlsSendCommit, opts ...grpc.CallOption) (*Mls_CommitResult, error)
+	MlsGetCommits(ctx context.Context, in *TLMlsGetCommits, opts ...grpc.CallOption) (*Mls_Commits, error)
+	MlsConfirmCommits(ctx context.Context, in *TLMlsConfirmCommits, opts ...grpc.CallOption) (*Mls_Ok, error)
 }
 
 type rPCMlsClient struct {
@@ -118,6 +124,36 @@ func (c *rPCMlsClient) MlsSetRecoverySecret(ctx context.Context, in *TLMlsSetRec
 	return out, nil
 }
 
+func (c *rPCMlsClient) MlsSendCommit(ctx context.Context, in *TLMlsSendCommit, opts ...grpc.CallOption) (*Mls_CommitResult, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_CommitResult)
+	err := c.cc.Invoke(ctx, RPCMls_MlsSendCommit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMlsClient) MlsGetCommits(ctx context.Context, in *TLMlsGetCommits, opts ...grpc.CallOption) (*Mls_Commits, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_Commits)
+	err := c.cc.Invoke(ctx, RPCMls_MlsGetCommits_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMlsClient) MlsConfirmCommits(ctx context.Context, in *TLMlsConfirmCommits, opts ...grpc.CallOption) (*Mls_Ok, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_Ok)
+	err := c.cc.Invoke(ctx, RPCMls_MlsConfirmCommits_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCMlsServer is the server API for RPCMls service.
 // All implementations must embed UnimplementedRPCMlsServer
 // for forward compatibility.
@@ -128,6 +164,9 @@ type RPCMlsServer interface {
 	MlsGetWelcomes(context.Context, *TLMlsGetWelcomes) (*Mls_Welcomes, error)
 	MlsConfirmWelcomes(context.Context, *TLMlsConfirmWelcomes) (*Mls_Ok, error)
 	MlsSetRecoverySecret(context.Context, *TLMlsSetRecoverySecret) (*Mls_Ok, error)
+	MlsSendCommit(context.Context, *TLMlsSendCommit) (*Mls_CommitResult, error)
+	MlsGetCommits(context.Context, *TLMlsGetCommits) (*Mls_Commits, error)
+	MlsConfirmCommits(context.Context, *TLMlsConfirmCommits) (*Mls_Ok, error)
 	mustEmbedUnimplementedRPCMlsServer()
 }
 
@@ -155,6 +194,15 @@ func (UnimplementedRPCMlsServer) MlsConfirmWelcomes(context.Context, *TLMlsConfi
 }
 func (UnimplementedRPCMlsServer) MlsSetRecoverySecret(context.Context, *TLMlsSetRecoverySecret) (*Mls_Ok, error) {
 	return nil, status.Error(codes.Unimplemented, "method MlsSetRecoverySecret not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsSendCommit(context.Context, *TLMlsSendCommit) (*Mls_CommitResult, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsSendCommit not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsGetCommits(context.Context, *TLMlsGetCommits) (*Mls_Commits, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsGetCommits not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsConfirmCommits(context.Context, *TLMlsConfirmCommits) (*Mls_Ok, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsConfirmCommits not implemented")
 }
 func (UnimplementedRPCMlsServer) mustEmbedUnimplementedRPCMlsServer() {}
 func (UnimplementedRPCMlsServer) testEmbeddedByValue()                {}
@@ -285,6 +333,60 @@ func _RPCMls_MlsSetRecoverySecret_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMls_MlsSendCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsSendCommit)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsSendCommit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsSendCommit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsSendCommit(ctx, req.(*TLMlsSendCommit))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMls_MlsGetCommits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsGetCommits)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsGetCommits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsGetCommits_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsGetCommits(ctx, req.(*TLMlsGetCommits))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMls_MlsConfirmCommits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsConfirmCommits)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsConfirmCommits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsConfirmCommits_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsConfirmCommits(ctx, req.(*TLMlsConfirmCommits))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCMls_ServiceDesc is the grpc.ServiceDesc for RPCMls service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -315,6 +417,18 @@ var RPCMls_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "mls_setRecoverySecret",
 			Handler:    _RPCMls_MlsSetRecoverySecret_Handler,
+		},
+		{
+			MethodName: "mls_sendCommit",
+			Handler:    _RPCMls_MlsSendCommit_Handler,
+		},
+		{
+			MethodName: "mls_getCommits",
+			Handler:    _RPCMls_MlsGetCommits_Handler,
+		},
+		{
+			MethodName: "mls_confirmCommits",
+			Handler:    _RPCMls_MlsConfirmCommits_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

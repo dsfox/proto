@@ -117,6 +117,67 @@ func TestOurMethodsSurviveTheirOwnEncoding(t *testing.T) {
 
 // The server builds incoming objects from this table, so a type that is not in
 // it arrives as nothing at all - silently.
+func TestACommitSurvivesItsOwnEncoding(t *testing.T) {
+	t.Run("sendCommit", func(t *testing.T) {
+		original := &TLMlsSendCommit{
+			GroupId: []byte{7, 7, 7},
+			Epoch:   42,
+			Members: []int64{11, 22, 33},
+			Commit:  []byte{1, 2, 3, 4},
+		}
+
+		var decoded TLMlsSendCommit
+		roundTrip(t, original, &decoded)
+
+		if !bytes.Equal(decoded.GroupId, []byte{7, 7, 7}) {
+			t.Errorf("the group came back as %v", decoded.GroupId)
+		}
+		if decoded.Epoch != 42 {
+			t.Errorf("the epoch came back as %d", decoded.Epoch)
+		}
+		if len(decoded.Members) != 3 || decoded.Members[2] != 33 {
+			t.Errorf("the members came back as %v", decoded.Members)
+		}
+		if !bytes.Equal(decoded.Commit, []byte{1, 2, 3, 4}) {
+			t.Errorf("the commit came back as %v", decoded.Commit)
+		}
+	})
+
+	// The epoch has to survive a refusal as well as an acceptance: it is what
+	// tells the loser of a race how far behind it is, and a zero there would
+	// send it back with the same commit for ever.
+	t.Run("commitResult, refused", func(t *testing.T) {
+		original := &Mls_CommitResult{Accepted: false, Epoch: 9}
+
+		var decoded Mls_CommitResult
+		roundTrip(t, original, &decoded)
+
+		if decoded.Accepted {
+			t.Error("a refusal came back as an acceptance")
+		}
+		if decoded.Epoch != 9 {
+			t.Errorf("the epoch came back as %d", decoded.Epoch)
+		}
+	})
+
+	t.Run("commits", func(t *testing.T) {
+		original := &Mls_Commits{Commits: []*Mls_Commit{
+			{Id: 1, FromId: 2, GroupId: []byte{3}, Epoch: 4, Commit: []byte{5}},
+			{Id: 6, FromId: 7, GroupId: []byte{8}, Epoch: 9, Commit: []byte{10}},
+		}}
+
+		var decoded Mls_Commits
+		roundTrip(t, original, &decoded)
+
+		if len(decoded.Commits) != 2 {
+			t.Fatalf("came back with %d commits, sent 2", len(decoded.Commits))
+		}
+		if decoded.Commits[1].Epoch != 9 || decoded.Commits[1].Id != 6 {
+			t.Errorf("the second came back as %s", decoded.Commits[1].String())
+		}
+	})
+}
+
 func TestOurMethodsAreInTheTableTheServerReadsFrom(t *testing.T) {
 	for id, name := range MlsConstructorNames() {
 		object := NewTLObjectByClassID(id)
@@ -130,8 +191,8 @@ func TestOurMethodsAreInTheTableTheServerReadsFrom(t *testing.T) {
 // messages into the same message, and the failure is far from the cause.
 func TestOurConstructorIdsAreOurs(t *testing.T) {
 	ours := MlsConstructorNames()
-	if len(ours) != 11 {
-		t.Fatalf("expected eleven of our own, found %d", len(ours))
+	if len(ours) != 17 {
+		t.Fatalf("expected seventeen of our own, found %d", len(ours))
 	}
 
 	seen := map[int32]bool{}
@@ -197,6 +258,12 @@ func TestOurIdsAreTheCrc32OfTheirDeclarations(t *testing.T) {
 		CRC32_mls_welcomes:           "mls.welcomes welcomes:Vector<mls.Welcome> = mls.Welcomes;",
 		CRC32_mls_welcome:            "mls.welcome id:long from_id:long welcome:bytes = mls.Welcome;",
 		CRC32_mls_confirmWelcomes:    "mls.confirmWelcomes ids:Vector<long> = mls.Ok;",
+		CRC32_mls_sendCommit:         "mls.sendCommit group_id:bytes epoch:long members:Vector<long> commit:bytes = mls.CommitResult;",
+		CRC32_mls_commitResult:       "mls.commitResult accepted:Bool epoch:long = mls.CommitResult;",
+		CRC32_mls_getCommits:         "mls.getCommits = mls.Commits;",
+		CRC32_mls_commits:            "mls.commits commits:Vector<mls.Commit> = mls.Commits;",
+		CRC32_mls_commit:             "mls.commit id:long from_id:long group_id:bytes epoch:long commit:bytes = mls.Commit;",
+		CRC32_mls_confirmCommits:     "mls.confirmCommits ids:Vector<long> = mls.Ok;",
 	}
 
 	for id, declaration := range declarations {

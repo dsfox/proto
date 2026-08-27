@@ -83,6 +83,51 @@ message TL_mls_confirmWelcomes {
   repeated int64 ids = 1;
 }
 
+// A commit is what moves a conversation from one epoch to the next: somebody
+// added, somebody removed. MLS validates it against the epoch it was made from,
+// so of two commits made from the same epoch exactly one can be taken - the
+// server keeps that order, which RFC 9420 gives to the delivery service.
+//
+// The members are named because the server does not know who is in a group and
+// must not: it is told where to leave the commit, not asked who belongs.
+message TL_mls_sendCommit {
+  bytes group_id = 1;
+  int64 epoch = 2;
+  repeated int64 members = 3;
+  bytes commit = 4;
+}
+
+// Whether the commit was taken, and which epoch the conversation is really on.
+//
+// The epoch comes back on refusal as well, so the loser of a race knows how far
+// behind it is without another round trip - it has to catch up, rebuild its
+// change on top of the winner and send again.
+message mls_CommitResult {
+  bool accepted = 1;
+  int64 epoch = 2;
+}
+
+message TL_mls_getCommits {}
+
+message mls_Commit {
+  int64 id = 1;
+  int64 from_id = 2;
+  bytes group_id = 3;
+  int64 epoch = 4;
+  bytes commit = 5;
+}
+
+message mls_Commits {
+  repeated mls_Commit commits = 1;
+}
+
+// Applied, not received. A device that took a commit and stopped before saving
+// the state it produced must be given it again, or it sits an epoch behind and
+// the conversation goes quiet for that person alone.
+message TL_mls_confirmCommits {
+  repeated int64 ids = 1;
+}
+
 service RPCMls {
   rpc mls_publishKeyPackages(TL_mls_publishKeyPackages)
       returns (mls_PublishResult) {}
@@ -92,6 +137,9 @@ service RPCMls {
   rpc mls_getWelcomes(TL_mls_getWelcomes) returns (mls_Welcomes) {}
   rpc mls_confirmWelcomes(TL_mls_confirmWelcomes) returns (mls_Ok) {}
   rpc mls_setRecoverySecret(TL_mls_setRecoverySecret) returns (mls_Ok) {}
+  rpc mls_sendCommit(TL_mls_sendCommit) returns (mls_CommitResult) {}
+  rpc mls_getCommits(TL_mls_getCommits) returns (mls_Commits) {}
+  rpc mls_confirmCommits(TL_mls_confirmCommits) returns (mls_Ok) {}
 }
 
 // A device registering the way back into its own account.
