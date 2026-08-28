@@ -249,7 +249,7 @@ func TestOurMethodsKnowWhereToGo(t *testing.T) {
 func TestOurIdsAreTheCrc32OfTheirDeclarations(t *testing.T) {
 	declarations := map[int32]string{
 		CRC32_mls_publishKeyPackages: "mls.publishKeyPackages key_packages:Vector<bytes> last_resort:bytes = mls.PublishResult;",
-		CRC32_mls_publishResult:      "mls.publishResult added:int available:int should_refill:Bool = mls.PublishResult;",
+		CRC32_mls_publishResult:      "mls.publishResult added:int available:int should_refill:Bool devices:int = mls.PublishResult;",
 		CRC32_mls_claimKeyPackages:   "mls.claimKeyPackages user_id:long = mls.KeyPackages;",
 		CRC32_mls_keyPackages:        "mls.keyPackages packages:Vector<bytes> = mls.KeyPackages;",
 		CRC32_mls_sendWelcome:        "mls.sendWelcome user_id:long welcome:bytes = mls.Ok;",

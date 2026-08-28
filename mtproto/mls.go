@@ -20,8 +20,8 @@ const (
 	// mls.publishKeyPackages key_packages:Vector<bytes> last_resort:bytes = mls.PublishResult;
 	CRC32_mls_publishKeyPackages = int32(940659472) // 0x38115310
 
-	// mls.publishResult added:int available:int should_refill:Bool = mls.PublishResult;
-	CRC32_mls_publishResult = int32(-1429473241) // 0xaacbf827
+	// mls.publishResult added:int available:int should_refill:Bool devices:int = mls.PublishResult;
+	CRC32_mls_publishResult = int32(-472421573) // 0xe3d76b3b
 
 	// mls.claimKeyPackages user_id:long = mls.KeyPackages;
 	CRC32_mls_claimKeyPackages = int32(88879177) // 0x054c3049
@@ -234,6 +234,11 @@ func (m *Mls_PublishResult) Encode(x *EncodeBuf, layer int32) error {
 	} else {
 		x.Int(int32(-1132882121)) // boolFalse, 0xbc799737
 	}
+	// How many devices of this account have published anything. It is what tells
+	// a phone that another phone of the same person has signed in since the
+	// conversation started - the comparison of members is about people and
+	// cannot see it (#41).
+	x.Int(m.Devices)
 	return nil
 }
 
@@ -241,6 +246,7 @@ func (m *Mls_PublishResult) Decode(dBuf *DecodeBuf) error {
 	m.Added = dBuf.Int()
 	m.Available = dBuf.Int()
 	m.ShouldRefill = dBuf.Int() == int32(-1720552011)
+	m.Devices = dBuf.Int()
 	return dBuf.err
 }
 

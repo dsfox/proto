@@ -31,6 +31,10 @@ message mls_PublishResult {
   int32 added = 1;
   int32 available = 2;
   bool should_refill = 3;
+  // How many devices of this account have published anything. It is what tells
+  // a phone that another phone of the same person has signed in since a
+  // conversation started (#41).
+  int32 devices = 4;
 }
 
 // Asks for one package per device of a person, which is what starting a
