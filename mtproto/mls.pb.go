@@ -263,9 +263,15 @@ func (x *Mls_KeyPackages) GetPackages() [][]byte {
 // it - a welcome lost in transit is a conversation that exists on one side and
 // not the other, which shows up much later as messages that will not open.
 type TLMlsSendWelcome struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Welcome       []byte                 `protobuf:"bytes,2,opt,name=welcome,proto3" json:"welcome,omitempty"`
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	UserId  int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Welcome []byte                 `protobuf:"bytes,2,opt,name=welcome,proto3" json:"welcome,omitempty"`
+	// Which chat the invitation is for, as a dialog id - negative for a group.
+	// Without it a welcome says only who sent it, and the device joining files
+	// the conversation under that person: a group ends up recorded as the
+	// conversation with whoever invited them, and a private message to that
+	// person is then written with the group's keys (#115).
+	PeerId        int64 `protobuf:"varint,3,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -312,6 +318,13 @@ func (x *TLMlsSendWelcome) GetWelcome() []byte {
 		return x.Welcome
 	}
 	return nil
+}
+
+func (x *TLMlsSendWelcome) GetPeerId() int64 {
+	if x != nil {
+		return x.PeerId
+	}
+	return 0
 }
 
 type TLMlsGetWelcomes struct {
@@ -397,10 +410,13 @@ func (x *Mls_Ok) GetOk() bool {
 }
 
 type Mls_Welcome struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	FromId        int64                  `protobuf:"varint,2,opt,name=from_id,json=fromId,proto3" json:"from_id,omitempty"`
-	Welcome       []byte                 `protobuf:"bytes,3,opt,name=welcome,proto3" json:"welcome,omitempty"`
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Id      int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FromId  int64                  `protobuf:"varint,2,opt,name=from_id,json=fromId,proto3" json:"from_id,omitempty"`
+	Welcome []byte                 `protobuf:"bytes,3,opt,name=welcome,proto3" json:"welcome,omitempty"`
+	// The chat this invitation is for. Zero for one written before invitations
+	// carried it, and then the old guess - the sender - is all there is.
+	PeerId        int64 `protobuf:"varint,4,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -454,6 +470,13 @@ func (x *Mls_Welcome) GetWelcome() []byte {
 		return x.Welcome
 	}
 	return nil
+}
+
+func (x *Mls_Welcome) GetPeerId() int64 {
+	if x != nil {
+		return x.PeerId
+	}
+	return 0
 }
 
 type Mls_Welcomes struct {
@@ -953,17 +976,19 @@ const file_mls_proto_rawDesc = "" +
 	"\x17TL_mls_claimKeyPackages\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"-\n" +
 	"\x0fmls_KeyPackages\x12\x1a\n" +
-	"\bpackages\x18\x01 \x03(\fR\bpackages\"G\n" +
+	"\bpackages\x18\x01 \x03(\fR\bpackages\"`\n" +
 	"\x12TL_mls_sendWelcome\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x18\n" +
-	"\awelcome\x18\x02 \x01(\fR\awelcome\"\x14\n" +
+	"\awelcome\x18\x02 \x01(\fR\awelcome\x12\x17\n" +
+	"\apeer_id\x18\x03 \x01(\x03R\x06peerId\"\x14\n" +
 	"\x12TL_mls_getWelcomes\"\x18\n" +
 	"\x06mls_Ok\x12\x0e\n" +
-	"\x02ok\x18\x01 \x01(\bR\x02ok\"P\n" +
+	"\x02ok\x18\x01 \x01(\bR\x02ok\"i\n" +
 	"\vmls_Welcome\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x17\n" +
 	"\afrom_id\x18\x02 \x01(\x03R\x06fromId\x12\x18\n" +
-	"\awelcome\x18\x03 \x01(\fR\awelcome\"@\n" +
+	"\awelcome\x18\x03 \x01(\fR\awelcome\x12\x17\n" +
+	"\apeer_id\x18\x04 \x01(\x03R\x06peerId\"@\n" +
 	"\fmls_Welcomes\x120\n" +
 	"\bwelcomes\x18\x01 \x03(\v2\x14.mtproto.mls_WelcomeR\bwelcomes\"*\n" +
 	"\x16TL_mls_confirmWelcomes\x12\x10\n" +

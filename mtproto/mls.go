@@ -29,8 +29,8 @@ const (
 	// mls.keyPackages packages:Vector<bytes> = mls.KeyPackages;
 	CRC32_mls_keyPackages = int32(-548140819) // 0xdf5408ed
 
-	// mls.sendWelcome user_id:long welcome:bytes = mls.Ok;
-	CRC32_mls_sendWelcome = int32(-773834602) // 0xd1e03896
+	// mls.sendWelcome user_id:long peer_id:long welcome:bytes = mls.Ok;
+	CRC32_mls_sendWelcome = int32(2042714623) // 0x79c159ff
 
 	// mls.ok ok:Bool = mls.Ok;
 	CRC32_mls_ok = int32(-1518331278) // 0xa5801a72
@@ -42,7 +42,7 @@ const (
 	CRC32_mls_welcomes = int32(-1921518262) // 0x8d77f54a
 
 	// mls.welcome id:long from_id:long welcome:bytes = mls.Welcome;
-	CRC32_mls_welcome = int32(-180214709) // 0xf542244b
+	CRC32_mls_welcome = int32(215890102) // 0x0cde38b6
 
 	// mls.confirmWelcomes ids:Vector<long> = mls.Ok;
 	CRC32_mls_confirmWelcomes = int32(-1226029994) // 0xb6ec4456
@@ -76,12 +76,17 @@ const (
 func (m *TLMlsSendWelcome) Encode(x *EncodeBuf, layer int32) error {
 	x.Int(CRC32_mls_sendWelcome)
 	x.Long(m.UserId)
+	// Which chat it is for, so the device joining does not have to guess from
+	// who sent it - guessing filed a group as the conversation with whoever
+	// invited them (#115).
+	x.Long(m.PeerId)
 	x.StringBytes(m.Welcome)
 	return nil
 }
 
 func (m *TLMlsSendWelcome) Decode(dBuf *DecodeBuf) error {
 	m.UserId = dBuf.Long()
+	m.PeerId = dBuf.Long()
 	m.Welcome = dBuf.StringBytes()
 	return dBuf.err
 }
@@ -127,6 +132,7 @@ func (m *Mls_Welcome) Encode(x *EncodeBuf, layer int32) error {
 	x.Int(CRC32_mls_welcome)
 	x.Long(m.Id)
 	x.Long(m.FromId)
+	x.Long(m.PeerId)
 	x.StringBytes(m.Welcome)
 	return nil
 }
@@ -134,6 +140,7 @@ func (m *Mls_Welcome) Encode(x *EncodeBuf, layer int32) error {
 func (m *Mls_Welcome) Decode(dBuf *DecodeBuf) error {
 	m.Id = dBuf.Long()
 	m.FromId = dBuf.Long()
+	m.PeerId = dBuf.Long()
 	m.Welcome = dBuf.StringBytes()
 	return dBuf.err
 }

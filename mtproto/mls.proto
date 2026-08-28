@@ -60,6 +60,15 @@ message mls_KeyPackages {
 message TL_mls_sendWelcome {
   int64 user_id = 1;
   bytes welcome = 2;
+  // Which chat the invitation is for, as a dialog id - negative for a group,
+  // positive for a person. A dialog id and not either client's internal packed
+  // form: the two clients pack them differently, and one reading the other's
+  // packing crashed on the path every invitation takes.
+  // Without it a welcome says only who sent it, and the device joining files
+  // the conversation under that person: a group ends up recorded as the
+  // conversation with whoever invited them, and a private message to that
+  // person is then written with the group's keys (#115).
+  int64 peer_id = 3;
 }
 
 message TL_mls_getWelcomes {}
@@ -74,6 +83,9 @@ message mls_Welcome {
   int64 id = 1;
   int64 from_id = 2;
   bytes welcome = 3;
+  // The chat this invitation is for. Zero for one written before invitations
+  // carried it, and then the old guess - the sender - is all there is.
+  int64 peer_id = 4;
 }
 
 message mls_Welcomes {
