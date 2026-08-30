@@ -35,6 +35,10 @@ const (
 	// mls.ok ok:Bool = mls.Ok;
 	CRC32_mls_ok = int32(-1518331278) // 0xa5801a72
 
+	// mls.devicesOf users:Vector<long> = mls.DeviceCounts;
+	CRC32_mls_devicesOf = int32(-657797125) // 0xd8cacffb
+	// mls.deviceCounts counts:Vector<int> = mls.DeviceCounts;
+	CRC32_mls_deviceCounts = int32(661412983) // 0x276c5c77
 	// mls.getWelcomes = mls.Welcomes;
 	CRC32_mls_getWelcomes = int32(-512239425) // 0xe177d8bf
 
@@ -175,6 +179,56 @@ func (m *Mls_Welcomes) Decode(dBuf *DecodeBuf) error {
 			return err
 		}
 		m.Welcomes = append(m.Welcomes, w)
+	}
+	return dBuf.err
+}
+
+func (m *TLMlsDevicesOf) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_devicesOf)
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Users)))
+	for _, id := range m.Users {
+		x.Long(id)
+	}
+	return nil
+}
+
+func (m *TLMlsDevicesOf) Decode(dBuf *DecodeBuf) error {
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.devicesOf: expected a vector, got %d", v)
+	}
+	count := dBuf.Int()
+	if count < 0 || count > 1000 {
+		return fmt.Errorf("mls.devicesOf: %d people is not a number of people", count)
+	}
+	m.Users = make([]int64, 0, count)
+	for i := int32(0); i < count; i++ {
+		m.Users = append(m.Users, dBuf.Long())
+	}
+	return dBuf.err
+}
+
+func (m *Mls_DeviceCounts) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_deviceCounts)
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Counts)))
+	for _, n := range m.Counts {
+		x.Int(n)
+	}
+	return nil
+}
+
+func (m *Mls_DeviceCounts) Decode(dBuf *DecodeBuf) error {
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.deviceCounts: expected a vector, got %d", v)
+	}
+	count := dBuf.Int()
+	if count < 0 || count > 1000 {
+		return fmt.Errorf("mls.deviceCounts: %d counts is not a number of counts", count)
+	}
+	m.Counts = make([]int32, 0, count)
+	for i := int32(0); i < count; i++ {
+		m.Counts = append(m.Counts, dBuf.Int())
 	}
 	return dBuf.err
 }
@@ -442,6 +496,8 @@ func init() {
 	clazzIdRegisters2[CRC32_mls_sendWelcome] = func() TLObject { return &TLMlsSendWelcome{} }
 	clazzIdRegisters2[CRC32_mls_setRecoverySecret] = func() TLObject { return &TLMlsSetRecoverySecret{} }
 	clazzIdRegisters2[CRC32_mls_ok] = func() TLObject { return &Mls_Ok{} }
+	clazzIdRegisters2[CRC32_mls_devicesOf] = func() TLObject { return &TLMlsDevicesOf{} }
+	clazzIdRegisters2[CRC32_mls_deviceCounts] = func() TLObject { return &Mls_DeviceCounts{} }
 	clazzIdRegisters2[CRC32_mls_getWelcomes] = func() TLObject { return &TLMlsGetWelcomes{} }
 	clazzIdRegisters2[CRC32_mls_welcomes] = func() TLObject { return &Mls_Welcomes{} }
 	clazzIdRegisters2[CRC32_mls_welcome] = func() TLObject { return &Mls_Welcome{} }
@@ -467,6 +523,10 @@ func init() {
 	rpcContextRegisters["TLMlsSendWelcome"] = RPCContextTuple{
 		"/mtproto.RPCMls/mls_sendWelcome",
 		func() interface{} { return new(Mls_Ok) },
+	}
+	rpcContextRegisters["TLMlsDevicesOf"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_devicesOf",
+		func() interface{} { return new(Mls_DeviceCounts) },
 	}
 	rpcContextRegisters["TLMlsGetWelcomes"] = RPCContextTuple{
 		"/mtproto.RPCMls/mls_getWelcomes",
@@ -515,5 +575,7 @@ func MlsConstructorNames() map[int32]string {
 		CRC32_mls_commits:            "mls.commits",
 		CRC32_mls_commit:             "mls.commit",
 		CRC32_mls_confirmCommits:     "mls.confirmCommits",
+		CRC32_mls_devicesOf:          "mls.devicesOf",
+		CRC32_mls_deviceCounts:       "mls.deviceCounts",
 	}
 }

@@ -144,6 +144,30 @@ message TL_mls_confirmCommits {
   repeated int64 ids = 1;
 }
 
+// How many devices each of these people has published from.
+//
+// Everything that compares a conversation with its chat reads the part of a
+// leaf name before the slash, so it reasons about people. That is wrong the
+// moment somebody replaces a phone: the leaf of the device that is gone still
+// stands for them, nobody counts them as missing, and the phone they now hold
+// is never let in - they sit in the chat watching padlocks for ever (#132).
+//
+// A count is what tells the difference, and only the server can give it: it is
+// the one that knows how many devices a person has published from. Asking for
+// key packages would answer the same question and spend one to do it - a claim
+// is a delete - so the supply would be gone within the hour.
+//
+// Nothing is learnt from the answer that the group does not already show:
+// everybody in a conversation can see everybody's leaves.
+message TL_mls_devicesOf {
+  repeated int64 users = 1;
+}
+
+// One count per person asked about, in the order they were asked.
+message mls_DeviceCounts {
+  repeated int32 counts = 1;
+}
+
 service RPCMls {
   rpc mls_publishKeyPackages(TL_mls_publishKeyPackages)
       returns (mls_PublishResult) {}
@@ -156,6 +180,7 @@ service RPCMls {
   rpc mls_sendCommit(TL_mls_sendCommit) returns (mls_CommitResult) {}
   rpc mls_getCommits(TL_mls_getCommits) returns (mls_Commits) {}
   rpc mls_confirmCommits(TL_mls_confirmCommits) returns (mls_Ok) {}
+  rpc mls_devicesOf(TL_mls_devicesOf) returns (mls_DeviceCounts) {}
 }
 
 // A device registering the way back into its own account.

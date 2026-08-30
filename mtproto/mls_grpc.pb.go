@@ -39,6 +39,7 @@ const (
 	RPCMls_MlsSendCommit_FullMethodName         = "/mtproto.RPCMls/mls_sendCommit"
 	RPCMls_MlsGetCommits_FullMethodName         = "/mtproto.RPCMls/mls_getCommits"
 	RPCMls_MlsConfirmCommits_FullMethodName     = "/mtproto.RPCMls/mls_confirmCommits"
+	RPCMls_MlsDevicesOf_FullMethodName          = "/mtproto.RPCMls/mls_devicesOf"
 )
 
 // RPCMlsClient is the client API for RPCMls service.
@@ -54,6 +55,7 @@ type RPCMlsClient interface {
 	MlsSendCommit(ctx context.Context, in *TLMlsSendCommit, opts ...grpc.CallOption) (*Mls_CommitResult, error)
 	MlsGetCommits(ctx context.Context, in *TLMlsGetCommits, opts ...grpc.CallOption) (*Mls_Commits, error)
 	MlsConfirmCommits(ctx context.Context, in *TLMlsConfirmCommits, opts ...grpc.CallOption) (*Mls_Ok, error)
+	MlsDevicesOf(ctx context.Context, in *TLMlsDevicesOf, opts ...grpc.CallOption) (*Mls_DeviceCounts, error)
 }
 
 type rPCMlsClient struct {
@@ -154,6 +156,16 @@ func (c *rPCMlsClient) MlsConfirmCommits(ctx context.Context, in *TLMlsConfirmCo
 	return out, nil
 }
 
+func (c *rPCMlsClient) MlsDevicesOf(ctx context.Context, in *TLMlsDevicesOf, opts ...grpc.CallOption) (*Mls_DeviceCounts, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_DeviceCounts)
+	err := c.cc.Invoke(ctx, RPCMls_MlsDevicesOf_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCMlsServer is the server API for RPCMls service.
 // All implementations must embed UnimplementedRPCMlsServer
 // for forward compatibility.
@@ -167,6 +179,7 @@ type RPCMlsServer interface {
 	MlsSendCommit(context.Context, *TLMlsSendCommit) (*Mls_CommitResult, error)
 	MlsGetCommits(context.Context, *TLMlsGetCommits) (*Mls_Commits, error)
 	MlsConfirmCommits(context.Context, *TLMlsConfirmCommits) (*Mls_Ok, error)
+	MlsDevicesOf(context.Context, *TLMlsDevicesOf) (*Mls_DeviceCounts, error)
 	mustEmbedUnimplementedRPCMlsServer()
 }
 
@@ -203,6 +216,9 @@ func (UnimplementedRPCMlsServer) MlsGetCommits(context.Context, *TLMlsGetCommits
 }
 func (UnimplementedRPCMlsServer) MlsConfirmCommits(context.Context, *TLMlsConfirmCommits) (*Mls_Ok, error) {
 	return nil, status.Error(codes.Unimplemented, "method MlsConfirmCommits not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsDevicesOf(context.Context, *TLMlsDevicesOf) (*Mls_DeviceCounts, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsDevicesOf not implemented")
 }
 func (UnimplementedRPCMlsServer) mustEmbedUnimplementedRPCMlsServer() {}
 func (UnimplementedRPCMlsServer) testEmbeddedByValue()                {}
@@ -387,6 +403,24 @@ func _RPCMls_MlsConfirmCommits_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMls_MlsDevicesOf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsDevicesOf)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsDevicesOf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsDevicesOf_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsDevicesOf(ctx, req.(*TLMlsDevicesOf))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCMls_ServiceDesc is the grpc.ServiceDesc for RPCMls service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -429,6 +463,10 @@ var RPCMls_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "mls_confirmCommits",
 			Handler:    _RPCMls_MlsConfirmCommits_Handler,
+		},
+		{
+			MethodName: "mls_devicesOf",
+			Handler:    _RPCMls_MlsDevicesOf_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

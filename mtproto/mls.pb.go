@@ -13,7 +13,7 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        v7.35.1
-// source: mls.proto
+// source: mtproto/mls.proto
 
 package mtproto
 
@@ -47,7 +47,7 @@ type TLMlsPublishKeyPackages struct {
 
 func (x *TLMlsPublishKeyPackages) Reset() {
 	*x = TLMlsPublishKeyPackages{}
-	mi := &file_mls_proto_msgTypes[0]
+	mi := &file_mtproto_mls_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -59,7 +59,7 @@ func (x *TLMlsPublishKeyPackages) String() string {
 func (*TLMlsPublishKeyPackages) ProtoMessage() {}
 
 func (x *TLMlsPublishKeyPackages) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[0]
+	mi := &file_mtproto_mls_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -72,7 +72,7 @@ func (x *TLMlsPublishKeyPackages) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsPublishKeyPackages.ProtoReflect.Descriptor instead.
 func (*TLMlsPublishKeyPackages) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{0}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *TLMlsPublishKeyPackages) GetKeyPackages() [][]byte {
@@ -106,7 +106,7 @@ type Mls_PublishResult struct {
 
 func (x *Mls_PublishResult) Reset() {
 	*x = Mls_PublishResult{}
-	mi := &file_mls_proto_msgTypes[1]
+	mi := &file_mtproto_mls_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -118,7 +118,7 @@ func (x *Mls_PublishResult) String() string {
 func (*Mls_PublishResult) ProtoMessage() {}
 
 func (x *Mls_PublishResult) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[1]
+	mi := &file_mtproto_mls_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -131,7 +131,7 @@ func (x *Mls_PublishResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_PublishResult.ProtoReflect.Descriptor instead.
 func (*Mls_PublishResult) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{1}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Mls_PublishResult) GetAdded() int32 {
@@ -173,7 +173,7 @@ type TLMlsClaimKeyPackages struct {
 
 func (x *TLMlsClaimKeyPackages) Reset() {
 	*x = TLMlsClaimKeyPackages{}
-	mi := &file_mls_proto_msgTypes[2]
+	mi := &file_mtproto_mls_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -185,7 +185,7 @@ func (x *TLMlsClaimKeyPackages) String() string {
 func (*TLMlsClaimKeyPackages) ProtoMessage() {}
 
 func (x *TLMlsClaimKeyPackages) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[2]
+	mi := &file_mtproto_mls_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +198,7 @@ func (x *TLMlsClaimKeyPackages) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsClaimKeyPackages.ProtoReflect.Descriptor instead.
 func (*TLMlsClaimKeyPackages) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{2}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TLMlsClaimKeyPackages) GetUserId() int64 {
@@ -220,7 +220,7 @@ type Mls_KeyPackages struct {
 
 func (x *Mls_KeyPackages) Reset() {
 	*x = Mls_KeyPackages{}
-	mi := &file_mls_proto_msgTypes[3]
+	mi := &file_mtproto_mls_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -232,7 +232,7 @@ func (x *Mls_KeyPackages) String() string {
 func (*Mls_KeyPackages) ProtoMessage() {}
 
 func (x *Mls_KeyPackages) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[3]
+	mi := &file_mtproto_mls_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -245,7 +245,7 @@ func (x *Mls_KeyPackages) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_KeyPackages.ProtoReflect.Descriptor instead.
 func (*Mls_KeyPackages) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{3}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Mls_KeyPackages) GetPackages() [][]byte {
@@ -266,7 +266,10 @@ type TLMlsSendWelcome struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	UserId  int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	Welcome []byte                 `protobuf:"bytes,2,opt,name=welcome,proto3" json:"welcome,omitempty"`
-	// Which chat the invitation is for, as a dialog id - negative for a group.
+	// Which chat the invitation is for, as a dialog id - negative for a group,
+	// positive for a person. A dialog id and not either client's internal packed
+	// form: the two clients pack them differently, and one reading the other's
+	// packing crashed on the path every invitation takes.
 	// Without it a welcome says only who sent it, and the device joining files
 	// the conversation under that person: a group ends up recorded as the
 	// conversation with whoever invited them, and a private message to that
@@ -278,7 +281,7 @@ type TLMlsSendWelcome struct {
 
 func (x *TLMlsSendWelcome) Reset() {
 	*x = TLMlsSendWelcome{}
-	mi := &file_mls_proto_msgTypes[4]
+	mi := &file_mtproto_mls_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -290,7 +293,7 @@ func (x *TLMlsSendWelcome) String() string {
 func (*TLMlsSendWelcome) ProtoMessage() {}
 
 func (x *TLMlsSendWelcome) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[4]
+	mi := &file_mtproto_mls_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -303,7 +306,7 @@ func (x *TLMlsSendWelcome) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsSendWelcome.ProtoReflect.Descriptor instead.
 func (*TLMlsSendWelcome) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{4}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *TLMlsSendWelcome) GetUserId() int64 {
@@ -335,7 +338,7 @@ type TLMlsGetWelcomes struct {
 
 func (x *TLMlsGetWelcomes) Reset() {
 	*x = TLMlsGetWelcomes{}
-	mi := &file_mls_proto_msgTypes[5]
+	mi := &file_mtproto_mls_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +350,7 @@ func (x *TLMlsGetWelcomes) String() string {
 func (*TLMlsGetWelcomes) ProtoMessage() {}
 
 func (x *TLMlsGetWelcomes) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[5]
+	mi := &file_mtproto_mls_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +363,7 @@ func (x *TLMlsGetWelcomes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsGetWelcomes.ProtoReflect.Descriptor instead.
 func (*TLMlsGetWelcomes) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{5}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{5}
 }
 
 // Ours rather than the schema's Bool, so this file needs nothing from the
@@ -374,7 +377,7 @@ type Mls_Ok struct {
 
 func (x *Mls_Ok) Reset() {
 	*x = Mls_Ok{}
-	mi := &file_mls_proto_msgTypes[6]
+	mi := &file_mtproto_mls_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -386,7 +389,7 @@ func (x *Mls_Ok) String() string {
 func (*Mls_Ok) ProtoMessage() {}
 
 func (x *Mls_Ok) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[6]
+	mi := &file_mtproto_mls_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -399,7 +402,7 @@ func (x *Mls_Ok) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_Ok.ProtoReflect.Descriptor instead.
 func (*Mls_Ok) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{6}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Mls_Ok) GetOk() bool {
@@ -423,7 +426,7 @@ type Mls_Welcome struct {
 
 func (x *Mls_Welcome) Reset() {
 	*x = Mls_Welcome{}
-	mi := &file_mls_proto_msgTypes[7]
+	mi := &file_mtproto_mls_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -435,7 +438,7 @@ func (x *Mls_Welcome) String() string {
 func (*Mls_Welcome) ProtoMessage() {}
 
 func (x *Mls_Welcome) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[7]
+	mi := &file_mtproto_mls_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -448,7 +451,7 @@ func (x *Mls_Welcome) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_Welcome.ProtoReflect.Descriptor instead.
 func (*Mls_Welcome) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{7}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Mls_Welcome) GetId() int64 {
@@ -488,7 +491,7 @@ type Mls_Welcomes struct {
 
 func (x *Mls_Welcomes) Reset() {
 	*x = Mls_Welcomes{}
-	mi := &file_mls_proto_msgTypes[8]
+	mi := &file_mtproto_mls_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -500,7 +503,7 @@ func (x *Mls_Welcomes) String() string {
 func (*Mls_Welcomes) ProtoMessage() {}
 
 func (x *Mls_Welcomes) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[8]
+	mi := &file_mtproto_mls_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -513,7 +516,7 @@ func (x *Mls_Welcomes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_Welcomes.ProtoReflect.Descriptor instead.
 func (*Mls_Welcomes) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{8}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Mls_Welcomes) GetWelcomes() []*Mls_Welcome {
@@ -535,7 +538,7 @@ type TLMlsConfirmWelcomes struct {
 
 func (x *TLMlsConfirmWelcomes) Reset() {
 	*x = TLMlsConfirmWelcomes{}
-	mi := &file_mls_proto_msgTypes[9]
+	mi := &file_mtproto_mls_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -547,7 +550,7 @@ func (x *TLMlsConfirmWelcomes) String() string {
 func (*TLMlsConfirmWelcomes) ProtoMessage() {}
 
 func (x *TLMlsConfirmWelcomes) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[9]
+	mi := &file_mtproto_mls_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -560,7 +563,7 @@ func (x *TLMlsConfirmWelcomes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsConfirmWelcomes.ProtoReflect.Descriptor instead.
 func (*TLMlsConfirmWelcomes) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{9}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *TLMlsConfirmWelcomes) GetIds() []int64 {
@@ -589,7 +592,7 @@ type TLMlsSendCommit struct {
 
 func (x *TLMlsSendCommit) Reset() {
 	*x = TLMlsSendCommit{}
-	mi := &file_mls_proto_msgTypes[10]
+	mi := &file_mtproto_mls_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -601,7 +604,7 @@ func (x *TLMlsSendCommit) String() string {
 func (*TLMlsSendCommit) ProtoMessage() {}
 
 func (x *TLMlsSendCommit) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[10]
+	mi := &file_mtproto_mls_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -614,7 +617,7 @@ func (x *TLMlsSendCommit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsSendCommit.ProtoReflect.Descriptor instead.
 func (*TLMlsSendCommit) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{10}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TLMlsSendCommit) GetGroupId() []byte {
@@ -660,7 +663,7 @@ type Mls_CommitResult struct {
 
 func (x *Mls_CommitResult) Reset() {
 	*x = Mls_CommitResult{}
-	mi := &file_mls_proto_msgTypes[11]
+	mi := &file_mtproto_mls_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -672,7 +675,7 @@ func (x *Mls_CommitResult) String() string {
 func (*Mls_CommitResult) ProtoMessage() {}
 
 func (x *Mls_CommitResult) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[11]
+	mi := &file_mtproto_mls_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -685,7 +688,7 @@ func (x *Mls_CommitResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_CommitResult.ProtoReflect.Descriptor instead.
 func (*Mls_CommitResult) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{11}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Mls_CommitResult) GetAccepted() bool {
@@ -710,7 +713,7 @@ type TLMlsGetCommits struct {
 
 func (x *TLMlsGetCommits) Reset() {
 	*x = TLMlsGetCommits{}
-	mi := &file_mls_proto_msgTypes[12]
+	mi := &file_mtproto_mls_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -722,7 +725,7 @@ func (x *TLMlsGetCommits) String() string {
 func (*TLMlsGetCommits) ProtoMessage() {}
 
 func (x *TLMlsGetCommits) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[12]
+	mi := &file_mtproto_mls_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -735,7 +738,7 @@ func (x *TLMlsGetCommits) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsGetCommits.ProtoReflect.Descriptor instead.
 func (*TLMlsGetCommits) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{12}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{12}
 }
 
 type Mls_Commit struct {
@@ -751,7 +754,7 @@ type Mls_Commit struct {
 
 func (x *Mls_Commit) Reset() {
 	*x = Mls_Commit{}
-	mi := &file_mls_proto_msgTypes[13]
+	mi := &file_mtproto_mls_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -763,7 +766,7 @@ func (x *Mls_Commit) String() string {
 func (*Mls_Commit) ProtoMessage() {}
 
 func (x *Mls_Commit) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[13]
+	mi := &file_mtproto_mls_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -776,7 +779,7 @@ func (x *Mls_Commit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_Commit.ProtoReflect.Descriptor instead.
 func (*Mls_Commit) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{13}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *Mls_Commit) GetId() int64 {
@@ -823,7 +826,7 @@ type Mls_Commits struct {
 
 func (x *Mls_Commits) Reset() {
 	*x = Mls_Commits{}
-	mi := &file_mls_proto_msgTypes[14]
+	mi := &file_mtproto_mls_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -835,7 +838,7 @@ func (x *Mls_Commits) String() string {
 func (*Mls_Commits) ProtoMessage() {}
 
 func (x *Mls_Commits) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[14]
+	mi := &file_mtproto_mls_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -848,7 +851,7 @@ func (x *Mls_Commits) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_Commits.ProtoReflect.Descriptor instead.
 func (*Mls_Commits) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{14}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Mls_Commits) GetCommits() []*Mls_Commit {
@@ -870,7 +873,7 @@ type TLMlsConfirmCommits struct {
 
 func (x *TLMlsConfirmCommits) Reset() {
 	*x = TLMlsConfirmCommits{}
-	mi := &file_mls_proto_msgTypes[15]
+	mi := &file_mtproto_mls_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -882,7 +885,7 @@ func (x *TLMlsConfirmCommits) String() string {
 func (*TLMlsConfirmCommits) ProtoMessage() {}
 
 func (x *TLMlsConfirmCommits) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[15]
+	mi := &file_mtproto_mls_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -895,12 +898,116 @@ func (x *TLMlsConfirmCommits) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsConfirmCommits.ProtoReflect.Descriptor instead.
 func (*TLMlsConfirmCommits) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{15}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *TLMlsConfirmCommits) GetIds() []int64 {
 	if x != nil {
 		return x.Ids
+	}
+	return nil
+}
+
+// How many devices each of these people has published from.
+//
+// Everything that compares a conversation with its chat reads the part of a
+// leaf name before the slash, so it reasons about people. That is wrong the
+// moment somebody replaces a phone: the leaf of the device that is gone still
+// stands for them, nobody counts them as missing, and the phone they now hold
+// is never let in - they sit in the chat watching padlocks for ever (#132).
+//
+// A count is what tells the difference, and only the server can give it: it is
+// the one that knows how many devices a person has published from. Asking for
+// key packages would answer the same question and spend one to do it - a claim
+// is a delete - so the supply would be gone within the hour.
+//
+// Nothing is learnt from the answer that the group does not already show:
+// everybody in a conversation can see everybody's leaves.
+type TLMlsDevicesOf struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Users         []int64                `protobuf:"varint,1,rep,packed,name=users,proto3" json:"users,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsDevicesOf) Reset() {
+	*x = TLMlsDevicesOf{}
+	mi := &file_mtproto_mls_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsDevicesOf) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsDevicesOf) ProtoMessage() {}
+
+func (x *TLMlsDevicesOf) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsDevicesOf.ProtoReflect.Descriptor instead.
+func (*TLMlsDevicesOf) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *TLMlsDevicesOf) GetUsers() []int64 {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+// One count per person asked about, in the order they were asked.
+type Mls_DeviceCounts struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Counts        []int32                `protobuf:"varint,1,rep,packed,name=counts,proto3" json:"counts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_DeviceCounts) Reset() {
+	*x = Mls_DeviceCounts{}
+	mi := &file_mtproto_mls_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_DeviceCounts) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_DeviceCounts) ProtoMessage() {}
+
+func (x *Mls_DeviceCounts) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_DeviceCounts.ProtoReflect.Descriptor instead.
+func (*Mls_DeviceCounts) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *Mls_DeviceCounts) GetCounts() []int32 {
+	if x != nil {
+		return x.Counts
 	}
 	return nil
 }
@@ -924,7 +1031,7 @@ type TLMlsSetRecoverySecret struct {
 
 func (x *TLMlsSetRecoverySecret) Reset() {
 	*x = TLMlsSetRecoverySecret{}
-	mi := &file_mls_proto_msgTypes[16]
+	mi := &file_mtproto_mls_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -936,7 +1043,7 @@ func (x *TLMlsSetRecoverySecret) String() string {
 func (*TLMlsSetRecoverySecret) ProtoMessage() {}
 
 func (x *TLMlsSetRecoverySecret) ProtoReflect() protoreflect.Message {
-	mi := &file_mls_proto_msgTypes[16]
+	mi := &file_mtproto_mls_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -949,7 +1056,7 @@ func (x *TLMlsSetRecoverySecret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsSetRecoverySecret.ProtoReflect.Descriptor instead.
 func (*TLMlsSetRecoverySecret) Descriptor() ([]byte, []int) {
-	return file_mls_proto_rawDescGZIP(), []int{16}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *TLMlsSetRecoverySecret) GetSecret() string {
@@ -959,11 +1066,11 @@ func (x *TLMlsSetRecoverySecret) GetSecret() string {
 	return ""
 }
 
-var File_mls_proto protoreflect.FileDescriptor
+var File_mtproto_mls_proto protoreflect.FileDescriptor
 
-const file_mls_proto_rawDesc = "" +
+const file_mtproto_mls_proto_rawDesc = "" +
 	"\n" +
-	"\tmls.proto\x12\amtproto\"_\n" +
+	"\x11mtproto/mls.proto\x12\amtproto\"_\n" +
 	"\x19TL_mls_publishKeyPackages\x12!\n" +
 	"\fkey_packages\x18\x01 \x03(\fR\vkeyPackages\x12\x1f\n" +
 	"\vlast_resort\x18\x02 \x01(\fR\n" +
@@ -1012,9 +1119,13 @@ const file_mls_proto_rawDesc = "" +
 	"\vmls_Commits\x12-\n" +
 	"\acommits\x18\x01 \x03(\v2\x13.mtproto.mls_CommitR\acommits\")\n" +
 	"\x15TL_mls_confirmCommits\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\x03R\x03ids\"2\n" +
+	"\x03ids\x18\x01 \x03(\x03R\x03ids\"(\n" +
+	"\x10TL_mls_devicesOf\x12\x14\n" +
+	"\x05users\x18\x01 \x03(\x03R\x05users\"*\n" +
+	"\x10mls_DeviceCounts\x12\x16\n" +
+	"\x06counts\x18\x01 \x03(\x05R\x06counts\"2\n" +
 	"\x18TL_mls_setRecoverySecret\x12\x16\n" +
-	"\x06secret\x18\x01 \x01(\tR\x06secret2\xba\x05\n" +
+	"\x06secret\x18\x01 \x01(\tR\x06secret2\x83\x06\n" +
 	"\x06RPCMls\x12Z\n" +
 	"\x16mls_publishKeyPackages\x12\".mtproto.TL_mls_publishKeyPackages\x1a\x1a.mtproto.mls_PublishResult\"\x00\x12T\n" +
 	"\x14mls_claimKeyPackages\x12 .mtproto.TL_mls_claimKeyPackages\x1a\x18.mtproto.mls_KeyPackages\"\x00\x12A\n" +
@@ -1024,22 +1135,23 @@ const file_mls_proto_rawDesc = "" +
 	"\x15mls_setRecoverySecret\x12!.mtproto.TL_mls_setRecoverySecret\x1a\x0f.mtproto.mls_Ok\"\x00\x12I\n" +
 	"\x0emls_sendCommit\x12\x1a.mtproto.TL_mls_sendCommit\x1a\x19.mtproto.mls_CommitResult\"\x00\x12D\n" +
 	"\x0emls_getCommits\x12\x1a.mtproto.TL_mls_getCommits\x1a\x14.mtproto.mls_Commits\"\x00\x12G\n" +
-	"\x12mls_confirmCommits\x12\x1e.mtproto.TL_mls_confirmCommits\x1a\x0f.mtproto.mls_Ok\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
+	"\x12mls_confirmCommits\x12\x1e.mtproto.TL_mls_confirmCommits\x1a\x0f.mtproto.mls_Ok\"\x00\x12G\n" +
+	"\rmls_devicesOf\x12\x19.mtproto.TL_mls_devicesOf\x1a\x19.mtproto.mls_DeviceCounts\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
 
 var (
-	file_mls_proto_rawDescOnce sync.Once
-	file_mls_proto_rawDescData []byte
+	file_mtproto_mls_proto_rawDescOnce sync.Once
+	file_mtproto_mls_proto_rawDescData []byte
 )
 
-func file_mls_proto_rawDescGZIP() []byte {
-	file_mls_proto_rawDescOnce.Do(func() {
-		file_mls_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mls_proto_rawDesc), len(file_mls_proto_rawDesc)))
+func file_mtproto_mls_proto_rawDescGZIP() []byte {
+	file_mtproto_mls_proto_rawDescOnce.Do(func() {
+		file_mtproto_mls_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mtproto_mls_proto_rawDesc), len(file_mtproto_mls_proto_rawDesc)))
 	})
-	return file_mls_proto_rawDescData
+	return file_mtproto_mls_proto_rawDescData
 }
 
-var file_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
-var file_mls_proto_goTypes = []any{
+var file_mtproto_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_mtproto_mls_proto_goTypes = []any{
 	(*TLMlsPublishKeyPackages)(nil), // 0: mtproto.TL_mls_publishKeyPackages
 	(*Mls_PublishResult)(nil),       // 1: mtproto.mls_PublishResult
 	(*TLMlsClaimKeyPackages)(nil),   // 2: mtproto.TL_mls_claimKeyPackages
@@ -1056,9 +1168,11 @@ var file_mls_proto_goTypes = []any{
 	(*Mls_Commit)(nil),              // 13: mtproto.mls_Commit
 	(*Mls_Commits)(nil),             // 14: mtproto.mls_Commits
 	(*TLMlsConfirmCommits)(nil),     // 15: mtproto.TL_mls_confirmCommits
-	(*TLMlsSetRecoverySecret)(nil),  // 16: mtproto.TL_mls_setRecoverySecret
+	(*TLMlsDevicesOf)(nil),          // 16: mtproto.TL_mls_devicesOf
+	(*Mls_DeviceCounts)(nil),        // 17: mtproto.mls_DeviceCounts
+	(*TLMlsSetRecoverySecret)(nil),  // 18: mtproto.TL_mls_setRecoverySecret
 }
-var file_mls_proto_depIdxs = []int32{
+var file_mtproto_mls_proto_depIdxs = []int32{
 	7,  // 0: mtproto.mls_Welcomes.welcomes:type_name -> mtproto.mls_Welcome
 	13, // 1: mtproto.mls_Commits.commits:type_name -> mtproto.mls_Commit
 	0,  // 2: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
@@ -1066,46 +1180,48 @@ var file_mls_proto_depIdxs = []int32{
 	4,  // 4: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
 	5,  // 5: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
 	9,  // 6: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
-	16, // 7: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
+	18, // 7: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
 	10, // 8: mtproto.RPCMls.mls_sendCommit:input_type -> mtproto.TL_mls_sendCommit
 	12, // 9: mtproto.RPCMls.mls_getCommits:input_type -> mtproto.TL_mls_getCommits
 	15, // 10: mtproto.RPCMls.mls_confirmCommits:input_type -> mtproto.TL_mls_confirmCommits
-	1,  // 11: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
-	3,  // 12: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
-	6,  // 13: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
-	8,  // 14: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
-	6,  // 15: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
-	6,  // 16: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
-	11, // 17: mtproto.RPCMls.mls_sendCommit:output_type -> mtproto.mls_CommitResult
-	14, // 18: mtproto.RPCMls.mls_getCommits:output_type -> mtproto.mls_Commits
-	6,  // 19: mtproto.RPCMls.mls_confirmCommits:output_type -> mtproto.mls_Ok
-	11, // [11:20] is the sub-list for method output_type
-	2,  // [2:11] is the sub-list for method input_type
+	16, // 11: mtproto.RPCMls.mls_devicesOf:input_type -> mtproto.TL_mls_devicesOf
+	1,  // 12: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
+	3,  // 13: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
+	6,  // 14: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
+	8,  // 15: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
+	6,  // 16: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
+	6,  // 17: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
+	11, // 18: mtproto.RPCMls.mls_sendCommit:output_type -> mtproto.mls_CommitResult
+	14, // 19: mtproto.RPCMls.mls_getCommits:output_type -> mtproto.mls_Commits
+	6,  // 20: mtproto.RPCMls.mls_confirmCommits:output_type -> mtproto.mls_Ok
+	17, // 21: mtproto.RPCMls.mls_devicesOf:output_type -> mtproto.mls_DeviceCounts
+	12, // [12:22] is the sub-list for method output_type
+	2,  // [2:12] is the sub-list for method input_type
 	2,  // [2:2] is the sub-list for extension type_name
 	2,  // [2:2] is the sub-list for extension extendee
 	0,  // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_mls_proto_init() }
-func file_mls_proto_init() {
-	if File_mls_proto != nil {
+func init() { file_mtproto_mls_proto_init() }
+func file_mtproto_mls_proto_init() {
+	if File_mtproto_mls_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mls_proto_rawDesc), len(file_mls_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mtproto_mls_proto_rawDesc), len(file_mtproto_mls_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_mls_proto_goTypes,
-		DependencyIndexes: file_mls_proto_depIdxs,
-		MessageInfos:      file_mls_proto_msgTypes,
+		GoTypes:           file_mtproto_mls_proto_goTypes,
+		DependencyIndexes: file_mtproto_mls_proto_depIdxs,
+		MessageInfos:      file_mtproto_mls_proto_msgTypes,
 	}.Build()
-	File_mls_proto = out.File
-	file_mls_proto_goTypes = nil
-	file_mls_proto_depIdxs = nil
+	File_mtproto_mls_proto = out.File
+	file_mtproto_mls_proto_goTypes = nil
+	file_mtproto_mls_proto_depIdxs = nil
 }
