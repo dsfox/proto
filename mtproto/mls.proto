@@ -168,6 +168,31 @@ message mls_DeviceCounts {
   repeated int32 counts = 1;
 }
 
+// A device saying it has started the conversation for a chat.
+//
+// Nothing decided which conversation a chat's is, so every device that wanted
+// to send into one without a conversation started one of its own - and three
+// people beginning a group within a minute ended in two conversations that
+// cannot read each other (#135). Devices cannot settle it among themselves:
+// the losers have to be told, and when everybody is offline and arrives in a
+// random order there is nobody to tell them.
+//
+// So the first claim wins, and the answer is the same for everybody from then
+// on. A device whose claim loses throws its own away and waits: it is in the
+// chat, and the members of the conversation that won will see it has no leaf
+// there and let it in.
+message TL_mls_claimConversation {
+  int64 peer_id = 1;
+  bytes group_id = 2;
+}
+
+// The conversation this chat has, which is the claimant's own when it was
+// first and somebody else's when it was not.
+message mls_Conversation {
+  int64 peer_id = 1;
+  bytes group_id = 2;
+}
+
 service RPCMls {
   rpc mls_publishKeyPackages(TL_mls_publishKeyPackages)
       returns (mls_PublishResult) {}
@@ -181,6 +206,7 @@ service RPCMls {
   rpc mls_getCommits(TL_mls_getCommits) returns (mls_Commits) {}
   rpc mls_confirmCommits(TL_mls_confirmCommits) returns (mls_Ok) {}
   rpc mls_devicesOf(TL_mls_devicesOf) returns (mls_DeviceCounts) {}
+  rpc mls_claimConversation(TL_mls_claimConversation) returns (mls_Conversation) {}
 }
 
 // A device registering the way back into its own account.

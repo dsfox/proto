@@ -35,6 +35,10 @@ const (
 	// mls.ok ok:Bool = mls.Ok;
 	CRC32_mls_ok = int32(-1518331278) // 0xa5801a72
 
+	// mls.claimConversation peer_id:long group_id:bytes = mls.Conversation;
+	CRC32_mls_claimConversation = int32(-1101602434) // 0xbe56e17e
+	// mls.conversation peer_id:long group_id:bytes = mls.Conversation;
+	CRC32_mls_conversation = int32(622211617) // 0x25163221
 	// mls.devicesOf users:Vector<long> = mls.DeviceCounts;
 	CRC32_mls_devicesOf = int32(-657797125) // 0xd8cacffb
 	// mls.deviceCounts counts:Vector<int> = mls.DeviceCounts;
@@ -180,6 +184,32 @@ func (m *Mls_Welcomes) Decode(dBuf *DecodeBuf) error {
 		}
 		m.Welcomes = append(m.Welcomes, w)
 	}
+	return dBuf.err
+}
+
+func (m *TLMlsClaimConversation) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_claimConversation)
+	x.Long(m.PeerId)
+	x.StringBytes(m.GroupId)
+	return nil
+}
+
+func (m *TLMlsClaimConversation) Decode(dBuf *DecodeBuf) error {
+	m.PeerId = dBuf.Long()
+	m.GroupId = dBuf.StringBytes()
+	return dBuf.err
+}
+
+func (m *Mls_Conversation) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_conversation)
+	x.Long(m.PeerId)
+	x.StringBytes(m.GroupId)
+	return nil
+}
+
+func (m *Mls_Conversation) Decode(dBuf *DecodeBuf) error {
+	m.PeerId = dBuf.Long()
+	m.GroupId = dBuf.StringBytes()
 	return dBuf.err
 }
 
@@ -496,6 +526,8 @@ func init() {
 	clazzIdRegisters2[CRC32_mls_sendWelcome] = func() TLObject { return &TLMlsSendWelcome{} }
 	clazzIdRegisters2[CRC32_mls_setRecoverySecret] = func() TLObject { return &TLMlsSetRecoverySecret{} }
 	clazzIdRegisters2[CRC32_mls_ok] = func() TLObject { return &Mls_Ok{} }
+	clazzIdRegisters2[CRC32_mls_claimConversation] = func() TLObject { return &TLMlsClaimConversation{} }
+	clazzIdRegisters2[CRC32_mls_conversation] = func() TLObject { return &Mls_Conversation{} }
 	clazzIdRegisters2[CRC32_mls_devicesOf] = func() TLObject { return &TLMlsDevicesOf{} }
 	clazzIdRegisters2[CRC32_mls_deviceCounts] = func() TLObject { return &Mls_DeviceCounts{} }
 	clazzIdRegisters2[CRC32_mls_getWelcomes] = func() TLObject { return &TLMlsGetWelcomes{} }
@@ -523,6 +555,10 @@ func init() {
 	rpcContextRegisters["TLMlsSendWelcome"] = RPCContextTuple{
 		"/mtproto.RPCMls/mls_sendWelcome",
 		func() interface{} { return new(Mls_Ok) },
+	}
+	rpcContextRegisters["TLMlsClaimConversation"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_claimConversation",
+		func() interface{} { return new(Mls_Conversation) },
 	}
 	rpcContextRegisters["TLMlsDevicesOf"] = RPCContextTuple{
 		"/mtproto.RPCMls/mls_devicesOf",
@@ -575,6 +611,8 @@ func MlsConstructorNames() map[int32]string {
 		CRC32_mls_commits:            "mls.commits",
 		CRC32_mls_commit:             "mls.commit",
 		CRC32_mls_confirmCommits:     "mls.confirmCommits",
+		CRC32_mls_claimConversation:  "mls.claimConversation",
+		CRC32_mls_conversation:       "mls.conversation",
 		CRC32_mls_devicesOf:          "mls.devicesOf",
 		CRC32_mls_deviceCounts:       "mls.deviceCounts",
 	}
