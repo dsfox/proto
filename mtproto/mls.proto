@@ -23,6 +23,14 @@ message TL_mls_publishKeyPackages {
   // once the supply runs dry - the weaker path, taken so that a conversation
   // can still start.
   bytes last_resort = 2;
+  // The leaf name of the identity these belong to.
+  //
+  // A device that starts its state over makes a new identity, and the packages
+  // it published under the old one stay here. The server counts a device's
+  // supply by its auth key, so it sees a full one, never asks for more, and
+  // everybody who starts a conversation with that person builds an invitation
+  // the person can never open (#136).
+  bytes name = 3;
 }
 
 // What was taken, and whether the device should make more. The decision to

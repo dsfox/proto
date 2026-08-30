@@ -40,7 +40,15 @@ type TLMlsPublishKeyPackages struct {
 	// May be empty. When it is not, it is the one package handed out repeatedly
 	// once the supply runs dry - the weaker path, taken so that a conversation
 	// can still start.
-	LastResort    []byte `protobuf:"bytes,2,opt,name=last_resort,json=lastResort,proto3" json:"last_resort,omitempty"`
+	LastResort []byte `protobuf:"bytes,2,opt,name=last_resort,json=lastResort,proto3" json:"last_resort,omitempty"`
+	// The leaf name of the identity these belong to.
+	//
+	// A device that starts its state over makes a new identity, and the packages
+	// it published under the old one stay here. The server counts a device's
+	// supply by its auth key, so it sees a full one, never asks for more, and
+	// everybody who starts a conversation with that person builds an invitation
+	// the person can never open (#136).
+	Name          []byte `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -85,6 +93,13 @@ func (x *TLMlsPublishKeyPackages) GetKeyPackages() [][]byte {
 func (x *TLMlsPublishKeyPackages) GetLastResort() []byte {
 	if x != nil {
 		return x.LastResort
+	}
+	return nil
+}
+
+func (x *TLMlsPublishKeyPackages) GetName() []byte {
+	if x != nil {
+		return x.Name
 	}
 	return nil
 }
@@ -1189,11 +1204,12 @@ var File_mtproto_mls_proto protoreflect.FileDescriptor
 
 const file_mtproto_mls_proto_rawDesc = "" +
 	"\n" +
-	"\x11mtproto/mls.proto\x12\amtproto\"_\n" +
+	"\x11mtproto/mls.proto\x12\amtproto\"s\n" +
 	"\x19TL_mls_publishKeyPackages\x12!\n" +
 	"\fkey_packages\x18\x01 \x03(\fR\vkeyPackages\x12\x1f\n" +
 	"\vlast_resort\x18\x02 \x01(\fR\n" +
-	"lastResort\"\x86\x01\n" +
+	"lastResort\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\fR\x04name\"\x86\x01\n" +
 	"\x11mls_PublishResult\x12\x14\n" +
 	"\x05added\x18\x01 \x01(\x05R\x05added\x12\x1c\n" +
 	"\tavailable\x18\x02 \x01(\x05R\tavailable\x12#\n" +

@@ -18,7 +18,7 @@ import "fmt"
 
 const (
 	// mls.publishKeyPackages key_packages:Vector<bytes> last_resort:bytes = mls.PublishResult;
-	CRC32_mls_publishKeyPackages = int32(940659472) // 0x38115310
+	CRC32_mls_publishKeyPackages = int32(-913436181) // 0xc98e11eb
 
 	// mls.publishResult added:int available:int should_refill:Bool devices:int = mls.PublishResult;
 	CRC32_mls_publishResult = int32(-472421573) // 0xe3d76b3b
@@ -296,6 +296,7 @@ func (m *TLMlsPublishKeyPackages) Encode(x *EncodeBuf, layer int32) error {
 		x.StringBytes(p)
 	}
 	x.StringBytes(m.LastResort)
+	x.StringBytes(m.Name)
 	return nil
 }
 
@@ -313,6 +314,7 @@ func (m *TLMlsPublishKeyPackages) Decode(dBuf *DecodeBuf) error {
 		m.KeyPackages = append(m.KeyPackages, dBuf.StringBytes())
 	}
 	m.LastResort = dBuf.StringBytes()
+	m.Name = dBuf.StringBytes()
 	return dBuf.err
 }
 
