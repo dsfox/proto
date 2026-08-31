@@ -41,8 +41,8 @@ const (
 	CRC32_mls_conversation = int32(622211617) // 0x25163221
 	// mls.devicesOf users:Vector<long> = mls.DeviceCounts;
 	CRC32_mls_devicesOf = int32(-657797125) // 0xd8cacffb
-	// mls.deviceCounts counts:Vector<int> = mls.DeviceCounts;
-	CRC32_mls_deviceCounts = int32(661412983) // 0x276c5c77
+	// mls.deviceCounts counts:Vector<int> names:Vector<bytes> = mls.DeviceCounts;
+	CRC32_mls_deviceCounts = int32(1890672928) // 0x70b16120
 	// mls.getWelcomes = mls.Welcomes;
 	CRC32_mls_getWelcomes = int32(-512239425) // 0xe177d8bf
 
@@ -245,6 +245,14 @@ func (m *Mls_DeviceCounts) Encode(x *EncodeBuf, layer int32) error {
 	for _, n := range m.Counts {
 		x.Int(n)
 	}
+	// And the names of those devices, all of them in one list: the counts say
+	// where to cut it. One entry per counted device, empty when the device
+	// published before key packages said whose they are (#136).
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Names)))
+	for _, name := range m.Names {
+		x.StringBytes(name)
+	}
 	return nil
 }
 
@@ -257,8 +265,28 @@ func (m *Mls_DeviceCounts) Decode(dBuf *DecodeBuf) error {
 		return fmt.Errorf("mls.deviceCounts: %d counts is not a number of counts", count)
 	}
 	m.Counts = make([]int32, 0, count)
+	total := int32(0)
 	for i := int32(0); i < count; i++ {
-		m.Counts = append(m.Counts, dBuf.Int())
+		n := dBuf.Int()
+		m.Counts = append(m.Counts, n)
+		if n > 0 {
+			total += n
+		}
+	}
+
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.deviceCounts: expected a vector of names, got %d", v)
+	}
+	named := dBuf.Int()
+	// The counts are what cuts this list, so a list of another length cannot be
+	// cut at all. Refused here rather than handed on: a caller that split it
+	// anyway would attribute one person's devices to the next.
+	if named != total {
+		return fmt.Errorf("mls.deviceCounts: %d name(s) for %d device(s)", named, total)
+	}
+	m.Names = make([][]byte, 0, named)
+	for i := int32(0); i < named; i++ {
+		m.Names = append(m.Names, dBuf.StringBytes())
 	}
 	return dBuf.err
 }

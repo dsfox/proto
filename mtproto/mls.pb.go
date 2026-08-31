@@ -982,10 +982,26 @@ func (x *TLMlsDevicesOf) GetUsers() []int64 {
 	return nil
 }
 
-// One count per person asked about, in the order they were asked.
+// One count per person asked about, in the order they were asked, and the name
+// of every one of those devices after it.
+//
+// The names run as one list rather than one list per person: TL has no ragged
+// vector, and the counts already say where to cut. That is the point of putting
+// them in one answer - a leaf is taken out on two questions, whether a device
+// is missing (the count) and which leaf is it (the names), and while those came
+// from two calls they could disagree. Nobody dared act on them for anybody but
+// their own account, so a leaf whose device is gone stayed for ever and every
+// commit was encrypted to it (#139).
+//
+// A name may be empty: a device that published before key packages said which
+// identity they belong to (#136) is counted and cannot be named. It is still
+// one entry, so the cut stays right, and a caller that finds an empty name
+// knows this person has a device it cannot account for and must not decide
+// anything about their leaves.
 type Mls_DeviceCounts struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Counts        []int32                `protobuf:"varint,1,rep,packed,name=counts,proto3" json:"counts,omitempty"`
+	Names         [][]byte               `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1023,6 +1039,13 @@ func (*Mls_DeviceCounts) Descriptor() ([]byte, []int) {
 func (x *Mls_DeviceCounts) GetCounts() []int32 {
 	if x != nil {
 		return x.Counts
+	}
+	return nil
+}
+
+func (x *Mls_DeviceCounts) GetNames() [][]byte {
+	if x != nil {
+		return x.Names
 	}
 	return nil
 }
@@ -1256,9 +1279,10 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\x15TL_mls_confirmCommits\x12\x10\n" +
 	"\x03ids\x18\x01 \x03(\x03R\x03ids\"(\n" +
 	"\x10TL_mls_devicesOf\x12\x14\n" +
-	"\x05users\x18\x01 \x03(\x03R\x05users\"*\n" +
+	"\x05users\x18\x01 \x03(\x03R\x05users\"@\n" +
 	"\x10mls_DeviceCounts\x12\x16\n" +
-	"\x06counts\x18\x01 \x03(\x05R\x06counts\"N\n" +
+	"\x06counts\x18\x01 \x03(\x05R\x06counts\x12\x14\n" +
+	"\x05names\x18\x02 \x03(\fR\x05names\"N\n" +
 	"\x18TL_mls_claimConversation\x12\x17\n" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
 	"\bgroup_id\x18\x02 \x01(\fR\agroupId\"F\n" +

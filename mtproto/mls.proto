@@ -171,9 +171,25 @@ message TL_mls_devicesOf {
   repeated int64 users = 1;
 }
 
-// One count per person asked about, in the order they were asked.
+// One count per person asked about, in the order they were asked, and the name
+// of every one of those devices after it.
+//
+// The names run as one list rather than one list per person: TL has no ragged
+// vector, and the counts already say where to cut. That is the point of putting
+// them in one answer - a leaf is taken out on two questions, whether a device
+// is missing (the count) and which leaf is it (the names), and while those came
+// from two calls they could disagree. Nobody dared act on them for anybody but
+// their own account, so a leaf whose device is gone stayed for ever and every
+// commit was encrypted to it (#139).
+//
+// A name may be empty: a device that published before key packages said which
+// identity they belong to (#136) is counted and cannot be named. It is still
+// one entry, so the cut stays right, and a caller that finds an empty name
+// knows this person has a device it cannot account for and must not decide
+// anything about their leaves.
 message mls_DeviceCounts {
   repeated int32 counts = 1;
+  repeated bytes names = 2;
 }
 
 // A device saying it has started the conversation for a chat.
