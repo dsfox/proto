@@ -1063,12 +1063,30 @@ func (x *Mls_DeviceCounts) GetNames() [][]byte {
 // on. A device whose claim loses throws its own away and waits: it is in the
 // chat, and the members of the conversation that won will see it has no leaf
 // there and let it in.
+//
+// holds_everybody is the other thing a device can say here, and the only thing
+// that may replace an answer already settled: that it is itself inside this
+// conversation and has just found a leaf there for every device of every member
+// of the chat. Nothing else makes a conversation the chat's, and a device that
+// has just compared the two knows it as a fact rather than a hope.
+//
+// It is needed because the first answer was otherwise for ever. The answer for
+// one chat on the stand was won by a conversation a rebuilding device made and
+// nobody followed: everybody talks in another one, and every device that starts
+// from nothing is sent to a group with nobody in it, to wait for an invitation
+// that cannot come. No message and no invitation can undo that, because neither
+// of them is ever compared with what is settled here (#139).
+//
+// It grants nobody anything they did not have. A member can already take the
+// chat into a conversation of their own by inviting everybody to it; this only
+// writes down where the chat ended up.
 type TLMlsClaimConversation struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PeerId        int64                  `protobuf:"varint,1,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
-	GroupId       []byte                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	PeerId         int64                  `protobuf:"varint,1,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
+	GroupId        []byte                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	HoldsEverybody bool                   `protobuf:"varint,3,opt,name=holds_everybody,json=holdsEverybody,proto3" json:"holds_everybody,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *TLMlsClaimConversation) Reset() {
@@ -1113,6 +1131,13 @@ func (x *TLMlsClaimConversation) GetGroupId() []byte {
 		return x.GroupId
 	}
 	return nil
+}
+
+func (x *TLMlsClaimConversation) GetHoldsEverybody() bool {
+	if x != nil {
+		return x.HoldsEverybody
+	}
+	return false
 }
 
 // The conversation this chat has, which is the claimant's own when it was
@@ -1282,10 +1307,11 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\x05users\x18\x01 \x03(\x03R\x05users\"@\n" +
 	"\x10mls_DeviceCounts\x12\x16\n" +
 	"\x06counts\x18\x01 \x03(\x05R\x06counts\x12\x14\n" +
-	"\x05names\x18\x02 \x03(\fR\x05names\"N\n" +
+	"\x05names\x18\x02 \x03(\fR\x05names\"w\n" +
 	"\x18TL_mls_claimConversation\x12\x17\n" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
-	"\bgroup_id\x18\x02 \x01(\fR\agroupId\"F\n" +
+	"\bgroup_id\x18\x02 \x01(\fR\agroupId\x12'\n" +
+	"\x0fholds_everybody\x18\x03 \x01(\bR\x0eholdsEverybody\"F\n" +
 	"\x10mls_Conversation\x12\x17\n" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
 	"\bgroup_id\x18\x02 \x01(\fR\agroupId\"2\n" +

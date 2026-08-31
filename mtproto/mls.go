@@ -35,8 +35,8 @@ const (
 	// mls.ok ok:Bool = mls.Ok;
 	CRC32_mls_ok = int32(-1518331278) // 0xa5801a72
 
-	// mls.claimConversation peer_id:long group_id:bytes = mls.Conversation;
-	CRC32_mls_claimConversation = int32(-1101602434) // 0xbe56e17e
+	// mls.claimConversation peer_id:long group_id:bytes holds_everybody:Bool = mls.Conversation;
+	CRC32_mls_claimConversation = int32(-936499491) // 0xc82e26dd
 	// mls.conversation peer_id:long group_id:bytes = mls.Conversation;
 	CRC32_mls_conversation = int32(622211617) // 0x25163221
 	// mls.devicesOf users:Vector<long> = mls.DeviceCounts;
@@ -191,12 +191,21 @@ func (m *TLMlsClaimConversation) Encode(x *EncodeBuf, layer int32) error {
 	x.Int(CRC32_mls_claimConversation)
 	x.Long(m.PeerId)
 	x.StringBytes(m.GroupId)
+	// Whether the caller is inside this conversation and has just found a leaf
+	// there for every device of every member of the chat. That is the only
+	// thing that may replace an answer already settled (#139).
+	if m.HoldsEverybody {
+		x.Int(int32(-1720552011)) // boolTrue, 0x997275b5
+	} else {
+		x.Int(int32(-1132882121)) // boolFalse, 0xbc799737
+	}
 	return nil
 }
 
 func (m *TLMlsClaimConversation) Decode(dBuf *DecodeBuf) error {
 	m.PeerId = dBuf.Long()
 	m.GroupId = dBuf.StringBytes()
+	m.HoldsEverybody = dBuf.Int() == int32(-1720552011)
 	return dBuf.err
 }
 

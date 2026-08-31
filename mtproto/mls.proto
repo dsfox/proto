@@ -205,9 +205,27 @@ message mls_DeviceCounts {
 // on. A device whose claim loses throws its own away and waits: it is in the
 // chat, and the members of the conversation that won will see it has no leaf
 // there and let it in.
+//
+// holds_everybody is the other thing a device can say here, and the only thing
+// that may replace an answer already settled: that it is itself inside this
+// conversation and has just found a leaf there for every device of every member
+// of the chat. Nothing else makes a conversation the chat's, and a device that
+// has just compared the two knows it as a fact rather than a hope.
+//
+// It is needed because the first answer was otherwise for ever. The answer for
+// one chat on the stand was won by a conversation a rebuilding device made and
+// nobody followed: everybody talks in another one, and every device that starts
+// from nothing is sent to a group with nobody in it, to wait for an invitation
+// that cannot come. No message and no invitation can undo that, because neither
+// of them is ever compared with what is settled here (#139).
+//
+// It grants nobody anything they did not have. A member can already take the
+// chat into a conversation of their own by inviting everybody to it; this only
+// writes down where the chat ended up.
 message TL_mls_claimConversation {
   int64 peer_id = 1;
   bytes group_id = 2;
+  bool holds_everybody = 3;
 }
 
 // The conversation this chat has, which is the claimant's own when it was
