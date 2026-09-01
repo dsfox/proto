@@ -76,6 +76,12 @@ message TL_mls_sendWelcome {
   // the conversation under that person: a group ends up recorded as the
   // conversation with whoever invited them, and a private message to that
   // person is then written with the group's keys (#115).
+  //
+  // Said as the sender sees it, and turned round by the server for whoever it
+  // is left for. A chat between two has no single dialog id - each side calls
+  // it by the other person - so an invitation naming the person being invited
+  // names, to them, a chat with themselves, and the conversation is filed where
+  // nothing will ever look for it again (#155).
   int64 peer_id = 3;
 }
 
@@ -249,6 +255,11 @@ message mls_Members {
 // chat into a conversation of their own by inviting everybody to it; this only
 // writes down where the chat ended up.
 message TL_mls_claimConversation {
+  // The chat, as the caller sees it. The server keys the answer by the chat
+  // itself, which for a chat between two is the pair of its people rather than
+  // either side's name for it: alpha claimed one chat under delta's number and
+  // delta the same chat under alpha's, both were first, and the two of them
+  // ended up in conversations that could not read each other (#155).
   int64 peer_id = 1;
   bytes group_id = 2;
   // 3 was holds_everybody: a device vouching that this conversation held every
