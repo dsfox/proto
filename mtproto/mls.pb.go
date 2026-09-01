@@ -941,42 +941,41 @@ func (x *TLMlsConfirmCommits) GetIds() []int64 {
 	return nil
 }
 
-// How many devices each of these people has published from.
+// What the delivery service holds about a conversation: which leaves it has
+// been told the group holds, whether the device behind each one is still
+// answering, and who in the chat has a device with no leaf here at all (#147).
 //
-// Everything that compares a conversation with its chat reads the part of a
-// leaf name before the slash, so it reasons about people. That is wrong the
-// moment somebody replaces a phone: the leaf of the device that is gone still
-// stands for them, nobody counts them as missing, and the phone they now hold
-// is never let in - they sit in the chat watching padlocks for ever (#132).
-//
-// A count is what tells the difference, and only the server can give it: it is
-// the one that knows how many devices a person has published from. Asking for
-// key packages would answer the same question and spend one to do it - a claim
-// is a delete - so the supply would be gone within the hour.
+// This replaces a dance the clients used to do on every round. Each of them
+// walked its own tree, counted the leaves per person, asked how many devices
+// each of those people had, and worked out the answer by arithmetic. The
+// counting was the only part they could do alone; the rest was always the
+// server's to answer, and asking it in pieces is how the pieces came to
+// disagree (#132, #136, #139).
 //
 // Nothing is learnt from the answer that the group does not already show:
 // everybody in a conversation can see everybody's leaves.
-type TLMlsDevicesOf struct {
+type TLMlsMembersOf struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Users         []int64                `protobuf:"varint,1,rep,packed,name=users,proto3" json:"users,omitempty"`
+	PeerId        int64                  `protobuf:"varint,1,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
+	GroupId       []byte                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *TLMlsDevicesOf) Reset() {
-	*x = TLMlsDevicesOf{}
+func (x *TLMlsMembersOf) Reset() {
+	*x = TLMlsMembersOf{}
 	mi := &file_mtproto_mls_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *TLMlsDevicesOf) String() string {
+func (x *TLMlsMembersOf) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TLMlsDevicesOf) ProtoMessage() {}
+func (*TLMlsMembersOf) ProtoMessage() {}
 
-func (x *TLMlsDevicesOf) ProtoReflect() protoreflect.Message {
+func (x *TLMlsMembersOf) ProtoReflect() protoreflect.Message {
 	mi := &file_mtproto_mls_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -988,56 +987,61 @@ func (x *TLMlsDevicesOf) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TLMlsDevicesOf.ProtoReflect.Descriptor instead.
-func (*TLMlsDevicesOf) Descriptor() ([]byte, []int) {
+// Deprecated: Use TLMlsMembersOf.ProtoReflect.Descriptor instead.
+func (*TLMlsMembersOf) Descriptor() ([]byte, []int) {
 	return file_mtproto_mls_proto_rawDescGZIP(), []int{16}
 }
 
-func (x *TLMlsDevicesOf) GetUsers() []int64 {
+func (x *TLMlsMembersOf) GetPeerId() int64 {
 	if x != nil {
-		return x.Users
+		return x.PeerId
+	}
+	return 0
+}
+
+func (x *TLMlsMembersOf) GetGroupId() []byte {
+	if x != nil {
+		return x.GroupId
 	}
 	return nil
 }
 
-// One count per person asked about, in the order they were asked, and the name
-// of every one of those devices after it.
+// One leaf, and whether anybody is behind it.
 //
-// The names run as one list rather than one list per person: TL has no ragged
-// vector, and the counts already say where to cut. That is the point of putting
-// them in one answer - a leaf is taken out on two questions, whether a device
-// is missing (the count) and which leaf is it (the names), and while those came
-// from two calls they could disagree. Nobody dared act on them for anybody but
-// their own account, so a leaf whose device is gone stayed for ever and every
-// commit was encrypted to it (#139).
+// `alive` is false for a leaf whose device has gone: the account signed that
+// phone out, or reinstalled and came back as a different device. The leaf it
+// left behind still reads everything said afterwards until somebody removes it
+// (#41), and until now no client could tell that leaf from a phone that was
+// merely offline - which is why nobody dared act on it for anybody but their
+// own account (#132).
 //
-// A name may be empty: a device that published before key packages said which
-// identity they belong to (#136) is counted and cannot be named. It is still
-// one entry, so the cut stays right, and a caller that finds an empty name
-// knows this person has a device it cannot account for and must not decide
-// anything about their leaves.
-type Mls_DeviceCounts struct {
+// `alive` is true whenever the server cannot say otherwise. A device that
+// published before key packages named their identity (#136) cannot be matched
+// to a leaf at all, and the safe answer about a leaf nobody can account for is
+// to leave it alone: evicting a live phone is the worst thing this can do.
+type Mls_Leaf struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Counts        []int32                `protobuf:"varint,1,rep,packed,name=counts,proto3" json:"counts,omitempty"`
-	Names         [][]byte               `protobuf:"bytes,2,rep,name=names,proto3" json:"names,omitempty"`
+	Name          []byte                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	UserId        int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Alive         bool                   `protobuf:"varint,3,opt,name=alive,proto3" json:"alive,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Mls_DeviceCounts) Reset() {
-	*x = Mls_DeviceCounts{}
+func (x *Mls_Leaf) Reset() {
+	*x = Mls_Leaf{}
 	mi := &file_mtproto_mls_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Mls_DeviceCounts) String() string {
+func (x *Mls_Leaf) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Mls_DeviceCounts) ProtoMessage() {}
+func (*Mls_Leaf) ProtoMessage() {}
 
-func (x *Mls_DeviceCounts) ProtoReflect() protoreflect.Message {
+func (x *Mls_Leaf) ProtoReflect() protoreflect.Message {
 	mi := &file_mtproto_mls_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1049,21 +1053,97 @@ func (x *Mls_DeviceCounts) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Mls_DeviceCounts.ProtoReflect.Descriptor instead.
-func (*Mls_DeviceCounts) Descriptor() ([]byte, []int) {
+// Deprecated: Use Mls_Leaf.ProtoReflect.Descriptor instead.
+func (*Mls_Leaf) Descriptor() ([]byte, []int) {
 	return file_mtproto_mls_proto_rawDescGZIP(), []int{17}
 }
 
-func (x *Mls_DeviceCounts) GetCounts() []int32 {
+func (x *Mls_Leaf) GetName() []byte {
 	if x != nil {
-		return x.Counts
+		return x.Name
 	}
 	return nil
 }
 
-func (x *Mls_DeviceCounts) GetNames() [][]byte {
+func (x *Mls_Leaf) GetUserId() int64 {
 	if x != nil {
-		return x.Names
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *Mls_Leaf) GetAlive() bool {
+	if x != nil {
+		return x.Alive
+	}
+	return false
+}
+
+// What the group holds, and who is missing from it.
+//
+// `epoch` is what the delivery service believes the group is on, which is how a
+// device learns it is behind without sending a commit to find out.
+//
+// `wanting` is the people in the chat who have a device that is answering and
+// no leaf here for it. Somebody with none at all is the ordinary newcomer;
+// somebody with one leaf that is dead and a phone that is alive is #132, and
+// those two looked identical to every client that could only count.
+type Mls_Members struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Epoch         int64                  `protobuf:"varint,1,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	Holds         []*Mls_Leaf            `protobuf:"bytes,2,rep,name=holds,proto3" json:"holds,omitempty"`
+	Wanting       []int64                `protobuf:"varint,3,rep,packed,name=wanting,proto3" json:"wanting,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_Members) Reset() {
+	*x = Mls_Members{}
+	mi := &file_mtproto_mls_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_Members) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_Members) ProtoMessage() {}
+
+func (x *Mls_Members) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_Members.ProtoReflect.Descriptor instead.
+func (*Mls_Members) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *Mls_Members) GetEpoch() int64 {
+	if x != nil {
+		return x.Epoch
+	}
+	return 0
+}
+
+func (x *Mls_Members) GetHolds() []*Mls_Leaf {
+	if x != nil {
+		return x.Holds
+	}
+	return nil
+}
+
+func (x *Mls_Members) GetWanting() []int64 {
+	if x != nil {
+		return x.Wanting
 	}
 	return nil
 }
@@ -1112,7 +1192,7 @@ type TLMlsClaimConversation struct {
 
 func (x *TLMlsClaimConversation) Reset() {
 	*x = TLMlsClaimConversation{}
-	mi := &file_mtproto_mls_proto_msgTypes[18]
+	mi := &file_mtproto_mls_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1124,7 +1204,7 @@ func (x *TLMlsClaimConversation) String() string {
 func (*TLMlsClaimConversation) ProtoMessage() {}
 
 func (x *TLMlsClaimConversation) ProtoReflect() protoreflect.Message {
-	mi := &file_mtproto_mls_proto_msgTypes[18]
+	mi := &file_mtproto_mls_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1137,7 +1217,7 @@ func (x *TLMlsClaimConversation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsClaimConversation.ProtoReflect.Descriptor instead.
 func (*TLMlsClaimConversation) Descriptor() ([]byte, []int) {
-	return file_mtproto_mls_proto_rawDescGZIP(), []int{18}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *TLMlsClaimConversation) GetPeerId() int64 {
@@ -1173,7 +1253,7 @@ type Mls_Conversation struct {
 
 func (x *Mls_Conversation) Reset() {
 	*x = Mls_Conversation{}
-	mi := &file_mtproto_mls_proto_msgTypes[19]
+	mi := &file_mtproto_mls_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1185,7 +1265,7 @@ func (x *Mls_Conversation) String() string {
 func (*Mls_Conversation) ProtoMessage() {}
 
 func (x *Mls_Conversation) ProtoReflect() protoreflect.Message {
-	mi := &file_mtproto_mls_proto_msgTypes[19]
+	mi := &file_mtproto_mls_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1198,7 +1278,7 @@ func (x *Mls_Conversation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mls_Conversation.ProtoReflect.Descriptor instead.
 func (*Mls_Conversation) Descriptor() ([]byte, []int) {
-	return file_mtproto_mls_proto_rawDescGZIP(), []int{19}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *Mls_Conversation) GetPeerId() int64 {
@@ -1234,7 +1314,7 @@ type TLMlsSetRecoverySecret struct {
 
 func (x *TLMlsSetRecoverySecret) Reset() {
 	*x = TLMlsSetRecoverySecret{}
-	mi := &file_mtproto_mls_proto_msgTypes[20]
+	mi := &file_mtproto_mls_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1246,7 +1326,7 @@ func (x *TLMlsSetRecoverySecret) String() string {
 func (*TLMlsSetRecoverySecret) ProtoMessage() {}
 
 func (x *TLMlsSetRecoverySecret) ProtoReflect() protoreflect.Message {
-	mi := &file_mtproto_mls_proto_msgTypes[20]
+	mi := &file_mtproto_mls_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1259,7 +1339,7 @@ func (x *TLMlsSetRecoverySecret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TLMlsSetRecoverySecret.ProtoReflect.Descriptor instead.
 func (*TLMlsSetRecoverySecret) Descriptor() ([]byte, []int) {
-	return file_mtproto_mls_proto_rawDescGZIP(), []int{20}
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *TLMlsSetRecoverySecret) GetSecret() string {
@@ -1324,12 +1404,18 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\vmls_Commits\x12-\n" +
 	"\acommits\x18\x01 \x03(\v2\x13.mtproto.mls_CommitR\acommits\")\n" +
 	"\x15TL_mls_confirmCommits\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\x03R\x03ids\"(\n" +
-	"\x10TL_mls_devicesOf\x12\x14\n" +
-	"\x05users\x18\x01 \x03(\x03R\x05users\"@\n" +
-	"\x10mls_DeviceCounts\x12\x16\n" +
-	"\x06counts\x18\x01 \x03(\x05R\x06counts\x12\x14\n" +
-	"\x05names\x18\x02 \x03(\fR\x05names\"j\n" +
+	"\x03ids\x18\x01 \x03(\x03R\x03ids\"F\n" +
+	"\x10TL_mls_membersOf\x12\x17\n" +
+	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
+	"\bgroup_id\x18\x02 \x01(\fR\agroupId\"M\n" +
+	"\bmls_Leaf\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\fR\x04name\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12\x14\n" +
+	"\x05alive\x18\x03 \x01(\bR\x05alive\"f\n" +
+	"\vmls_Members\x12\x14\n" +
+	"\x05epoch\x18\x01 \x01(\x03R\x05epoch\x12'\n" +
+	"\x05holds\x18\x02 \x03(\v2\x11.mtproto.mls_LeafR\x05holds\x12\x18\n" +
+	"\awanting\x18\x03 \x03(\x03R\awanting\"j\n" +
 	"\x18TL_mls_claimConversation\x12\x17\n" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
 	"\bgroup_id\x18\x02 \x01(\fR\agroupId\x12\x14\n" +
@@ -1338,7 +1424,7 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
 	"\bgroup_id\x18\x02 \x01(\fR\agroupId\"2\n" +
 	"\x18TL_mls_setRecoverySecret\x12\x16\n" +
-	"\x06secret\x18\x01 \x01(\tR\x06secret2\xdc\x06\n" +
+	"\x06secret\x18\x01 \x01(\tR\x06secret2\xd7\x06\n" +
 	"\x06RPCMls\x12Z\n" +
 	"\x16mls_publishKeyPackages\x12\".mtproto.TL_mls_publishKeyPackages\x1a\x1a.mtproto.mls_PublishResult\"\x00\x12T\n" +
 	"\x14mls_claimKeyPackages\x12 .mtproto.TL_mls_claimKeyPackages\x1a\x18.mtproto.mls_KeyPackages\"\x00\x12A\n" +
@@ -1348,8 +1434,8 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\x15mls_setRecoverySecret\x12!.mtproto.TL_mls_setRecoverySecret\x1a\x0f.mtproto.mls_Ok\"\x00\x12I\n" +
 	"\x0emls_sendCommit\x12\x1a.mtproto.TL_mls_sendCommit\x1a\x19.mtproto.mls_CommitResult\"\x00\x12D\n" +
 	"\x0emls_getCommits\x12\x1a.mtproto.TL_mls_getCommits\x1a\x14.mtproto.mls_Commits\"\x00\x12G\n" +
-	"\x12mls_confirmCommits\x12\x1e.mtproto.TL_mls_confirmCommits\x1a\x0f.mtproto.mls_Ok\"\x00\x12G\n" +
-	"\rmls_devicesOf\x12\x19.mtproto.TL_mls_devicesOf\x1a\x19.mtproto.mls_DeviceCounts\"\x00\x12W\n" +
+	"\x12mls_confirmCommits\x12\x1e.mtproto.TL_mls_confirmCommits\x1a\x0f.mtproto.mls_Ok\"\x00\x12B\n" +
+	"\rmls_membersOf\x12\x19.mtproto.TL_mls_membersOf\x1a\x14.mtproto.mls_Members\"\x00\x12W\n" +
 	"\x15mls_claimConversation\x12!.mtproto.TL_mls_claimConversation\x1a\x19.mtproto.mls_Conversation\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
 
 var (
@@ -1364,7 +1450,7 @@ func file_mtproto_mls_proto_rawDescGZIP() []byte {
 	return file_mtproto_mls_proto_rawDescData
 }
 
-var file_mtproto_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_mtproto_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_mtproto_mls_proto_goTypes = []any{
 	(*TLMlsPublishKeyPackages)(nil), // 0: mtproto.TL_mls_publishKeyPackages
 	(*Mls_PublishResult)(nil),       // 1: mtproto.mls_PublishResult
@@ -1382,42 +1468,44 @@ var file_mtproto_mls_proto_goTypes = []any{
 	(*Mls_Commit)(nil),              // 13: mtproto.mls_Commit
 	(*Mls_Commits)(nil),             // 14: mtproto.mls_Commits
 	(*TLMlsConfirmCommits)(nil),     // 15: mtproto.TL_mls_confirmCommits
-	(*TLMlsDevicesOf)(nil),          // 16: mtproto.TL_mls_devicesOf
-	(*Mls_DeviceCounts)(nil),        // 17: mtproto.mls_DeviceCounts
-	(*TLMlsClaimConversation)(nil),  // 18: mtproto.TL_mls_claimConversation
-	(*Mls_Conversation)(nil),        // 19: mtproto.mls_Conversation
-	(*TLMlsSetRecoverySecret)(nil),  // 20: mtproto.TL_mls_setRecoverySecret
+	(*TLMlsMembersOf)(nil),          // 16: mtproto.TL_mls_membersOf
+	(*Mls_Leaf)(nil),                // 17: mtproto.mls_Leaf
+	(*Mls_Members)(nil),             // 18: mtproto.mls_Members
+	(*TLMlsClaimConversation)(nil),  // 19: mtproto.TL_mls_claimConversation
+	(*Mls_Conversation)(nil),        // 20: mtproto.mls_Conversation
+	(*TLMlsSetRecoverySecret)(nil),  // 21: mtproto.TL_mls_setRecoverySecret
 }
 var file_mtproto_mls_proto_depIdxs = []int32{
 	7,  // 0: mtproto.mls_Welcomes.welcomes:type_name -> mtproto.mls_Welcome
 	13, // 1: mtproto.mls_Commits.commits:type_name -> mtproto.mls_Commit
-	0,  // 2: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
-	2,  // 3: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
-	4,  // 4: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
-	5,  // 5: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
-	9,  // 6: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
-	20, // 7: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
-	10, // 8: mtproto.RPCMls.mls_sendCommit:input_type -> mtproto.TL_mls_sendCommit
-	12, // 9: mtproto.RPCMls.mls_getCommits:input_type -> mtproto.TL_mls_getCommits
-	15, // 10: mtproto.RPCMls.mls_confirmCommits:input_type -> mtproto.TL_mls_confirmCommits
-	16, // 11: mtproto.RPCMls.mls_devicesOf:input_type -> mtproto.TL_mls_devicesOf
-	18, // 12: mtproto.RPCMls.mls_claimConversation:input_type -> mtproto.TL_mls_claimConversation
-	1,  // 13: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
-	3,  // 14: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
-	6,  // 15: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
-	8,  // 16: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
-	6,  // 17: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
-	6,  // 18: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
-	11, // 19: mtproto.RPCMls.mls_sendCommit:output_type -> mtproto.mls_CommitResult
-	14, // 20: mtproto.RPCMls.mls_getCommits:output_type -> mtproto.mls_Commits
-	6,  // 21: mtproto.RPCMls.mls_confirmCommits:output_type -> mtproto.mls_Ok
-	17, // 22: mtproto.RPCMls.mls_devicesOf:output_type -> mtproto.mls_DeviceCounts
-	19, // 23: mtproto.RPCMls.mls_claimConversation:output_type -> mtproto.mls_Conversation
-	13, // [13:24] is the sub-list for method output_type
-	2,  // [2:13] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	17, // 2: mtproto.mls_Members.holds:type_name -> mtproto.mls_Leaf
+	0,  // 3: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
+	2,  // 4: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
+	4,  // 5: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
+	5,  // 6: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
+	9,  // 7: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
+	21, // 8: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
+	10, // 9: mtproto.RPCMls.mls_sendCommit:input_type -> mtproto.TL_mls_sendCommit
+	12, // 10: mtproto.RPCMls.mls_getCommits:input_type -> mtproto.TL_mls_getCommits
+	15, // 11: mtproto.RPCMls.mls_confirmCommits:input_type -> mtproto.TL_mls_confirmCommits
+	16, // 12: mtproto.RPCMls.mls_membersOf:input_type -> mtproto.TL_mls_membersOf
+	19, // 13: mtproto.RPCMls.mls_claimConversation:input_type -> mtproto.TL_mls_claimConversation
+	1,  // 14: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
+	3,  // 15: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
+	6,  // 16: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
+	8,  // 17: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
+	6,  // 18: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
+	6,  // 19: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
+	11, // 20: mtproto.RPCMls.mls_sendCommit:output_type -> mtproto.mls_CommitResult
+	14, // 21: mtproto.RPCMls.mls_getCommits:output_type -> mtproto.mls_Commits
+	6,  // 22: mtproto.RPCMls.mls_confirmCommits:output_type -> mtproto.mls_Ok
+	18, // 23: mtproto.RPCMls.mls_membersOf:output_type -> mtproto.mls_Members
+	20, // 24: mtproto.RPCMls.mls_claimConversation:output_type -> mtproto.mls_Conversation
+	14, // [14:25] is the sub-list for method output_type
+	3,  // [3:14] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_mtproto_mls_proto_init() }
@@ -1431,7 +1519,7 @@ func file_mtproto_mls_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mtproto_mls_proto_rawDesc), len(file_mtproto_mls_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

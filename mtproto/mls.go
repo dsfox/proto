@@ -39,10 +39,12 @@ const (
 	CRC32_mls_claimConversation = int32(-187340385) // 0xf4d5699f
 	// mls.conversation peer_id:long group_id:bytes = mls.Conversation;
 	CRC32_mls_conversation = int32(622211617) // 0x25163221
-	// mls.devicesOf users:Vector<long> = mls.DeviceCounts;
-	CRC32_mls_devicesOf = int32(-657797125) // 0xd8cacffb
-	// mls.deviceCounts counts:Vector<int> names:Vector<bytes> = mls.DeviceCounts;
-	CRC32_mls_deviceCounts = int32(1890672928) // 0x70b16120
+	// mls.membersOf peer_id:long group_id:bytes = mls.Members;
+	CRC32_mls_membersOf = int32(1023161582) // 0x3cfc34ee
+	// mls.leaf name:bytes user_id:long alive:Bool = mls.Leaf;
+	CRC32_mls_leaf = int32(631366541) // 0x25a1e38d
+	// mls.members epoch:long holds:Vector<mls.Leaf> wanting:Vector<long> = mls.Members;
+	CRC32_mls_members = int32(2000012518) // 0x7735c4e6
 	// mls.getWelcomes = mls.Welcomes;
 	CRC32_mls_getWelcomes = int32(-512239425) // 0xe177d8bf
 
@@ -251,80 +253,86 @@ func (m *Mls_Conversation) Decode(dBuf *DecodeBuf) error {
 	return dBuf.err
 }
 
-func (m *TLMlsDevicesOf) Encode(x *EncodeBuf, layer int32) error {
-	x.Int(CRC32_mls_devicesOf)
-	x.Int(int32(0x1cb5c415))
-	x.Int(int32(len(m.Users)))
-	for _, id := range m.Users {
-		x.Long(id)
-	}
+func (m *TLMlsMembersOf) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_membersOf)
+	x.Long(m.PeerId)
+	x.StringBytes(m.GroupId)
 	return nil
 }
 
-func (m *TLMlsDevicesOf) Decode(dBuf *DecodeBuf) error {
-	if v := dBuf.Int(); v != int32(0x1cb5c415) {
-		return fmt.Errorf("mls.devicesOf: expected a vector, got %d", v)
-	}
-	count := dBuf.Int()
-	if count < 0 || count > 1000 {
-		return fmt.Errorf("mls.devicesOf: %d people is not a number of people", count)
-	}
-	m.Users = make([]int64, 0, count)
-	for i := int32(0); i < count; i++ {
-		m.Users = append(m.Users, dBuf.Long())
-	}
+func (m *TLMlsMembersOf) Decode(dBuf *DecodeBuf) error {
+	m.PeerId = dBuf.Long()
+	m.GroupId = dBuf.StringBytes()
 	return dBuf.err
 }
 
-func (m *Mls_DeviceCounts) Encode(x *EncodeBuf, layer int32) error {
-	x.Int(CRC32_mls_deviceCounts)
-	x.Int(int32(0x1cb5c415))
-	x.Int(int32(len(m.Counts)))
-	for _, n := range m.Counts {
-		x.Int(n)
-	}
-	// And the names of those devices, all of them in one list: the counts say
-	// where to cut it. One entry per counted device, empty when the device
-	// published before key packages said whose they are (#136).
-	x.Int(int32(0x1cb5c415))
-	x.Int(int32(len(m.Names)))
-	for _, name := range m.Names {
-		x.StringBytes(name)
+func (m *Mls_Leaf) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_leaf)
+	x.StringBytes(m.Name)
+	x.Long(m.UserId)
+	if m.Alive {
+		x.Int(int32(-1720552011)) // boolTrue, 0x997275b5
+	} else {
+		x.Int(int32(-1132882121)) // boolFalse, 0xbc799737
 	}
 	return nil
 }
 
-func (m *Mls_DeviceCounts) Decode(dBuf *DecodeBuf) error {
-	if v := dBuf.Int(); v != int32(0x1cb5c415) {
-		return fmt.Errorf("mls.deviceCounts: expected a vector, got %d", v)
-	}
-	count := dBuf.Int()
-	if count < 0 || count > 1000 {
-		return fmt.Errorf("mls.deviceCounts: %d counts is not a number of counts", count)
-	}
-	m.Counts = make([]int32, 0, count)
-	total := int32(0)
-	for i := int32(0); i < count; i++ {
-		n := dBuf.Int()
-		m.Counts = append(m.Counts, n)
-		if n > 0 {
-			total += n
+func (m *Mls_Leaf) Decode(dBuf *DecodeBuf) error {
+	m.Name = dBuf.StringBytes()
+	m.UserId = dBuf.Long()
+	m.Alive = dBuf.Int() == int32(-1720552011)
+	return dBuf.err
+}
+
+func (m *Mls_Members) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_members)
+	x.Long(m.Epoch)
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Holds)))
+	for _, leaf := range m.Holds {
+		if err := leaf.Encode(x, layer); err != nil {
+			return err
 		}
 	}
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Wanting)))
+	for _, who := range m.Wanting {
+		x.Long(who)
+	}
+	return nil
+}
 
+func (m *Mls_Members) Decode(dBuf *DecodeBuf) error {
+	m.Epoch = dBuf.Long()
 	if v := dBuf.Int(); v != int32(0x1cb5c415) {
-		return fmt.Errorf("mls.deviceCounts: expected a vector of names, got %d", v)
+		return fmt.Errorf("mls.members: expected a vector of leaves, got %d", v)
 	}
-	named := dBuf.Int()
-	// The counts are what cuts this list, so a list of another length cannot be
-	// cut at all. Refused here rather than handed on: a caller that split it
-	// anyway would attribute one person's devices to the next.
-	if named != total {
-		return fmt.Errorf("mls.deviceCounts: %d name(s) for %d device(s)", named, total)
+	held := dBuf.Int()
+	if held < 0 || held > 1000 {
+		return fmt.Errorf("mls.members: %d is not a number of leaves", held)
 	}
-	m.Names = make([][]byte, 0, named)
-	for i := int32(0); i < named; i++ {
-		m.Names = append(m.Names, dBuf.StringBytes())
+	m.Holds = make([]*Mls_Leaf, 0, held)
+	for i := int32(0); i < held; i++ {
+		if v := dBuf.Int(); v != CRC32_mls_leaf {
+			return fmt.Errorf("mls.members: expected a leaf, got %d", v)
+		}
+		leaf := &Mls_Leaf{}
+		if err := leaf.Decode(dBuf); err != nil {
+			return err
+		}
+		m.Holds = append(m.Holds, leaf)
+	}
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.members: expected a vector of people, got %d", v)
+	}
+	wanted := dBuf.Int()
+	if wanted < 0 || wanted > 1000 {
+		return fmt.Errorf("mls.members: %d is not a number of people", wanted)
+	}
+	m.Wanting = make([]int64, 0, wanted)
+	for i := int32(0); i < wanted; i++ {
+		m.Wanting = append(m.Wanting, dBuf.Long())
 	}
 	return dBuf.err
 }
@@ -602,8 +610,9 @@ func init() {
 	clazzIdRegisters2[CRC32_mls_ok] = func() TLObject { return &Mls_Ok{} }
 	clazzIdRegisters2[CRC32_mls_claimConversation] = func() TLObject { return &TLMlsClaimConversation{} }
 	clazzIdRegisters2[CRC32_mls_conversation] = func() TLObject { return &Mls_Conversation{} }
-	clazzIdRegisters2[CRC32_mls_devicesOf] = func() TLObject { return &TLMlsDevicesOf{} }
-	clazzIdRegisters2[CRC32_mls_deviceCounts] = func() TLObject { return &Mls_DeviceCounts{} }
+	clazzIdRegisters2[CRC32_mls_membersOf] = func() TLObject { return &TLMlsMembersOf{} }
+	clazzIdRegisters2[CRC32_mls_leaf] = func() TLObject { return &Mls_Leaf{} }
+	clazzIdRegisters2[CRC32_mls_members] = func() TLObject { return &Mls_Members{} }
 	clazzIdRegisters2[CRC32_mls_getWelcomes] = func() TLObject { return &TLMlsGetWelcomes{} }
 	clazzIdRegisters2[CRC32_mls_welcomes] = func() TLObject { return &Mls_Welcomes{} }
 	clazzIdRegisters2[CRC32_mls_welcome] = func() TLObject { return &Mls_Welcome{} }
@@ -634,9 +643,9 @@ func init() {
 		"/mtproto.RPCMls/mls_claimConversation",
 		func() interface{} { return new(Mls_Conversation) },
 	}
-	rpcContextRegisters["TLMlsDevicesOf"] = RPCContextTuple{
-		"/mtproto.RPCMls/mls_devicesOf",
-		func() interface{} { return new(Mls_DeviceCounts) },
+	rpcContextRegisters["TLMlsMembersOf"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_membersOf",
+		func() interface{} { return new(Mls_Members) },
 	}
 	rpcContextRegisters["TLMlsGetWelcomes"] = RPCContextTuple{
 		"/mtproto.RPCMls/mls_getWelcomes",
@@ -687,7 +696,8 @@ func MlsConstructorNames() map[int32]string {
 		CRC32_mls_confirmCommits:     "mls.confirmCommits",
 		CRC32_mls_claimConversation:  "mls.claimConversation",
 		CRC32_mls_conversation:       "mls.conversation",
-		CRC32_mls_devicesOf:          "mls.devicesOf",
-		CRC32_mls_deviceCounts:       "mls.deviceCounts",
+		CRC32_mls_membersOf:          "mls.membersOf",
+		CRC32_mls_leaf:               "mls.leaf",
+		CRC32_mls_members:            "mls.members",
 	}
 }

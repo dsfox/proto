@@ -163,44 +163,56 @@ message TL_mls_confirmCommits {
   repeated int64 ids = 1;
 }
 
-// How many devices each of these people has published from.
+// What the delivery service holds about a conversation: which leaves it has
+// been told the group holds, whether the device behind each one is still
+// answering, and who in the chat has a device with no leaf here at all (#147).
 //
-// Everything that compares a conversation with its chat reads the part of a
-// leaf name before the slash, so it reasons about people. That is wrong the
-// moment somebody replaces a phone: the leaf of the device that is gone still
-// stands for them, nobody counts them as missing, and the phone they now hold
-// is never let in - they sit in the chat watching padlocks for ever (#132).
-//
-// A count is what tells the difference, and only the server can give it: it is
-// the one that knows how many devices a person has published from. Asking for
-// key packages would answer the same question and spend one to do it - a claim
-// is a delete - so the supply would be gone within the hour.
+// This replaces a dance the clients used to do on every round. Each of them
+// walked its own tree, counted the leaves per person, asked how many devices
+// each of those people had, and worked out the answer by arithmetic. The
+// counting was the only part they could do alone; the rest was always the
+// server's to answer, and asking it in pieces is how the pieces came to
+// disagree (#132, #136, #139).
 //
 // Nothing is learnt from the answer that the group does not already show:
 // everybody in a conversation can see everybody's leaves.
-message TL_mls_devicesOf {
-  repeated int64 users = 1;
+message TL_mls_membersOf {
+  int64 peer_id = 1;
+  bytes group_id = 2;
 }
 
-// One count per person asked about, in the order they were asked, and the name
-// of every one of those devices after it.
+// One leaf, and whether anybody is behind it.
 //
-// The names run as one list rather than one list per person: TL has no ragged
-// vector, and the counts already say where to cut. That is the point of putting
-// them in one answer - a leaf is taken out on two questions, whether a device
-// is missing (the count) and which leaf is it (the names), and while those came
-// from two calls they could disagree. Nobody dared act on them for anybody but
-// their own account, so a leaf whose device is gone stayed for ever and every
-// commit was encrypted to it (#139).
+// `alive` is false for a leaf whose device has gone: the account signed that
+// phone out, or reinstalled and came back as a different device. The leaf it
+// left behind still reads everything said afterwards until somebody removes it
+// (#41), and until now no client could tell that leaf from a phone that was
+// merely offline - which is why nobody dared act on it for anybody but their
+// own account (#132).
 //
-// A name may be empty: a device that published before key packages said which
-// identity they belong to (#136) is counted and cannot be named. It is still
-// one entry, so the cut stays right, and a caller that finds an empty name
-// knows this person has a device it cannot account for and must not decide
-// anything about their leaves.
-message mls_DeviceCounts {
-  repeated int32 counts = 1;
-  repeated bytes names = 2;
+// `alive` is true whenever the server cannot say otherwise. A device that
+// published before key packages named their identity (#136) cannot be matched
+// to a leaf at all, and the safe answer about a leaf nobody can account for is
+// to leave it alone: evicting a live phone is the worst thing this can do.
+message mls_Leaf {
+  bytes name = 1;
+  int64 user_id = 2;
+  bool alive = 3;
+}
+
+// What the group holds, and who is missing from it.
+//
+// `epoch` is what the delivery service believes the group is on, which is how a
+// device learns it is behind without sending a commit to find out.
+//
+// `wanting` is the people in the chat who have a device that is answering and
+// no leaf here for it. Somebody with none at all is the ordinary newcomer;
+// somebody with one leaf that is dead and a phone that is alive is #132, and
+// those two looked identical to every client that could only count.
+message mls_Members {
+  int64 epoch = 1;
+  repeated mls_Leaf holds = 2;
+  repeated int64 wanting = 3;
 }
 
 // A device saying it has started the conversation for a chat.
@@ -266,7 +278,7 @@ service RPCMls {
   rpc mls_sendCommit(TL_mls_sendCommit) returns (mls_CommitResult) {}
   rpc mls_getCommits(TL_mls_getCommits) returns (mls_Commits) {}
   rpc mls_confirmCommits(TL_mls_confirmCommits) returns (mls_Ok) {}
-  rpc mls_devicesOf(TL_mls_devicesOf) returns (mls_DeviceCounts) {}
+  rpc mls_membersOf(TL_mls_membersOf) returns (mls_Members) {}
   rpc mls_claimConversation(TL_mls_claimConversation) returns (mls_Conversation) {}
 }
 
