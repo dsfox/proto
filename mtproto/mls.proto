@@ -236,7 +236,11 @@ message mls_DeviceCounts {
 message TL_mls_claimConversation {
   int64 peer_id = 1;
   bytes group_id = 2;
-  bool holds_everybody = 3;
+  // 3 was holds_everybody: a device vouching that this conversation held every
+  // device of every member of the chat. It existed because nobody else could
+  // answer that; the roster answers it now, so the vouch is gone and the number
+  // is kept out of the way of the next field (#147).
+  reserved 3;
   // The same roster as on a commit, because a group's first membership arrives
   // with no commit at all: the creator accepts its own commit locally and never
   // posts it, deliberately - there is nobody to have raced with (#147).
