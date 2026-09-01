@@ -112,8 +112,11 @@ message TL_mls_confirmWelcomes {
 // so of two commits made from the same epoch exactly one can be taken - the
 // server keeps that order, which RFC 9420 gives to the delivery service.
 //
-// The members are named because the server does not know who is in a group and
-// must not: it is told where to leave the commit, not asked who belongs.
+// `members` names where to leave the commit - the accounts whose mailboxes it
+// has to reach. It used to carry "because the server does not know who is in a
+// group and must not" beside it. Nobody had written that rule down, it bought
+// no privacy, and working around it cost five issues (#147); `holds` below now
+// names the membership outright.
 message TL_mls_sendCommit {
   bytes group_id = 1;
   int64 epoch = 2;
