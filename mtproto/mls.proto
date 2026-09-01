@@ -119,6 +119,17 @@ message TL_mls_sendCommit {
   int64 epoch = 2;
   repeated int64 members = 3;
   bytes commit = 4;
+  // Who holds a leaf in this group once this commit is applied - one entry per
+  // leaf, each the leaf's identity exactly as MLS carries it, which in this
+  // fork is the bytes of <user_id>/<device_id>. The committer is the one party
+  // that knows for certain: it is that device's own tree and it has just
+  // changed it.
+  //
+  // Whole rather than incremental, and that is the point: any commit repairs
+  // the roster, an addition and a removal are the same operation, and a server
+  // that missed one is corrected by the next rather than staying wrong for
+  // ever (#147).
+  repeated bytes holds = 5;
 }
 
 // Whether the commit was taken, and which epoch the conversation is really on.
@@ -226,6 +237,10 @@ message TL_mls_claimConversation {
   int64 peer_id = 1;
   bytes group_id = 2;
   bool holds_everybody = 3;
+  // The same roster as on a commit, because a group's first membership arrives
+  // with no commit at all: the creator accepts its own commit locally and never
+  // posts it, deliberately - there is nobody to have raced with (#147).
+  repeated bytes holds = 4;
 }
 
 // The conversation this chat has, which is the claimant's own when it was

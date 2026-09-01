@@ -35,8 +35,8 @@ const (
 	// mls.ok ok:Bool = mls.Ok;
 	CRC32_mls_ok = int32(-1518331278) // 0xa5801a72
 
-	// mls.claimConversation peer_id:long group_id:bytes holds_everybody:Bool = mls.Conversation;
-	CRC32_mls_claimConversation = int32(-936499491) // 0xc82e26dd
+	// mls.claimConversation peer_id:long group_id:bytes holds_everybody:Bool holds:Vector<bytes> = mls.Conversation;
+	CRC32_mls_claimConversation = int32(-1427126146) // 0xaaefc87e
 	// mls.conversation peer_id:long group_id:bytes = mls.Conversation;
 	CRC32_mls_conversation = int32(622211617) // 0x25163221
 	// mls.devicesOf users:Vector<long> = mls.DeviceCounts;
@@ -58,8 +58,8 @@ const (
 	// mls.setRecoverySecret secret:string = mls.Ok;
 	CRC32_mls_setRecoverySecret = int32(-369099376) // 0xe9fffd90
 
-	// mls.sendCommit group_id:bytes epoch:long members:Vector<long> commit:bytes = mls.CommitResult;
-	CRC32_mls_sendCommit = int32(-945155929) // 0xc7aa10a7
+	// mls.sendCommit group_id:bytes epoch:long members:Vector<long> commit:bytes holds:Vector<bytes> = mls.CommitResult;
+	CRC32_mls_sendCommit = int32(781607113) // 0x2e9660c9
 
 	// mls.commitResult accepted:Bool epoch:long = mls.CommitResult;
 	CRC32_mls_commitResult = int32(191372459) // 0x0b681cab
@@ -199,6 +199,7 @@ func (m *TLMlsClaimConversation) Encode(x *EncodeBuf, layer int32) error {
 	} else {
 		x.Int(int32(-1132882121)) // boolFalse, 0xbc799737
 	}
+	encodeHolds(x, m.Holds)
 	return nil
 }
 
@@ -206,7 +207,44 @@ func (m *TLMlsClaimConversation) Decode(dBuf *DecodeBuf) error {
 	m.PeerId = dBuf.Long()
 	m.GroupId = dBuf.StringBytes()
 	m.HoldsEverybody = dBuf.Int() == int32(-1720552011)
+	holds, err := decodeHolds(dBuf, "mls.claimConversation")
+	if err != nil {
+		return err
+	}
+	m.Holds = holds
 	return dBuf.err
+}
+
+// The roster: who holds a leaf in this group, one entry per leaf, each the
+// leaf's identity as MLS carries it - the bytes of <user_id>/<device_id>.
+//
+// Written once and used by both methods that carry it, because two copies of a
+// wire format is how the two come to disagree - and a disagreement here is a
+// request the server cannot parse at all.
+func encodeHolds(x *EncodeBuf, holds [][]byte) {
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(holds)))
+	for _, leaf := range holds {
+		x.StringBytes(leaf)
+	}
+}
+
+func decodeHolds(dBuf *DecodeBuf, method string) ([][]byte, error) {
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return nil, fmt.Errorf("%s: expected a vector of leaves, got %d", method, v)
+	}
+	count := dBuf.Int()
+	// The same bound the members list has. A group larger than this is not a
+	// group, and a length taken from the wire has to be refused rather than
+	// allocated.
+	if count < 0 || count > 1000 {
+		return nil, fmt.Errorf("%s: %d is not a number of leaves", method, count)
+	}
+	holds := make([][]byte, 0, count)
+	for i := int32(0); i < count; i++ {
+		holds = append(holds, dBuf.StringBytes())
+	}
+	return holds, nil
 }
 
 func (m *Mls_Conversation) Encode(x *EncodeBuf, layer int32) error {
@@ -432,6 +470,7 @@ func (m *TLMlsSendCommit) Encode(x *EncodeBuf, layer int32) error {
 		x.Long(id)
 	}
 	x.StringBytes(m.Commit)
+	encodeHolds(x, m.Holds)
 	return nil
 }
 
@@ -450,6 +489,11 @@ func (m *TLMlsSendCommit) Decode(dBuf *DecodeBuf) error {
 		m.Members = append(m.Members, dBuf.Long())
 	}
 	m.Commit = dBuf.StringBytes()
+	holds, err := decodeHolds(dBuf, "mls.sendCommit")
+	if err != nil {
+		return err
+	}
+	m.Holds = holds
 	return dBuf.err
 }
 

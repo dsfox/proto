@@ -596,11 +596,22 @@ func (x *TLMlsConfirmWelcomes) GetIds() []int64 {
 // The members are named because the server does not know who is in a group and
 // must not: it is told where to leave the commit, not asked who belongs.
 type TLMlsSendCommit struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	GroupId       []byte                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
-	Epoch         int64                  `protobuf:"varint,2,opt,name=epoch,proto3" json:"epoch,omitempty"`
-	Members       []int64                `protobuf:"varint,3,rep,packed,name=members,proto3" json:"members,omitempty"`
-	Commit        []byte                 `protobuf:"bytes,4,opt,name=commit,proto3" json:"commit,omitempty"`
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	GroupId []byte                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	Epoch   int64                  `protobuf:"varint,2,opt,name=epoch,proto3" json:"epoch,omitempty"`
+	Members []int64                `protobuf:"varint,3,rep,packed,name=members,proto3" json:"members,omitempty"`
+	Commit  []byte                 `protobuf:"bytes,4,opt,name=commit,proto3" json:"commit,omitempty"`
+	// Who holds a leaf in this group once this commit is applied - one entry per
+	// leaf, each the leaf's identity exactly as MLS carries it, which in this
+	// fork is the bytes of <user_id>/<device_id>. The committer is the one party
+	// that knows for certain: it is that device's own tree and it has just
+	// changed it.
+	//
+	// Whole rather than incremental, and that is the point: any commit repairs
+	// the roster, an addition and a removal are the same operation, and a server
+	// that missed one is corrected by the next rather than staying wrong for
+	// ever (#147).
+	Holds         [][]byte `protobuf:"bytes,5,rep,name=holds,proto3" json:"holds,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -659,6 +670,13 @@ func (x *TLMlsSendCommit) GetMembers() []int64 {
 func (x *TLMlsSendCommit) GetCommit() []byte {
 	if x != nil {
 		return x.Commit
+	}
+	return nil
+}
+
+func (x *TLMlsSendCommit) GetHolds() [][]byte {
+	if x != nil {
+		return x.Holds
 	}
 	return nil
 }
@@ -1085,8 +1103,12 @@ type TLMlsClaimConversation struct {
 	PeerId         int64                  `protobuf:"varint,1,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
 	GroupId        []byte                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	HoldsEverybody bool                   `protobuf:"varint,3,opt,name=holds_everybody,json=holdsEverybody,proto3" json:"holds_everybody,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// The same roster as on a commit, because a group's first membership arrives
+	// with no commit at all: the creator accepts its own commit locally and never
+	// posts it, deliberately - there is nobody to have raced with (#147).
+	Holds         [][]byte `protobuf:"bytes,4,rep,name=holds,proto3" json:"holds,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *TLMlsClaimConversation) Reset() {
@@ -1138,6 +1160,13 @@ func (x *TLMlsClaimConversation) GetHoldsEverybody() bool {
 		return x.HoldsEverybody
 	}
 	return false
+}
+
+func (x *TLMlsClaimConversation) GetHolds() [][]byte {
+	if x != nil {
+		return x.Holds
+	}
+	return nil
 }
 
 // The conversation this chat has, which is the claimant's own when it was
@@ -1282,12 +1311,13 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\fmls_Welcomes\x120\n" +
 	"\bwelcomes\x18\x01 \x03(\v2\x14.mtproto.mls_WelcomeR\bwelcomes\"*\n" +
 	"\x16TL_mls_confirmWelcomes\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\x03R\x03ids\"v\n" +
+	"\x03ids\x18\x01 \x03(\x03R\x03ids\"\x8c\x01\n" +
 	"\x11TL_mls_sendCommit\x12\x19\n" +
 	"\bgroup_id\x18\x01 \x01(\fR\agroupId\x12\x14\n" +
 	"\x05epoch\x18\x02 \x01(\x03R\x05epoch\x12\x18\n" +
 	"\amembers\x18\x03 \x03(\x03R\amembers\x12\x16\n" +
-	"\x06commit\x18\x04 \x01(\fR\x06commit\"D\n" +
+	"\x06commit\x18\x04 \x01(\fR\x06commit\x12\x14\n" +
+	"\x05holds\x18\x05 \x03(\fR\x05holds\"D\n" +
 	"\x10mls_CommitResult\x12\x1a\n" +
 	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x14\n" +
 	"\x05epoch\x18\x02 \x01(\x03R\x05epoch\"\x13\n" +
@@ -1307,11 +1337,12 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\x05users\x18\x01 \x03(\x03R\x05users\"@\n" +
 	"\x10mls_DeviceCounts\x12\x16\n" +
 	"\x06counts\x18\x01 \x03(\x05R\x06counts\x12\x14\n" +
-	"\x05names\x18\x02 \x03(\fR\x05names\"w\n" +
+	"\x05names\x18\x02 \x03(\fR\x05names\"\x8d\x01\n" +
 	"\x18TL_mls_claimConversation\x12\x17\n" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
 	"\bgroup_id\x18\x02 \x01(\fR\agroupId\x12'\n" +
-	"\x0fholds_everybody\x18\x03 \x01(\bR\x0eholdsEverybody\"F\n" +
+	"\x0fholds_everybody\x18\x03 \x01(\bR\x0eholdsEverybody\x12\x14\n" +
+	"\x05holds\x18\x04 \x03(\fR\x05holds\"F\n" +
 	"\x10mls_Conversation\x12\x17\n" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
 	"\bgroup_id\x18\x02 \x01(\fR\agroupId\"2\n" +
