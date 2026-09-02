@@ -1,0 +1,32 @@
+// Our own method for invitations people send themselves (#47), beside the
+// mls.* ones and for the same reason: a file of its own that regenerating
+// upstream's schema cannot drop. The wire encoding towards the phone is
+// written by hand in invite.go; this exists because the services inside the
+// server talk protobuf to each other.
+
+syntax = "proto3";
+
+package mtproto;
+
+option go_package = "github.com/teamgram/proto/mtproto";
+
+// invite.mint phone:string = invite.Minted;
+//
+// Mints a code bound to this number for the person asking, who vouches for
+// whoever holds it. The phone's own SMS app carries the code; the server never
+// sends anything.
+message TL_invite_mint {
+  string phone = 1;
+}
+
+// invite.minted code:string expires:int = invite.Minted;
+//
+// expires is Unix seconds: the moment the code stops working.
+message invite_Minted {
+  string code = 1;
+  int32 expires = 2;
+}
+
+service RPCInvite {
+  rpc invite_mint(TL_invite_mint) returns (invite_Minted) {}
+}
