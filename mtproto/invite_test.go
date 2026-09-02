@@ -1,6 +1,10 @@
 package mtproto
 
-import "testing"
+import (
+	"os"
+	"strings"
+	"testing"
+)
 
 // Hand-written TL is exactly the kind of code that looks right and puts the
 // bytes in the wrong order, so both types go out and come back.
@@ -35,5 +39,26 @@ func TestInviteMintKnowsWhereToGo(t *testing.T) {
 	}
 	if tuple.Method != "/mtproto.RPCInvite/invite_mint" || tuple.NewReplyFunc == nil {
 		t.Fatalf("TLInviteMint is routed to %q with reply %v", tuple.Method, tuple.NewReplyFunc)
+	}
+}
+
+// A route with no client behind it is not a route: the session looks the
+// method's gRPC prefix up in its own config, and a prefix missing there sends
+// the request to the stub layer, which refuses it with a licence message
+// that explains nothing. That is how invite.mint failed on its first run
+// (#47), and mls.* would fail the same way the day somebody trims the file.
+func TestOurRoutePrefixesHaveAClientInTheSessionConfig(t *testing.T) {
+	config, err := os.ReadFile("../../server/teamgramd/etc2/session.yaml")
+	if err != nil {
+		t.Skipf("the session config is not beside this module: %v", err)
+	}
+	for _, tuple := range []RPCContextTuple{
+		rpcContextRegisters["TLInviteMint"],
+		rpcContextRegisters["TLMlsPublishKeyPackages"],
+	} {
+		prefix := tuple.Method[:strings.LastIndex(tuple.Method, "/")]
+		if !strings.Contains(string(config), `"`+prefix+`"`) {
+			t.Errorf("%s is routed to %s, and session.yaml names no client for %s", tuple.Method, tuple.Method, prefix)
+		}
 	}
 }
