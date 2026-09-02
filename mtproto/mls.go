@@ -699,5 +699,6 @@ func MlsConstructorNames() map[int32]string {
 		CRC32_mls_membersOf:          "mls.membersOf",
 		CRC32_mls_leaf:               "mls.leaf",
 		CRC32_mls_members:            "mls.members",
+		CRC32_updateMlsMailbox:       "updateMlsMailbox",
 	}
 }

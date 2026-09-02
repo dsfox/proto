@@ -203,6 +203,43 @@ func TestOurConstructorIdsAreOurs(t *testing.T) {
 	}
 }
 
+// The update is not a method: it goes out inside an Updates container, which
+// dispatches by predicate on the way out and by constructor on the way back.
+// Both dispatches are switches in generated code with a hand-written case
+// spliced in, and a case that is missing from either fails only at runtime,
+// as a push the client never receives.
+func TestTheMailboxUpdateSurvivesTheContainer(t *testing.T) {
+	original := MakeTLUpdates(&Updates{
+		Updates: []*Update{MakeTLUpdateMlsMailbox(nil).To_Update()},
+		Users:   []*User{},
+		Chats:   []*Chat{},
+		Date:    1,
+		Seq:     0,
+	}).To_Updates()
+
+	// At the layer a phone actually speaks: the container is generated code
+	// and knows no layer 0, while the update inside it must be found at any.
+	buf := NewEncodeBuf(512)
+	if err := original.Encode(buf, 228); err != nil {
+		t.Fatalf("cannot encode the container: %v", err)
+	}
+
+	dBuf := NewDecodeBuf(buf.GetBuf())
+	decoded := &Updates{}
+	if err := decoded.Decode(dBuf); err != nil {
+		t.Fatalf("cannot decode the container: %v", err)
+	}
+	if len(decoded.Updates) != 1 {
+		t.Fatalf("came back with %d updates, sent 1", len(decoded.Updates))
+	}
+	if decoded.Updates[0].PredicateName != Predicate_updateMlsMailbox {
+		t.Fatalf("came back as %q", decoded.Updates[0].PredicateName)
+	}
+	if int32(decoded.Updates[0].Constructor) != CRC32_updateMlsMailbox {
+		t.Fatalf("came back under constructor %x", uint32(decoded.Updates[0].Constructor))
+	}
+}
+
 func roundTrip(t *testing.T, original, decoded TLObject) {
 	t.Helper()
 

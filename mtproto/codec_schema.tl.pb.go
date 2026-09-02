@@ -228808,6 +228808,13 @@ func (m *Update) Encode(x *EncodeBuf, layer int32) error {
 			return err
 		}
 
+	case Predicate_updateMlsMailbox: // hand-written, see mls_update.go
+		t := MakeTLUpdateMlsMailbox(m)
+		err := t.Encode(x, layer)
+		if err != nil {
+			return err
+		}
+
 	default:
 		return fmt.Errorf("invalid predicate error: %s", m.PredicateName)
 	}
@@ -228854,6 +228861,9 @@ func (m *Update) Decode(dBuf *DecodeBuf) error {
 		m2.Decode(dBuf)
 	case 0x8951abef:
 		m2 := MakeTLUpdateNewAuthorization(m)
+		m2.Decode(dBuf)
+	case 0xb305b464: // hand-written, see mls_update.go
+		m2 := MakeTLUpdateMlsMailbox(m)
 		m2.Decode(dBuf)
 	case 0x12bcbd9a:
 		m2 := MakeTLUpdateNewEncryptedMessage(m)
