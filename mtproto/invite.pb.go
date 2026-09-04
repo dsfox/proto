@@ -131,6 +131,62 @@ func (x *Invite_Minted) GetExpires() int32 {
 	return 0
 }
 
+// invite.mintForChat chat_id:long phone:string = invite.Minted;
+//
+// The same code, minted from a group: whoever signs up with it is put into
+// the group by the server, from the person who minted it (#164).
+type TLInviteMintForChat struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ChatId        int64                  `protobuf:"varint,1,opt,name=chat_id,json=chatId,proto3" json:"chat_id,omitempty"`
+	Phone         string                 `protobuf:"bytes,2,opt,name=phone,proto3" json:"phone,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLInviteMintForChat) Reset() {
+	*x = TLInviteMintForChat{}
+	mi := &file_invite_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLInviteMintForChat) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLInviteMintForChat) ProtoMessage() {}
+
+func (x *TLInviteMintForChat) ProtoReflect() protoreflect.Message {
+	mi := &file_invite_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLInviteMintForChat.ProtoReflect.Descriptor instead.
+func (*TLInviteMintForChat) Descriptor() ([]byte, []int) {
+	return file_invite_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TLInviteMintForChat) GetChatId() int64 {
+	if x != nil {
+		return x.ChatId
+	}
+	return 0
+}
+
+func (x *TLInviteMintForChat) GetPhone() string {
+	if x != nil {
+		return x.Phone
+	}
+	return ""
+}
+
 var File_invite_proto protoreflect.FileDescriptor
 
 const file_invite_proto_rawDesc = "" +
@@ -140,9 +196,13 @@ const file_invite_proto_rawDesc = "" +
 	"\x05phone\x18\x01 \x01(\tR\x05phone\"=\n" +
 	"\rinvite_Minted\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12\x18\n" +
-	"\aexpires\x18\x02 \x01(\x05R\aexpires2M\n" +
+	"\aexpires\x18\x02 \x01(\x05R\aexpires\"F\n" +
+	"\x15TL_invite_mintForChat\x12\x17\n" +
+	"\achat_id\x18\x01 \x01(\x03R\x06chatId\x12\x14\n" +
+	"\x05phone\x18\x02 \x01(\tR\x05phone2\x9d\x01\n" +
 	"\tRPCInvite\x12@\n" +
-	"\vinvite_mint\x12\x17.mtproto.TL_invite_mint\x1a\x16.mtproto.invite_Minted\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
+	"\vinvite_mint\x12\x17.mtproto.TL_invite_mint\x1a\x16.mtproto.invite_Minted\"\x00\x12N\n" +
+	"\x12invite_mintForChat\x12\x1e.mtproto.TL_invite_mintForChat\x1a\x16.mtproto.invite_Minted\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
 
 var (
 	file_invite_proto_rawDescOnce sync.Once
@@ -156,16 +216,19 @@ func file_invite_proto_rawDescGZIP() []byte {
 	return file_invite_proto_rawDescData
 }
 
-var file_invite_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_invite_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_invite_proto_goTypes = []any{
-	(*TLInviteMint)(nil),  // 0: mtproto.TL_invite_mint
-	(*Invite_Minted)(nil), // 1: mtproto.invite_Minted
+	(*TLInviteMint)(nil),        // 0: mtproto.TL_invite_mint
+	(*Invite_Minted)(nil),       // 1: mtproto.invite_Minted
+	(*TLInviteMintForChat)(nil), // 2: mtproto.TL_invite_mintForChat
 }
 var file_invite_proto_depIdxs = []int32{
 	0, // 0: mtproto.RPCInvite.invite_mint:input_type -> mtproto.TL_invite_mint
-	1, // 1: mtproto.RPCInvite.invite_mint:output_type -> mtproto.invite_Minted
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: mtproto.RPCInvite.invite_mintForChat:input_type -> mtproto.TL_invite_mintForChat
+	1, // 2: mtproto.RPCInvite.invite_mint:output_type -> mtproto.invite_Minted
+	1, // 3: mtproto.RPCInvite.invite_mintForChat:output_type -> mtproto.invite_Minted
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -182,7 +245,7 @@ func file_invite_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_invite_proto_rawDesc), len(file_invite_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

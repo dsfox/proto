@@ -24,6 +24,25 @@ func TestInviteMintSurvivesItsOwnEncoding(t *testing.T) {
 	}
 }
 
+func TestInviteMintForChatSurvivesItsOwnEncoding(t *testing.T) {
+	original := &TLInviteMintForChat{ChatId: 120090, Phone: "+79991234567"}
+	var decoded TLInviteMintForChat
+	roundTrip(t, original, &decoded)
+	if decoded.ChatId != 120090 || decoded.Phone != "+79991234567" {
+		t.Fatalf("came back as chat %d, number %q", decoded.ChatId, decoded.Phone)
+	}
+}
+
+func TestInviteMintForChatKnowsWhereToGo(t *testing.T) {
+	tuple, ok := GetRPCContextRegisters()["TLInviteMintForChat"]
+	if !ok {
+		t.Fatal("TLInviteMintForChat has no route, so the proxy would refuse it")
+	}
+	if tuple.Method != "/mtproto.RPCInvite/invite_mintForChat" || tuple.NewReplyFunc == nil {
+		t.Fatalf("routed to %q with reply %v", tuple.Method, tuple.NewReplyFunc)
+	}
+}
+
 func TestInviteIsInTheTableTheServerReadsFrom(t *testing.T) {
 	for id, name := range InviteConstructorNames() {
 		if NewTLObjectByClassID(id) == nil {

@@ -27,6 +27,16 @@ message invite_Minted {
   int32 expires = 2;
 }
 
+// invite.mintForChat chat_id:long phone:string = invite.Minted;
+//
+// The same code, minted from a group: whoever signs up with it is put into
+// the group by the server, from the person who minted it (#164).
+message TL_invite_mintForChat {
+  int64 chat_id = 1;
+  string phone = 2;
+}
+
 service RPCInvite {
   rpc invite_mint(TL_invite_mint) returns (invite_Minted) {}
+  rpc invite_mintForChat(TL_invite_mintForChat) returns (invite_Minted) {}
 }

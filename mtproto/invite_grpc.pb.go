@@ -25,7 +25,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RPCInvite_InviteMint_FullMethodName = "/mtproto.RPCInvite/invite_mint"
+	RPCInvite_InviteMint_FullMethodName        = "/mtproto.RPCInvite/invite_mint"
+	RPCInvite_InviteMintForChat_FullMethodName = "/mtproto.RPCInvite/invite_mintForChat"
 )
 
 // RPCInviteClient is the client API for RPCInvite service.
@@ -33,6 +34,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCInviteClient interface {
 	InviteMint(ctx context.Context, in *TLInviteMint, opts ...grpc.CallOption) (*Invite_Minted, error)
+	InviteMintForChat(ctx context.Context, in *TLInviteMintForChat, opts ...grpc.CallOption) (*Invite_Minted, error)
 }
 
 type rPCInviteClient struct {
@@ -53,14 +55,26 @@ func (c *rPCInviteClient) InviteMint(ctx context.Context, in *TLInviteMint, opts
 	return out, nil
 }
 
+func (c *rPCInviteClient) InviteMintForChat(ctx context.Context, in *TLInviteMintForChat, opts ...grpc.CallOption) (*Invite_Minted, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Invite_Minted)
+	err := c.cc.Invoke(ctx, RPCInvite_InviteMintForChat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCInviteServer is the server API for RPCInvite service.
-// All implementations should embed UnimplementedRPCInviteServer
+// All implementations must embed UnimplementedRPCInviteServer
 // for forward compatibility.
 type RPCInviteServer interface {
 	InviteMint(context.Context, *TLInviteMint) (*Invite_Minted, error)
+	InviteMintForChat(context.Context, *TLInviteMintForChat) (*Invite_Minted, error)
+	mustEmbedUnimplementedRPCInviteServer()
 }
 
-// UnimplementedRPCInviteServer should be embedded to have
+// UnimplementedRPCInviteServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
@@ -70,7 +84,11 @@ type UnimplementedRPCInviteServer struct{}
 func (UnimplementedRPCInviteServer) InviteMint(context.Context, *TLInviteMint) (*Invite_Minted, error) {
 	return nil, status.Error(codes.Unimplemented, "method InviteMint not implemented")
 }
-func (UnimplementedRPCInviteServer) testEmbeddedByValue() {}
+func (UnimplementedRPCInviteServer) InviteMintForChat(context.Context, *TLInviteMintForChat) (*Invite_Minted, error) {
+	return nil, status.Error(codes.Unimplemented, "method InviteMintForChat not implemented")
+}
+func (UnimplementedRPCInviteServer) mustEmbedUnimplementedRPCInviteServer() {}
+func (UnimplementedRPCInviteServer) testEmbeddedByValue()                   {}
 
 // UnsafeRPCInviteServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to RPCInviteServer will
@@ -108,6 +126,24 @@ func _RPCInvite_InviteMint_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCInvite_InviteMintForChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLInviteMintForChat)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCInviteServer).InviteMintForChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCInvite_InviteMintForChat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCInviteServer).InviteMintForChat(ctx, req.(*TLInviteMintForChat))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCInvite_ServiceDesc is the grpc.ServiceDesc for RPCInvite service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -118,6 +154,10 @@ var RPCInvite_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "invite_mint",
 			Handler:    _RPCInvite_InviteMint_Handler,
+		},
+		{
+			MethodName: "invite_mintForChat",
+			Handler:    _RPCInvite_InviteMintForChat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
