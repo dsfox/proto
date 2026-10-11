@@ -186385,8 +186385,7 @@ func GetClazzID(clazzName string, layer int) int32 {
 		if ok2 {
 			return m2
 		}
-		// A client ahead of this schema is served what we have. See
-		// clazz_id_ahead.go for why 0 here is not an option.
+		// ice9: a client ahead of this schema is served what we have (clazz_id_ahead.go)
 		if top, ok3 := clazzNameNewest[clazzName]; ok3 && layer > top.layer {
 			return top.id
 		}
