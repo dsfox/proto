@@ -53,25 +53,12 @@ func NewRSACryptorByKeyData(pkcs1PemPrivateKey []byte) (*RSACryptor, error) {
 	return &RSACryptor{key}, nil
 }
 
-// size is the modulus in bytes - the length an RSA operation is defined to
-// produce, whatever the value happens to be worth.
+// ice9: the modulus in bytes, the length every RSA result must have (#68)
 func (m *RSACryptor) size() int {
 	return (m.key.N.BitLen() + 7) / 8
 }
 
-// Encrypt and Decrypt both hand back exactly size() bytes, big-endian, padded
-// on the left.
-//
-// big.Int has no notion of a leading zero, so Bytes() returns 255 bytes for the
-// one value in 256 whose top byte is zero - and both halves of this file used
-// to get that wrong. Decrypt returned the short slice, and the handshake, which
-// requires 256, refused it inside a pool job whose error nobody logs: the
-// client got no answer and no refusal, and sat on "Connecting" until it gave up
-// and started again. Encrypt padded on the right, which for a big-endian number
-// is multiplication by 256 - a different ciphertext, silently.
-//
-// FillBytes pads on the left and panics if the value does not fit; it cannot
-// here, because both results are reduced modulo N and the buffer is N's size.
+// ice9: both results are size() bytes, padded on the left; big.Int drops a leading zero (#68)
 func (m *RSACryptor) Encrypt(b []byte) []byte {
 	c := new(big.Int)
 	c.Exp(new(big.Int).SetBytes(b), big.NewInt(int64(m.key.E)), m.key.N)
