@@ -4,10 +4,14 @@
 package emit
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
 	"go/format"
+	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/teamgram/proto/ice9/mtprotoc/schema"
 )
@@ -22,6 +26,15 @@ type Model struct {
 	Service  []*schema.Entity // mtproto.tl: the MTProto service types, layer 0
 	Teamgram []*schema.Entity // teamgram.tl: teamgram's own types and methods, layer 0
 	Names    map[*schema.Entity]string
+	Services []*Service         // services.txt: the gRPC service each method is answered from
+	Extras   map[string][]Field // extra_fields.txt: fields teamgram adds, by message
+	owners   map[*schema.Version]*schema.Entity
+}
+
+// Service is one gRPC service and the methods it answers, in order.
+type Service struct {
+	Name    string
+	Methods []*schema.Entity
 }
 
 // Load reads the schema directory.
@@ -32,7 +45,9 @@ func Load(dir string) (*Model, error) {
 		return nil, err
 	}
 	m := &Model{Top: s.Top, All: s, Names: schema.PredicateNames(s)}
+	byPredicate := map[string]*schema.Entity{}
 	for _, e := range s.Entities {
+		byPredicate[m.Names[e]] = e
 		switch e.File {
 		case paths[0]:
 			m.API = append(m.API, e)
@@ -42,7 +57,46 @@ func Load(dir string) (*Model, error) {
 			m.Teamgram = append(m.Teamgram, e)
 		}
 	}
+	if err := m.loadServices(filepath.Join(dir, "services.txt"), byPredicate); err != nil {
+		return nil, err
+	}
+	extras, err := loadExtras(filepath.Join(dir, "extra_fields.txt"))
+	if err != nil {
+		return nil, err
+	}
+	m.Extras = extras
 	return m, nil
+}
+
+// loadServices reads "RPCService method" lines, in order.
+func (m *Model) loadServices(path string, byPredicate map[string]*schema.Entity) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	var current *Service
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		fields := strings.Fields(line)
+		if len(fields) != 2 {
+			return fmt.Errorf("%s: a line is a service and a method: %s", path, line)
+		}
+		e := byPredicate[fields[1]]
+		if e == nil || !e.Method {
+			return fmt.Errorf("%s: %s is not a method of the schema", path, fields[1])
+		}
+		if current == nil || current.Name != fields[0] {
+			current = &Service{Name: fields[0]}
+			m.Services = append(m.Services, current)
+		}
+		current.Methods = append(current.Methods, e)
+	}
+	return scanner.Err()
 }
 
 // Constructors and Methods split entities, keeping their order.
@@ -70,6 +124,15 @@ type File struct {
 var Files = []File{
 	{"schema.tl.crc32.proto", CRC32Proto, true},
 	{"class_name_registers.go", ClassNameRegisters, false},
+	{"class_id_registers.tl.go", ClassIDRegisters, false},
+	{"rpc_client_registers.go", RPCClientRegisters, false},
+	{"schema.tl.core_types.proto", CoreTypesProto, true},
+	{"schema.tl.handshake.proto", HandshakeProto, true},
+	{"schema.tl.transport.proto", TransportProto, true},
+	{"schema.tl.sync.proto", SyncProto, true},
+	{"schema.tl.handshake_service.proto", HandshakeServiceProto, true},
+	{"schema.tl.transport_service.proto", TransportServiceProto, true},
+	{"schema.tl.sync_service.proto", SyncServiceProto, true},
 }
 
 // Formatted is the file as it is written: emitted, then formatted as the

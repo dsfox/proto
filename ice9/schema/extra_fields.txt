@@ -1,0 +1,15 @@
+# Fields teamgram's generator writes after a message's own: where a name has
+# several types over the layers, one of them again under the plain name, for
+# the server code that reads it (GetTitle, GetQuestion). Message, protobuf
+# type, name, number - the number is the hundred above the message's last.
+Chat google.protobuf.Int32Value color 100
+DialogFilter string title 100
+Document int64 size2 100
+DocumentAttribute double duration 100
+MessageAction string title 200
+MessagePeerReaction string reaction 100
+MessageReplyHeader int32 reply_to_msg_id 100
+Poll string question 100
+PollAnswer string text 100
+ReactionCount string reaction 100
+User google.protobuf.Int32Value color 100

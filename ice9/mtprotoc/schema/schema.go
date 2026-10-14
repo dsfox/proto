@@ -285,8 +285,11 @@ func Parse(sources []Source) (*Schema, error) {
 				delete(state, k)
 				continue
 			}
-			if h, ok := state[k]; ok && sec.From != nil && h.version.ID == l.version.ID {
-				return nil, fmt.Errorf("%s:%d: %s already has id %08x at layer %d; the line changes nothing", l.source, l.number, l.name, l.version.ID, raw.from)
+			// The same id with other params is a line too: Telegram has
+			// dropped flag bits without a new id, and the union of fields
+			// has them.
+			if h, ok := state[k]; ok && sec.From != nil && Definition(l.name, h.version) == Definition(l.name, l.version) {
+				return nil, fmt.Errorf("%s:%d: %s is the same at layer %d; the line changes nothing", l.source, l.number, l.name, raw.from)
 			}
 			state[k] = held{entity: e, version: l.version}
 			sec.Lines = append(sec.Lines, &Line{Entity: e, Version: l.version})
