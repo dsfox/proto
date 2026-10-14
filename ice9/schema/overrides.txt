@@ -1,0 +1,8 @@
+# Lines whose id is not the crc32 of their text: predicate, id, why.
+# tests in ice9/mtprotoc refuse any other such line, and an entry here that
+# is no longer needed.
+passwordKdfAlgoModPow 3a912d4a teamgram's short name for passwordKdfAlgoSHA256SHA256PBKDF2HMACSHA512iter100000SHA256ModPow, whose crc32 the id is
+securePasswordKdfAlgoPBKDF2 bbf2dda0 teamgram's short name for securePasswordKdfAlgoPBKDF2HMACSHA512iter100000, whose crc32 the id is
+ipPortSecret 37982646 Telegram's id from mtproto.tl, the crc32 of the line with secret:bytes left as bytes
+accessPointRule 4679b65f Telegram's id from mtproto.tl, not the crc32 of its line in any form tried
+help_configSimple 5a592a6c Telegram's id from mtproto.tl, not the crc32 of its line in any form tried
