@@ -1495,8 +1495,12 @@ const (
 	RPCAuthorization_AuthDropTempAuthKeys_FullMethodName               = "/mtproto.RPCAuthorization/auth_dropTempAuthKeys"
 	RPCAuthorization_AuthCheckRecoveryPassword_FullMethodName          = "/mtproto.RPCAuthorization/auth_checkRecoveryPassword"
 	RPCAuthorization_AuthImportWebTokenAuthorization_FullMethodName    = "/mtproto.RPCAuthorization/auth_importWebTokenAuthorization"
+	RPCAuthorization_AuthCancelWebTokenAuthorization_FullMethodName    = "/mtproto.RPCAuthorization/auth_cancelWebTokenAuthorization"
 	RPCAuthorization_AuthRequestFirebaseSms_FullMethodName             = "/mtproto.RPCAuthorization/auth_requestFirebaseSms"
 	RPCAuthorization_AuthResetLoginEmail_FullMethodName                = "/mtproto.RPCAuthorization/auth_resetLoginEmail"
+	RPCAuthorization_AuthInitFirebasePnvLogin_FullMethodName           = "/mtproto.RPCAuthorization/auth_initFirebasePnvLogin"
+	RPCAuthorization_AuthFinishFirebasePnvLogin_FullMethodName         = "/mtproto.RPCAuthorization/auth_finishFirebasePnvLogin"
+	RPCAuthorization_AuthFirebasePnvSignUp_FullMethodName              = "/mtproto.RPCAuthorization/auth_firebasePnvSignUp"
 	RPCAuthorization_AuthReportMissingCode_FullMethodName              = "/mtproto.RPCAuthorization/auth_reportMissingCode"
 	RPCAuthorization_AuthCheckPaidAuth_FullMethodName                  = "/mtproto.RPCAuthorization/auth_checkPaidAuth"
 	RPCAuthorization_AccountSendVerifyEmailCode_FullMethodName         = "/mtproto.RPCAuthorization/account_sendVerifyEmailCode"
@@ -1530,8 +1534,12 @@ type RPCAuthorizationClient interface {
 	AuthDropTempAuthKeys(ctx context.Context, in *TLAuthDropTempAuthKeys, opts ...grpc.CallOption) (*Bool, error)
 	AuthCheckRecoveryPassword(ctx context.Context, in *TLAuthCheckRecoveryPassword, opts ...grpc.CallOption) (*Bool, error)
 	AuthImportWebTokenAuthorization(ctx context.Context, in *TLAuthImportWebTokenAuthorization, opts ...grpc.CallOption) (*Auth_Authorization, error)
+	AuthCancelWebTokenAuthorization(ctx context.Context, in *TLAuthCancelWebTokenAuthorization, opts ...grpc.CallOption) (*Bool, error)
 	AuthRequestFirebaseSms(ctx context.Context, in *TLAuthRequestFirebaseSms, opts ...grpc.CallOption) (*Bool, error)
 	AuthResetLoginEmail(ctx context.Context, in *TLAuthResetLoginEmail, opts ...grpc.CallOption) (*Auth_SentCode, error)
+	AuthInitFirebasePnvLogin(ctx context.Context, in *TLAuthInitFirebasePnvLogin, opts ...grpc.CallOption) (*Auth_FirebasePnvIntent, error)
+	AuthFinishFirebasePnvLogin(ctx context.Context, in *TLAuthFinishFirebasePnvLogin, opts ...grpc.CallOption) (*Auth_Authorization, error)
+	AuthFirebasePnvSignUp(ctx context.Context, in *TLAuthFirebasePnvSignUp, opts ...grpc.CallOption) (*Auth_Authorization, error)
 	AuthReportMissingCode(ctx context.Context, in *TLAuthReportMissingCode, opts ...grpc.CallOption) (*Bool, error)
 	AuthCheckPaidAuth(ctx context.Context, in *TLAuthCheckPaidAuth, opts ...grpc.CallOption) (*Auth_SentCode, error)
 	AccountSendVerifyEmailCode(ctx context.Context, in *TLAccountSendVerifyEmailCode, opts ...grpc.CallOption) (*Account_SentEmailCode, error)
@@ -1722,6 +1730,16 @@ func (c *rPCAuthorizationClient) AuthImportWebTokenAuthorization(ctx context.Con
 	return out, nil
 }
 
+func (c *rPCAuthorizationClient) AuthCancelWebTokenAuthorization(ctx context.Context, in *TLAuthCancelWebTokenAuthorization, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCAuthorization_AuthCancelWebTokenAuthorization_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCAuthorizationClient) AuthRequestFirebaseSms(ctx context.Context, in *TLAuthRequestFirebaseSms, opts ...grpc.CallOption) (*Bool, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Bool)
@@ -1736,6 +1754,36 @@ func (c *rPCAuthorizationClient) AuthResetLoginEmail(ctx context.Context, in *TL
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Auth_SentCode)
 	err := c.cc.Invoke(ctx, RPCAuthorization_AuthResetLoginEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAuthorizationClient) AuthInitFirebasePnvLogin(ctx context.Context, in *TLAuthInitFirebasePnvLogin, opts ...grpc.CallOption) (*Auth_FirebasePnvIntent, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Auth_FirebasePnvIntent)
+	err := c.cc.Invoke(ctx, RPCAuthorization_AuthInitFirebasePnvLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAuthorizationClient) AuthFinishFirebasePnvLogin(ctx context.Context, in *TLAuthFinishFirebasePnvLogin, opts ...grpc.CallOption) (*Auth_Authorization, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Auth_Authorization)
+	err := c.cc.Invoke(ctx, RPCAuthorization_AuthFinishFirebasePnvLogin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCAuthorizationClient) AuthFirebasePnvSignUp(ctx context.Context, in *TLAuthFirebasePnvSignUp, opts ...grpc.CallOption) (*Auth_Authorization, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Auth_Authorization)
+	err := c.cc.Invoke(ctx, RPCAuthorization_AuthFirebasePnvSignUp_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1863,8 +1911,12 @@ type RPCAuthorizationServer interface {
 	AuthDropTempAuthKeys(context.Context, *TLAuthDropTempAuthKeys) (*Bool, error)
 	AuthCheckRecoveryPassword(context.Context, *TLAuthCheckRecoveryPassword) (*Bool, error)
 	AuthImportWebTokenAuthorization(context.Context, *TLAuthImportWebTokenAuthorization) (*Auth_Authorization, error)
+	AuthCancelWebTokenAuthorization(context.Context, *TLAuthCancelWebTokenAuthorization) (*Bool, error)
 	AuthRequestFirebaseSms(context.Context, *TLAuthRequestFirebaseSms) (*Bool, error)
 	AuthResetLoginEmail(context.Context, *TLAuthResetLoginEmail) (*Auth_SentCode, error)
+	AuthInitFirebasePnvLogin(context.Context, *TLAuthInitFirebasePnvLogin) (*Auth_FirebasePnvIntent, error)
+	AuthFinishFirebasePnvLogin(context.Context, *TLAuthFinishFirebasePnvLogin) (*Auth_Authorization, error)
+	AuthFirebasePnvSignUp(context.Context, *TLAuthFirebasePnvSignUp) (*Auth_Authorization, error)
 	AuthReportMissingCode(context.Context, *TLAuthReportMissingCode) (*Bool, error)
 	AuthCheckPaidAuth(context.Context, *TLAuthCheckPaidAuth) (*Auth_SentCode, error)
 	AccountSendVerifyEmailCode(context.Context, *TLAccountSendVerifyEmailCode) (*Account_SentEmailCode, error)
@@ -1935,11 +1987,23 @@ func (UnimplementedRPCAuthorizationServer) AuthCheckRecoveryPassword(context.Con
 func (UnimplementedRPCAuthorizationServer) AuthImportWebTokenAuthorization(context.Context, *TLAuthImportWebTokenAuthorization) (*Auth_Authorization, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthImportWebTokenAuthorization not implemented")
 }
+func (UnimplementedRPCAuthorizationServer) AuthCancelWebTokenAuthorization(context.Context, *TLAuthCancelWebTokenAuthorization) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthCancelWebTokenAuthorization not implemented")
+}
 func (UnimplementedRPCAuthorizationServer) AuthRequestFirebaseSms(context.Context, *TLAuthRequestFirebaseSms) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthRequestFirebaseSms not implemented")
 }
 func (UnimplementedRPCAuthorizationServer) AuthResetLoginEmail(context.Context, *TLAuthResetLoginEmail) (*Auth_SentCode, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthResetLoginEmail not implemented")
+}
+func (UnimplementedRPCAuthorizationServer) AuthInitFirebasePnvLogin(context.Context, *TLAuthInitFirebasePnvLogin) (*Auth_FirebasePnvIntent, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthInitFirebasePnvLogin not implemented")
+}
+func (UnimplementedRPCAuthorizationServer) AuthFinishFirebasePnvLogin(context.Context, *TLAuthFinishFirebasePnvLogin) (*Auth_Authorization, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthFinishFirebasePnvLogin not implemented")
+}
+func (UnimplementedRPCAuthorizationServer) AuthFirebasePnvSignUp(context.Context, *TLAuthFirebasePnvSignUp) (*Auth_Authorization, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthFirebasePnvSignUp not implemented")
 }
 func (UnimplementedRPCAuthorizationServer) AuthReportMissingCode(context.Context, *TLAuthReportMissingCode) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthReportMissingCode not implemented")
@@ -2297,6 +2361,24 @@ func _RPCAuthorization_AuthImportWebTokenAuthorization_Handler(srv interface{}, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCAuthorization_AuthCancelWebTokenAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAuthCancelWebTokenAuthorization)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAuthorizationServer).AuthCancelWebTokenAuthorization(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAuthorization_AuthCancelWebTokenAuthorization_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAuthorizationServer).AuthCancelWebTokenAuthorization(ctx, req.(*TLAuthCancelWebTokenAuthorization))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCAuthorization_AuthRequestFirebaseSms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLAuthRequestFirebaseSms)
 	if err := dec(in); err != nil {
@@ -2329,6 +2411,60 @@ func _RPCAuthorization_AuthResetLoginEmail_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCAuthorizationServer).AuthResetLoginEmail(ctx, req.(*TLAuthResetLoginEmail))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAuthorization_AuthInitFirebasePnvLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAuthInitFirebasePnvLogin)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAuthorizationServer).AuthInitFirebasePnvLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAuthorization_AuthInitFirebasePnvLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAuthorizationServer).AuthInitFirebasePnvLogin(ctx, req.(*TLAuthInitFirebasePnvLogin))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAuthorization_AuthFinishFirebasePnvLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAuthFinishFirebasePnvLogin)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAuthorizationServer).AuthFinishFirebasePnvLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAuthorization_AuthFinishFirebasePnvLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAuthorizationServer).AuthFinishFirebasePnvLogin(ctx, req.(*TLAuthFinishFirebasePnvLogin))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCAuthorization_AuthFirebasePnvSignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLAuthFirebasePnvSignUp)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCAuthorizationServer).AuthFirebasePnvSignUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCAuthorization_AuthFirebasePnvSignUp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCAuthorizationServer).AuthFirebasePnvSignUp(ctx, req.(*TLAuthFirebasePnvSignUp))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2589,12 +2725,28 @@ var RPCAuthorization_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCAuthorization_AuthImportWebTokenAuthorization_Handler,
 		},
 		{
+			MethodName: "auth_cancelWebTokenAuthorization",
+			Handler:    _RPCAuthorization_AuthCancelWebTokenAuthorization_Handler,
+		},
+		{
 			MethodName: "auth_requestFirebaseSms",
 			Handler:    _RPCAuthorization_AuthRequestFirebaseSms_Handler,
 		},
 		{
 			MethodName: "auth_resetLoginEmail",
 			Handler:    _RPCAuthorization_AuthResetLoginEmail_Handler,
+		},
+		{
+			MethodName: "auth_initFirebasePnvLogin",
+			Handler:    _RPCAuthorization_AuthInitFirebasePnvLogin_Handler,
+		},
+		{
+			MethodName: "auth_finishFirebasePnvLogin",
+			Handler:    _RPCAuthorization_AuthFinishFirebasePnvLogin_Handler,
+		},
+		{
+			MethodName: "auth_firebasePnvSignUp",
+			Handler:    _RPCAuthorization_AuthFirebasePnvSignUp_Handler,
 		},
 		{
 			MethodName: "auth_reportMissingCode",
@@ -13456,10 +13608,14 @@ var RPCEmojiStatus_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCEphemeral_EphemeralSendMessage_FullMethodName       = "/mtproto.RPCEphemeral/ephemeral_sendMessage"
-	RPCEphemeral_EphemeralDeleteMessage_FullMethodName     = "/mtproto.RPCEphemeral/ephemeral_deleteMessage"
-	RPCEphemeral_EphemeralReportMessage_FullMethodName     = "/mtproto.RPCEphemeral/ephemeral_reportMessage"
-	RPCEphemeral_EphemeralGetCallbackAnswer_FullMethodName = "/mtproto.RPCEphemeral/ephemeral_getCallbackAnswer"
+	RPCEphemeral_EphemeralSendMessage_FullMethodName              = "/mtproto.RPCEphemeral/ephemeral_sendMessage"
+	RPCEphemeral_EphemeralDeleteWelcomeMessage_FullMethodName     = "/mtproto.RPCEphemeral/ephemeral_deleteWelcomeMessage"
+	RPCEphemeral_EphemeralDeleteAllWelcomeMessages_FullMethodName = "/mtproto.RPCEphemeral/ephemeral_deleteAllWelcomeMessages"
+	RPCEphemeral_EphemeralGetWelcomeMessages_FullMethodName       = "/mtproto.RPCEphemeral/ephemeral_getWelcomeMessages"
+	RPCEphemeral_EphemeralDeleteMessage_FullMethodName            = "/mtproto.RPCEphemeral/ephemeral_deleteMessage"
+	RPCEphemeral_EphemeralReportMessage_FullMethodName            = "/mtproto.RPCEphemeral/ephemeral_reportMessage"
+	RPCEphemeral_EphemeralGetCallbackAnswer_FullMethodName        = "/mtproto.RPCEphemeral/ephemeral_getCallbackAnswer"
+	RPCEphemeral_EphemeralEditMessage_FullMethodName              = "/mtproto.RPCEphemeral/ephemeral_editMessage"
 )
 
 // RPCEphemeralClient is the client API for RPCEphemeral service.
@@ -13467,9 +13623,13 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RPCEphemeralClient interface {
 	EphemeralSendMessage(ctx context.Context, in *TLEphemeralSendMessage, opts ...grpc.CallOption) (*Updates, error)
+	EphemeralDeleteWelcomeMessage(ctx context.Context, in *TLEphemeralDeleteWelcomeMessage, opts ...grpc.CallOption) (*Bool, error)
+	EphemeralDeleteAllWelcomeMessages(ctx context.Context, in *TLEphemeralDeleteAllWelcomeMessages, opts ...grpc.CallOption) (*Bool, error)
+	EphemeralGetWelcomeMessages(ctx context.Context, in *TLEphemeralGetWelcomeMessages, opts ...grpc.CallOption) (*Ephemeral_WelcomeMessages, error)
 	EphemeralDeleteMessage(ctx context.Context, in *TLEphemeralDeleteMessage, opts ...grpc.CallOption) (*Bool, error)
 	EphemeralReportMessage(ctx context.Context, in *TLEphemeralReportMessage, opts ...grpc.CallOption) (*ReportResult, error)
 	EphemeralGetCallbackAnswer(ctx context.Context, in *TLEphemeralGetCallbackAnswer, opts ...grpc.CallOption) (*Messages_BotCallbackAnswer, error)
+	EphemeralEditMessage(ctx context.Context, in *TLEphemeralEditMessage, opts ...grpc.CallOption) (*Updates, error)
 }
 
 type rPCEphemeralClient struct {
@@ -13484,6 +13644,36 @@ func (c *rPCEphemeralClient) EphemeralSendMessage(ctx context.Context, in *TLEph
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Updates)
 	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralSendMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCEphemeralClient) EphemeralDeleteWelcomeMessage(ctx context.Context, in *TLEphemeralDeleteWelcomeMessage, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralDeleteWelcomeMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCEphemeralClient) EphemeralDeleteAllWelcomeMessages(ctx context.Context, in *TLEphemeralDeleteAllWelcomeMessages, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralDeleteAllWelcomeMessages_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCEphemeralClient) EphemeralGetWelcomeMessages(ctx context.Context, in *TLEphemeralGetWelcomeMessages, opts ...grpc.CallOption) (*Ephemeral_WelcomeMessages, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Ephemeral_WelcomeMessages)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralGetWelcomeMessages_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -13520,14 +13710,28 @@ func (c *rPCEphemeralClient) EphemeralGetCallbackAnswer(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *rPCEphemeralClient) EphemeralEditMessage(ctx context.Context, in *TLEphemeralEditMessage, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCEphemeral_EphemeralEditMessage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCEphemeralServer is the server API for RPCEphemeral service.
 // All implementations should embed UnimplementedRPCEphemeralServer
 // for forward compatibility.
 type RPCEphemeralServer interface {
 	EphemeralSendMessage(context.Context, *TLEphemeralSendMessage) (*Updates, error)
+	EphemeralDeleteWelcomeMessage(context.Context, *TLEphemeralDeleteWelcomeMessage) (*Bool, error)
+	EphemeralDeleteAllWelcomeMessages(context.Context, *TLEphemeralDeleteAllWelcomeMessages) (*Bool, error)
+	EphemeralGetWelcomeMessages(context.Context, *TLEphemeralGetWelcomeMessages) (*Ephemeral_WelcomeMessages, error)
 	EphemeralDeleteMessage(context.Context, *TLEphemeralDeleteMessage) (*Bool, error)
 	EphemeralReportMessage(context.Context, *TLEphemeralReportMessage) (*ReportResult, error)
 	EphemeralGetCallbackAnswer(context.Context, *TLEphemeralGetCallbackAnswer) (*Messages_BotCallbackAnswer, error)
+	EphemeralEditMessage(context.Context, *TLEphemeralEditMessage) (*Updates, error)
 }
 
 // UnimplementedRPCEphemeralServer should be embedded to have
@@ -13540,6 +13744,15 @@ type UnimplementedRPCEphemeralServer struct{}
 func (UnimplementedRPCEphemeralServer) EphemeralSendMessage(context.Context, *TLEphemeralSendMessage) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EphemeralSendMessage not implemented")
 }
+func (UnimplementedRPCEphemeralServer) EphemeralDeleteWelcomeMessage(context.Context, *TLEphemeralDeleteWelcomeMessage) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralDeleteWelcomeMessage not implemented")
+}
+func (UnimplementedRPCEphemeralServer) EphemeralDeleteAllWelcomeMessages(context.Context, *TLEphemeralDeleteAllWelcomeMessages) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralDeleteAllWelcomeMessages not implemented")
+}
+func (UnimplementedRPCEphemeralServer) EphemeralGetWelcomeMessages(context.Context, *TLEphemeralGetWelcomeMessages) (*Ephemeral_WelcomeMessages, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralGetWelcomeMessages not implemented")
+}
 func (UnimplementedRPCEphemeralServer) EphemeralDeleteMessage(context.Context, *TLEphemeralDeleteMessage) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EphemeralDeleteMessage not implemented")
 }
@@ -13548,6 +13761,9 @@ func (UnimplementedRPCEphemeralServer) EphemeralReportMessage(context.Context, *
 }
 func (UnimplementedRPCEphemeralServer) EphemeralGetCallbackAnswer(context.Context, *TLEphemeralGetCallbackAnswer) (*Messages_BotCallbackAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EphemeralGetCallbackAnswer not implemented")
+}
+func (UnimplementedRPCEphemeralServer) EphemeralEditMessage(context.Context, *TLEphemeralEditMessage) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EphemeralEditMessage not implemented")
 }
 func (UnimplementedRPCEphemeralServer) testEmbeddedByValue() {}
 
@@ -13583,6 +13799,60 @@ func _RPCEphemeral_EphemeralSendMessage_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCEphemeralServer).EphemeralSendMessage(ctx, req.(*TLEphemeralSendMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCEphemeral_EphemeralDeleteWelcomeMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralDeleteWelcomeMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralDeleteWelcomeMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralDeleteWelcomeMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralDeleteWelcomeMessage(ctx, req.(*TLEphemeralDeleteWelcomeMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCEphemeral_EphemeralDeleteAllWelcomeMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralDeleteAllWelcomeMessages)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralDeleteAllWelcomeMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralDeleteAllWelcomeMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralDeleteAllWelcomeMessages(ctx, req.(*TLEphemeralDeleteAllWelcomeMessages))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCEphemeral_EphemeralGetWelcomeMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralGetWelcomeMessages)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralGetWelcomeMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralGetWelcomeMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralGetWelcomeMessages(ctx, req.(*TLEphemeralGetWelcomeMessages))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -13641,6 +13911,24 @@ func _RPCEphemeral_EphemeralGetCallbackAnswer_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCEphemeral_EphemeralEditMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLEphemeralEditMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCEphemeralServer).EphemeralEditMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCEphemeral_EphemeralEditMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCEphemeralServer).EphemeralEditMessage(ctx, req.(*TLEphemeralEditMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCEphemeral_ServiceDesc is the grpc.ServiceDesc for RPCEphemeral service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -13653,6 +13941,18 @@ var RPCEphemeral_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCEphemeral_EphemeralSendMessage_Handler,
 		},
 		{
+			MethodName: "ephemeral_deleteWelcomeMessage",
+			Handler:    _RPCEphemeral_EphemeralDeleteWelcomeMessage_Handler,
+		},
+		{
+			MethodName: "ephemeral_deleteAllWelcomeMessages",
+			Handler:    _RPCEphemeral_EphemeralDeleteAllWelcomeMessages_Handler,
+		},
+		{
+			MethodName: "ephemeral_getWelcomeMessages",
+			Handler:    _RPCEphemeral_EphemeralGetWelcomeMessages_Handler,
+		},
+		{
 			MethodName: "ephemeral_deleteMessage",
 			Handler:    _RPCEphemeral_EphemeralDeleteMessage_Handler,
 		},
@@ -13663,6 +13963,10 @@ var RPCEphemeral_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ephemeral_getCallbackAnswer",
 			Handler:    _RPCEphemeral_EphemeralGetCallbackAnswer_Handler,
+		},
+		{
+			MethodName: "ephemeral_editMessage",
+			Handler:    _RPCEphemeral_EphemeralEditMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -20160,6 +20464,8 @@ var RPCInlineBot_ServiceDesc = grpc.ServiceDesc{
 const (
 	RPCInternalBot_HelpSetBotUpdatesStatus_FullMethodName    = "/mtproto.RPCInternalBot/help_setBotUpdatesStatus"
 	RPCInternalBot_BotsSendCustomRequest_FullMethodName      = "/mtproto.RPCInternalBot/bots_sendCustomRequest"
+	RPCInternalBot_BotsAddUsername_FullMethodName            = "/mtproto.RPCInternalBot/bots_addUsername"
+	RPCInternalBot_BotsRemoveUsername_FullMethodName         = "/mtproto.RPCInternalBot/bots_removeUsername"
 	RPCInternalBot_BotsAnswerWebhookJSONQuery_FullMethodName = "/mtproto.RPCInternalBot/bots_answerWebhookJSONQuery"
 )
 
@@ -20169,6 +20475,8 @@ const (
 type RPCInternalBotClient interface {
 	HelpSetBotUpdatesStatus(ctx context.Context, in *TLHelpSetBotUpdatesStatus, opts ...grpc.CallOption) (*Bool, error)
 	BotsSendCustomRequest(ctx context.Context, in *TLBotsSendCustomRequest, opts ...grpc.CallOption) (*DataJSON, error)
+	BotsAddUsername(ctx context.Context, in *TLBotsAddUsername, opts ...grpc.CallOption) (*Bool, error)
+	BotsRemoveUsername(ctx context.Context, in *TLBotsRemoveUsername, opts ...grpc.CallOption) (*Bool, error)
 	BotsAnswerWebhookJSONQuery(ctx context.Context, in *TLBotsAnswerWebhookJSONQuery, opts ...grpc.CallOption) (*Bool, error)
 }
 
@@ -20200,6 +20508,26 @@ func (c *rPCInternalBotClient) BotsSendCustomRequest(ctx context.Context, in *TL
 	return out, nil
 }
 
+func (c *rPCInternalBotClient) BotsAddUsername(ctx context.Context, in *TLBotsAddUsername, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCInternalBot_BotsAddUsername_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCInternalBotClient) BotsRemoveUsername(ctx context.Context, in *TLBotsRemoveUsername, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCInternalBot_BotsRemoveUsername_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCInternalBotClient) BotsAnswerWebhookJSONQuery(ctx context.Context, in *TLBotsAnswerWebhookJSONQuery, opts ...grpc.CallOption) (*Bool, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Bool)
@@ -20216,6 +20544,8 @@ func (c *rPCInternalBotClient) BotsAnswerWebhookJSONQuery(ctx context.Context, i
 type RPCInternalBotServer interface {
 	HelpSetBotUpdatesStatus(context.Context, *TLHelpSetBotUpdatesStatus) (*Bool, error)
 	BotsSendCustomRequest(context.Context, *TLBotsSendCustomRequest) (*DataJSON, error)
+	BotsAddUsername(context.Context, *TLBotsAddUsername) (*Bool, error)
+	BotsRemoveUsername(context.Context, *TLBotsRemoveUsername) (*Bool, error)
 	BotsAnswerWebhookJSONQuery(context.Context, *TLBotsAnswerWebhookJSONQuery) (*Bool, error)
 }
 
@@ -20231,6 +20561,12 @@ func (UnimplementedRPCInternalBotServer) HelpSetBotUpdatesStatus(context.Context
 }
 func (UnimplementedRPCInternalBotServer) BotsSendCustomRequest(context.Context, *TLBotsSendCustomRequest) (*DataJSON, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsSendCustomRequest not implemented")
+}
+func (UnimplementedRPCInternalBotServer) BotsAddUsername(context.Context, *TLBotsAddUsername) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsAddUsername not implemented")
+}
+func (UnimplementedRPCInternalBotServer) BotsRemoveUsername(context.Context, *TLBotsRemoveUsername) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BotsRemoveUsername not implemented")
 }
 func (UnimplementedRPCInternalBotServer) BotsAnswerWebhookJSONQuery(context.Context, *TLBotsAnswerWebhookJSONQuery) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsAnswerWebhookJSONQuery not implemented")
@@ -20291,6 +20627,42 @@ func _RPCInternalBot_BotsSendCustomRequest_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCInternalBot_BotsAddUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsAddUsername)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCInternalBotServer).BotsAddUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCInternalBot_BotsAddUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCInternalBotServer).BotsAddUsername(ctx, req.(*TLBotsAddUsername))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCInternalBot_BotsRemoveUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLBotsRemoveUsername)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCInternalBotServer).BotsRemoveUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCInternalBot_BotsRemoveUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCInternalBotServer).BotsRemoveUsername(ctx, req.(*TLBotsRemoveUsername))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCInternalBot_BotsAnswerWebhookJSONQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLBotsAnswerWebhookJSONQuery)
 	if err := dec(in); err != nil {
@@ -20323,6 +20695,14 @@ var RPCInternalBot_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "bots_sendCustomRequest",
 			Handler:    _RPCInternalBot_BotsSendCustomRequest_Handler,
+		},
+		{
+			MethodName: "bots_addUsername",
+			Handler:    _RPCInternalBot_BotsAddUsername_Handler,
+		},
+		{
+			MethodName: "bots_removeUsername",
+			Handler:    _RPCInternalBot_BotsRemoveUsername_Handler,
 		},
 		{
 			MethodName: "bots_answerWebhookJSONQuery",
@@ -25092,19 +25472,53 @@ var RPCPassport_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCPayments_AccountGetTmpPassword_FullMethodName            = "/mtproto.RPCPayments/account_getTmpPassword"
-	RPCPayments_MessagesSetBotShippingResults_FullMethodName    = "/mtproto.RPCPayments/messages_setBotShippingResults"
-	RPCPayments_MessagesSetBotPrecheckoutResults_FullMethodName = "/mtproto.RPCPayments/messages_setBotPrecheckoutResults"
-	RPCPayments_PaymentsGetPaymentForm_FullMethodName           = "/mtproto.RPCPayments/payments_getPaymentForm"
-	RPCPayments_PaymentsGetPaymentReceipt_FullMethodName        = "/mtproto.RPCPayments/payments_getPaymentReceipt"
-	RPCPayments_PaymentsValidateRequestedInfo_FullMethodName    = "/mtproto.RPCPayments/payments_validateRequestedInfo"
-	RPCPayments_PaymentsSendPaymentForm_FullMethodName          = "/mtproto.RPCPayments/payments_sendPaymentForm"
-	RPCPayments_PaymentsGetSavedInfo_FullMethodName             = "/mtproto.RPCPayments/payments_getSavedInfo"
-	RPCPayments_PaymentsClearSavedInfo_FullMethodName           = "/mtproto.RPCPayments/payments_clearSavedInfo"
-	RPCPayments_PaymentsGetBankCardData_FullMethodName          = "/mtproto.RPCPayments/payments_getBankCardData"
-	RPCPayments_PaymentsExportInvoice_FullMethodName            = "/mtproto.RPCPayments/payments_exportInvoice"
-	RPCPayments_PaymentsRequestRecurringPayment_FullMethodName  = "/mtproto.RPCPayments/payments_requestRecurringPayment"
-	RPCPayments_PaymentsRestorePlayMarketReceipt_FullMethodName = "/mtproto.RPCPayments/payments_restorePlayMarketReceipt"
+	RPCPayments_AccountGetTmpPassword_FullMethodName                = "/mtproto.RPCPayments/account_getTmpPassword"
+	RPCPayments_MessagesSetBotShippingResults_FullMethodName        = "/mtproto.RPCPayments/messages_setBotShippingResults"
+	RPCPayments_MessagesSetBotPrecheckoutResults_FullMethodName     = "/mtproto.RPCPayments/messages_setBotPrecheckoutResults"
+	RPCPayments_PaymentsGetPaymentForm_FullMethodName               = "/mtproto.RPCPayments/payments_getPaymentForm"
+	RPCPayments_PaymentsGetCurrencyRates_FullMethodName             = "/mtproto.RPCPayments/payments_getCurrencyRates"
+	RPCPayments_PaymentsGetOnrampProviders_FullMethodName           = "/mtproto.RPCPayments/payments_getOnrampProviders"
+	RPCPayments_PaymentsGetOnrampBaseCurrencies_FullMethodName      = "/mtproto.RPCPayments/payments_getOnrampBaseCurrencies"
+	RPCPayments_PaymentsGetOnrampAvailability_FullMethodName        = "/mtproto.RPCPayments/payments_getOnrampAvailability"
+	RPCPayments_PaymentsGetOnrampLimits_FullMethodName              = "/mtproto.RPCPayments/payments_getOnrampLimits"
+	RPCPayments_PaymentsGetOnrampQuote_FullMethodName               = "/mtproto.RPCPayments/payments_getOnrampQuote"
+	RPCPayments_PaymentsCreateOnrampSession_FullMethodName          = "/mtproto.RPCPayments/payments_createOnrampSession"
+	RPCPayments_WalletGetState_FullMethodName                       = "/mtproto.RPCPayments/wallet_getState"
+	RPCPayments_WalletGetUserAddresses_FullMethodName               = "/mtproto.RPCPayments/wallet_getUserAddresses"
+	RPCPayments_WalletGetTransactions_FullMethodName                = "/mtproto.RPCPayments/wallet_getTransactions"
+	RPCPayments_WalletGetTransactionsByIDs_FullMethodName           = "/mtproto.RPCPayments/wallet_getTransactionsByIDs"
+	RPCPayments_WalletGetTransactionsByMsgHash_FullMethodName       = "/mtproto.RPCPayments/wallet_getTransactionsByMsgHash"
+	RPCPayments_WalletExportSecretPhrase_FullMethodName             = "/mtproto.RPCPayments/wallet_exportSecretPhrase"
+	RPCPayments_WalletFetchEncryptedSecretPhrasePart_FullMethodName = "/mtproto.RPCPayments/wallet_fetchEncryptedSecretPhrasePart"
+	RPCPayments_WalletReplaceWallet_FullMethodName                  = "/mtproto.RPCPayments/wallet_replaceWallet"
+	RPCPayments_WalletDisableBackup_FullMethodName                  = "/mtproto.RPCPayments/wallet_disableBackup"
+	RPCPayments_WalletGetBackupHolderDcs_FullMethodName             = "/mtproto.RPCPayments/wallet_getBackupHolderDcs"
+	RPCPayments_WalletEnableBackup_FullMethodName                   = "/mtproto.RPCPayments/wallet_enableBackup"
+	RPCPayments_WalletGetProofChallenge_FullMethodName              = "/mtproto.RPCPayments/wallet_getProofChallenge"
+	RPCPayments_WalletSendTransfer_FullMethodName                   = "/mtproto.RPCPayments/wallet_sendTransfer"
+	RPCPayments_WalletGetGaslessInfo_FullMethodName                 = "/mtproto.RPCPayments/wallet_getGaslessInfo"
+	RPCPayments_WalletGetExistingWaltBalance_FullMethodName         = "/mtproto.RPCPayments/wallet_getExistingWaltBalance"
+	RPCPayments_WalletGetNfts_FullMethodName                        = "/mtproto.RPCPayments/wallet_getNfts"
+	RPCPayments_WalletTonConnectCreateSession_FullMethodName        = "/mtproto.RPCPayments/wallet_tonConnectCreateSession"
+	RPCPayments_WalletTonConnectRegisterKey_FullMethodName          = "/mtproto.RPCPayments/wallet_tonConnectRegisterKey"
+	RPCPayments_WalletTonConnectSubmitConnectResult_FullMethodName  = "/mtproto.RPCPayments/wallet_tonConnectSubmitConnectResult"
+	RPCPayments_WalletTonConnectGetPending_FullMethodName           = "/mtproto.RPCPayments/wallet_tonConnectGetPending"
+	RPCPayments_WalletTonConnectClaimRequest_FullMethodName         = "/mtproto.RPCPayments/wallet_tonConnectClaimRequest"
+	RPCPayments_WalletTonConnectSubmitResponse_FullMethodName       = "/mtproto.RPCPayments/wallet_tonConnectSubmitResponse"
+	RPCPayments_WalletTonConnectNextEventId_FullMethodName          = "/mtproto.RPCPayments/wallet_tonConnectNextEventId"
+	RPCPayments_WalletTonConnectCloseSession_FullMethodName         = "/mtproto.RPCPayments/wallet_tonConnectCloseSession"
+	RPCPayments_WalletTonConnectGetSessions_FullMethodName          = "/mtproto.RPCPayments/wallet_tonConnectGetSessions"
+	RPCPayments_ToncenterPerformApiRequest_FullMethodName           = "/mtproto.RPCPayments/toncenter_performApiRequest"
+	RPCPayments_ToncenterGetStreamingUrl_FullMethodName             = "/mtproto.RPCPayments/toncenter_getStreamingUrl"
+	RPCPayments_PaymentsGetPaymentReceipt_FullMethodName            = "/mtproto.RPCPayments/payments_getPaymentReceipt"
+	RPCPayments_PaymentsValidateRequestedInfo_FullMethodName        = "/mtproto.RPCPayments/payments_validateRequestedInfo"
+	RPCPayments_PaymentsSendPaymentForm_FullMethodName              = "/mtproto.RPCPayments/payments_sendPaymentForm"
+	RPCPayments_PaymentsGetSavedInfo_FullMethodName                 = "/mtproto.RPCPayments/payments_getSavedInfo"
+	RPCPayments_PaymentsClearSavedInfo_FullMethodName               = "/mtproto.RPCPayments/payments_clearSavedInfo"
+	RPCPayments_PaymentsGetBankCardData_FullMethodName              = "/mtproto.RPCPayments/payments_getBankCardData"
+	RPCPayments_PaymentsExportInvoice_FullMethodName                = "/mtproto.RPCPayments/payments_exportInvoice"
+	RPCPayments_PaymentsRequestRecurringPayment_FullMethodName      = "/mtproto.RPCPayments/payments_requestRecurringPayment"
+	RPCPayments_PaymentsRestorePlayMarketReceipt_FullMethodName     = "/mtproto.RPCPayments/payments_restorePlayMarketReceipt"
 )
 
 // RPCPaymentsClient is the client API for RPCPayments service.
@@ -25115,6 +25529,40 @@ type RPCPaymentsClient interface {
 	MessagesSetBotShippingResults(ctx context.Context, in *TLMessagesSetBotShippingResults, opts ...grpc.CallOption) (*Bool, error)
 	MessagesSetBotPrecheckoutResults(ctx context.Context, in *TLMessagesSetBotPrecheckoutResults, opts ...grpc.CallOption) (*Bool, error)
 	PaymentsGetPaymentForm(ctx context.Context, in *TLPaymentsGetPaymentForm, opts ...grpc.CallOption) (*Payments_PaymentForm, error)
+	PaymentsGetCurrencyRates(ctx context.Context, in *TLPaymentsGetCurrencyRates, opts ...grpc.CallOption) (*Payments_CurrencyRates, error)
+	PaymentsGetOnrampProviders(ctx context.Context, in *TLPaymentsGetOnrampProviders, opts ...grpc.CallOption) (*Vector_OnrampProviderInfo, error)
+	PaymentsGetOnrampBaseCurrencies(ctx context.Context, in *TLPaymentsGetOnrampBaseCurrencies, opts ...grpc.CallOption) (*Vector_String, error)
+	PaymentsGetOnrampAvailability(ctx context.Context, in *TLPaymentsGetOnrampAvailability, opts ...grpc.CallOption) (*OnrampAvailability, error)
+	PaymentsGetOnrampLimits(ctx context.Context, in *TLPaymentsGetOnrampLimits, opts ...grpc.CallOption) (*OnrampLimits, error)
+	PaymentsGetOnrampQuote(ctx context.Context, in *TLPaymentsGetOnrampQuote, opts ...grpc.CallOption) (*OnrampQuote, error)
+	PaymentsCreateOnrampSession(ctx context.Context, in *TLPaymentsCreateOnrampSession, opts ...grpc.CallOption) (*OnrampSession, error)
+	WalletGetState(ctx context.Context, in *TLWalletGetState, opts ...grpc.CallOption) (*WalletState, error)
+	WalletGetUserAddresses(ctx context.Context, in *TLWalletGetUserAddresses, opts ...grpc.CallOption) (*Wallet_UserAddresses, error)
+	WalletGetTransactions(ctx context.Context, in *TLWalletGetTransactions, opts ...grpc.CallOption) (*Wallet_Transactions, error)
+	WalletGetTransactionsByIDs(ctx context.Context, in *TLWalletGetTransactionsByIDs, opts ...grpc.CallOption) (*Wallet_Transactions, error)
+	WalletGetTransactionsByMsgHash(ctx context.Context, in *TLWalletGetTransactionsByMsgHash, opts ...grpc.CallOption) (*Wallet_Transactions, error)
+	WalletExportSecretPhrase(ctx context.Context, in *TLWalletExportSecretPhrase, opts ...grpc.CallOption) (*Wallet_SecretPhraseParts, error)
+	WalletFetchEncryptedSecretPhrasePart(ctx context.Context, in *TLWalletFetchEncryptedSecretPhrasePart, opts ...grpc.CallOption) (*Wallet_EncryptedSecretPhrasePart, error)
+	WalletReplaceWallet(ctx context.Context, in *TLWalletReplaceWallet, opts ...grpc.CallOption) (*WalletState, error)
+	WalletDisableBackup(ctx context.Context, in *TLWalletDisableBackup, opts ...grpc.CallOption) (*WalletState, error)
+	WalletGetBackupHolderDcs(ctx context.Context, in *TLWalletGetBackupHolderDcs, opts ...grpc.CallOption) (*Vector_Wallet_HolderDc, error)
+	WalletEnableBackup(ctx context.Context, in *TLWalletEnableBackup, opts ...grpc.CallOption) (*WalletState, error)
+	WalletGetProofChallenge(ctx context.Context, in *TLWalletGetProofChallenge, opts ...grpc.CallOption) (*Wallet_ProofChallenge, error)
+	WalletSendTransfer(ctx context.Context, in *TLWalletSendTransfer, opts ...grpc.CallOption) (*Updates, error)
+	WalletGetGaslessInfo(ctx context.Context, in *TLWalletGetGaslessInfo, opts ...grpc.CallOption) (*Updates, error)
+	WalletGetExistingWaltBalance(ctx context.Context, in *TLWalletGetExistingWaltBalance, opts ...grpc.CallOption) (*Wallet_ExistingBalance, error)
+	WalletGetNfts(ctx context.Context, in *TLWalletGetNfts, opts ...grpc.CallOption) (*Wallet_NftItems, error)
+	WalletTonConnectCreateSession(ctx context.Context, in *TLWalletTonConnectCreateSession, opts ...grpc.CallOption) (*TonConnectSession, error)
+	WalletTonConnectRegisterKey(ctx context.Context, in *TLWalletTonConnectRegisterKey, opts ...grpc.CallOption) (*Wallet_TonConnectChallenge, error)
+	WalletTonConnectSubmitConnectResult(ctx context.Context, in *TLWalletTonConnectSubmitConnectResult, opts ...grpc.CallOption) (*Bool, error)
+	WalletTonConnectGetPending(ctx context.Context, in *TLWalletTonConnectGetPending, opts ...grpc.CallOption) (*Wallet_TonConnectPending, error)
+	WalletTonConnectClaimRequest(ctx context.Context, in *TLWalletTonConnectClaimRequest, opts ...grpc.CallOption) (*Bool, error)
+	WalletTonConnectSubmitResponse(ctx context.Context, in *TLWalletTonConnectSubmitResponse, opts ...grpc.CallOption) (*Bool, error)
+	WalletTonConnectNextEventId(ctx context.Context, in *TLWalletTonConnectNextEventId, opts ...grpc.CallOption) (*TonConnectNextEventId, error)
+	WalletTonConnectCloseSession(ctx context.Context, in *TLWalletTonConnectCloseSession, opts ...grpc.CallOption) (*Bool, error)
+	WalletTonConnectGetSessions(ctx context.Context, in *TLWalletTonConnectGetSessions, opts ...grpc.CallOption) (*Wallet_TonConnectSessions, error)
+	ToncenterPerformApiRequest(ctx context.Context, in *TLToncenterPerformApiRequest, opts ...grpc.CallOption) (*Toncenter_ApiResponse, error)
+	ToncenterGetStreamingUrl(ctx context.Context, in *TLToncenterGetStreamingUrl, opts ...grpc.CallOption) (*Toncenter_StreamingUrl, error)
 	PaymentsGetPaymentReceipt(ctx context.Context, in *TLPaymentsGetPaymentReceipt, opts ...grpc.CallOption) (*Payments_PaymentReceipt, error)
 	PaymentsValidateRequestedInfo(ctx context.Context, in *TLPaymentsValidateRequestedInfo, opts ...grpc.CallOption) (*Payments_ValidatedRequestedInfo, error)
 	PaymentsSendPaymentForm(ctx context.Context, in *TLPaymentsSendPaymentForm, opts ...grpc.CallOption) (*Payments_PaymentResult, error)
@@ -25168,6 +25616,346 @@ func (c *rPCPaymentsClient) PaymentsGetPaymentForm(ctx context.Context, in *TLPa
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Payments_PaymentForm)
 	err := c.cc.Invoke(ctx, RPCPayments_PaymentsGetPaymentForm_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsGetCurrencyRates(ctx context.Context, in *TLPaymentsGetCurrencyRates, opts ...grpc.CallOption) (*Payments_CurrencyRates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Payments_CurrencyRates)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsGetCurrencyRates_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsGetOnrampProviders(ctx context.Context, in *TLPaymentsGetOnrampProviders, opts ...grpc.CallOption) (*Vector_OnrampProviderInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Vector_OnrampProviderInfo)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsGetOnrampProviders_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsGetOnrampBaseCurrencies(ctx context.Context, in *TLPaymentsGetOnrampBaseCurrencies, opts ...grpc.CallOption) (*Vector_String, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Vector_String)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsGetOnrampBaseCurrencies_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsGetOnrampAvailability(ctx context.Context, in *TLPaymentsGetOnrampAvailability, opts ...grpc.CallOption) (*OnrampAvailability, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OnrampAvailability)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsGetOnrampAvailability_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsGetOnrampLimits(ctx context.Context, in *TLPaymentsGetOnrampLimits, opts ...grpc.CallOption) (*OnrampLimits, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OnrampLimits)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsGetOnrampLimits_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsGetOnrampQuote(ctx context.Context, in *TLPaymentsGetOnrampQuote, opts ...grpc.CallOption) (*OnrampQuote, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OnrampQuote)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsGetOnrampQuote_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsCreateOnrampSession(ctx context.Context, in *TLPaymentsCreateOnrampSession, opts ...grpc.CallOption) (*OnrampSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OnrampSession)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsCreateOnrampSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetState(ctx context.Context, in *TLWalletGetState, opts ...grpc.CallOption) (*WalletState, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WalletState)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetState_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetUserAddresses(ctx context.Context, in *TLWalletGetUserAddresses, opts ...grpc.CallOption) (*Wallet_UserAddresses, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_UserAddresses)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetUserAddresses_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetTransactions(ctx context.Context, in *TLWalletGetTransactions, opts ...grpc.CallOption) (*Wallet_Transactions, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_Transactions)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetTransactions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetTransactionsByIDs(ctx context.Context, in *TLWalletGetTransactionsByIDs, opts ...grpc.CallOption) (*Wallet_Transactions, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_Transactions)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetTransactionsByIDs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetTransactionsByMsgHash(ctx context.Context, in *TLWalletGetTransactionsByMsgHash, opts ...grpc.CallOption) (*Wallet_Transactions, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_Transactions)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetTransactionsByMsgHash_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletExportSecretPhrase(ctx context.Context, in *TLWalletExportSecretPhrase, opts ...grpc.CallOption) (*Wallet_SecretPhraseParts, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_SecretPhraseParts)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletExportSecretPhrase_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletFetchEncryptedSecretPhrasePart(ctx context.Context, in *TLWalletFetchEncryptedSecretPhrasePart, opts ...grpc.CallOption) (*Wallet_EncryptedSecretPhrasePart, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_EncryptedSecretPhrasePart)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletFetchEncryptedSecretPhrasePart_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletReplaceWallet(ctx context.Context, in *TLWalletReplaceWallet, opts ...grpc.CallOption) (*WalletState, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WalletState)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletReplaceWallet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletDisableBackup(ctx context.Context, in *TLWalletDisableBackup, opts ...grpc.CallOption) (*WalletState, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WalletState)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletDisableBackup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetBackupHolderDcs(ctx context.Context, in *TLWalletGetBackupHolderDcs, opts ...grpc.CallOption) (*Vector_Wallet_HolderDc, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Vector_Wallet_HolderDc)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetBackupHolderDcs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletEnableBackup(ctx context.Context, in *TLWalletEnableBackup, opts ...grpc.CallOption) (*WalletState, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WalletState)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletEnableBackup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetProofChallenge(ctx context.Context, in *TLWalletGetProofChallenge, opts ...grpc.CallOption) (*Wallet_ProofChallenge, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_ProofChallenge)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetProofChallenge_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletSendTransfer(ctx context.Context, in *TLWalletSendTransfer, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletSendTransfer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetGaslessInfo(ctx context.Context, in *TLWalletGetGaslessInfo, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetGaslessInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetExistingWaltBalance(ctx context.Context, in *TLWalletGetExistingWaltBalance, opts ...grpc.CallOption) (*Wallet_ExistingBalance, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_ExistingBalance)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetExistingWaltBalance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletGetNfts(ctx context.Context, in *TLWalletGetNfts, opts ...grpc.CallOption) (*Wallet_NftItems, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_NftItems)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletGetNfts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectCreateSession(ctx context.Context, in *TLWalletTonConnectCreateSession, opts ...grpc.CallOption) (*TonConnectSession, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TonConnectSession)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectCreateSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectRegisterKey(ctx context.Context, in *TLWalletTonConnectRegisterKey, opts ...grpc.CallOption) (*Wallet_TonConnectChallenge, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_TonConnectChallenge)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectRegisterKey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectSubmitConnectResult(ctx context.Context, in *TLWalletTonConnectSubmitConnectResult, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectSubmitConnectResult_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectGetPending(ctx context.Context, in *TLWalletTonConnectGetPending, opts ...grpc.CallOption) (*Wallet_TonConnectPending, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_TonConnectPending)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectGetPending_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectClaimRequest(ctx context.Context, in *TLWalletTonConnectClaimRequest, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectClaimRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectSubmitResponse(ctx context.Context, in *TLWalletTonConnectSubmitResponse, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectSubmitResponse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectNextEventId(ctx context.Context, in *TLWalletTonConnectNextEventId, opts ...grpc.CallOption) (*TonConnectNextEventId, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TonConnectNextEventId)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectNextEventId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectCloseSession(ctx context.Context, in *TLWalletTonConnectCloseSession, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectCloseSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletTonConnectGetSessions(ctx context.Context, in *TLWalletTonConnectGetSessions, opts ...grpc.CallOption) (*Wallet_TonConnectSessions, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_TonConnectSessions)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletTonConnectGetSessions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) ToncenterPerformApiRequest(ctx context.Context, in *TLToncenterPerformApiRequest, opts ...grpc.CallOption) (*Toncenter_ApiResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Toncenter_ApiResponse)
+	err := c.cc.Invoke(ctx, RPCPayments_ToncenterPerformApiRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) ToncenterGetStreamingUrl(ctx context.Context, in *TLToncenterGetStreamingUrl, opts ...grpc.CallOption) (*Toncenter_StreamingUrl, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Toncenter_StreamingUrl)
+	err := c.cc.Invoke(ctx, RPCPayments_ToncenterGetStreamingUrl_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -25272,6 +26060,40 @@ type RPCPaymentsServer interface {
 	MessagesSetBotShippingResults(context.Context, *TLMessagesSetBotShippingResults) (*Bool, error)
 	MessagesSetBotPrecheckoutResults(context.Context, *TLMessagesSetBotPrecheckoutResults) (*Bool, error)
 	PaymentsGetPaymentForm(context.Context, *TLPaymentsGetPaymentForm) (*Payments_PaymentForm, error)
+	PaymentsGetCurrencyRates(context.Context, *TLPaymentsGetCurrencyRates) (*Payments_CurrencyRates, error)
+	PaymentsGetOnrampProviders(context.Context, *TLPaymentsGetOnrampProviders) (*Vector_OnrampProviderInfo, error)
+	PaymentsGetOnrampBaseCurrencies(context.Context, *TLPaymentsGetOnrampBaseCurrencies) (*Vector_String, error)
+	PaymentsGetOnrampAvailability(context.Context, *TLPaymentsGetOnrampAvailability) (*OnrampAvailability, error)
+	PaymentsGetOnrampLimits(context.Context, *TLPaymentsGetOnrampLimits) (*OnrampLimits, error)
+	PaymentsGetOnrampQuote(context.Context, *TLPaymentsGetOnrampQuote) (*OnrampQuote, error)
+	PaymentsCreateOnrampSession(context.Context, *TLPaymentsCreateOnrampSession) (*OnrampSession, error)
+	WalletGetState(context.Context, *TLWalletGetState) (*WalletState, error)
+	WalletGetUserAddresses(context.Context, *TLWalletGetUserAddresses) (*Wallet_UserAddresses, error)
+	WalletGetTransactions(context.Context, *TLWalletGetTransactions) (*Wallet_Transactions, error)
+	WalletGetTransactionsByIDs(context.Context, *TLWalletGetTransactionsByIDs) (*Wallet_Transactions, error)
+	WalletGetTransactionsByMsgHash(context.Context, *TLWalletGetTransactionsByMsgHash) (*Wallet_Transactions, error)
+	WalletExportSecretPhrase(context.Context, *TLWalletExportSecretPhrase) (*Wallet_SecretPhraseParts, error)
+	WalletFetchEncryptedSecretPhrasePart(context.Context, *TLWalletFetchEncryptedSecretPhrasePart) (*Wallet_EncryptedSecretPhrasePart, error)
+	WalletReplaceWallet(context.Context, *TLWalletReplaceWallet) (*WalletState, error)
+	WalletDisableBackup(context.Context, *TLWalletDisableBackup) (*WalletState, error)
+	WalletGetBackupHolderDcs(context.Context, *TLWalletGetBackupHolderDcs) (*Vector_Wallet_HolderDc, error)
+	WalletEnableBackup(context.Context, *TLWalletEnableBackup) (*WalletState, error)
+	WalletGetProofChallenge(context.Context, *TLWalletGetProofChallenge) (*Wallet_ProofChallenge, error)
+	WalletSendTransfer(context.Context, *TLWalletSendTransfer) (*Updates, error)
+	WalletGetGaslessInfo(context.Context, *TLWalletGetGaslessInfo) (*Updates, error)
+	WalletGetExistingWaltBalance(context.Context, *TLWalletGetExistingWaltBalance) (*Wallet_ExistingBalance, error)
+	WalletGetNfts(context.Context, *TLWalletGetNfts) (*Wallet_NftItems, error)
+	WalletTonConnectCreateSession(context.Context, *TLWalletTonConnectCreateSession) (*TonConnectSession, error)
+	WalletTonConnectRegisterKey(context.Context, *TLWalletTonConnectRegisterKey) (*Wallet_TonConnectChallenge, error)
+	WalletTonConnectSubmitConnectResult(context.Context, *TLWalletTonConnectSubmitConnectResult) (*Bool, error)
+	WalletTonConnectGetPending(context.Context, *TLWalletTonConnectGetPending) (*Wallet_TonConnectPending, error)
+	WalletTonConnectClaimRequest(context.Context, *TLWalletTonConnectClaimRequest) (*Bool, error)
+	WalletTonConnectSubmitResponse(context.Context, *TLWalletTonConnectSubmitResponse) (*Bool, error)
+	WalletTonConnectNextEventId(context.Context, *TLWalletTonConnectNextEventId) (*TonConnectNextEventId, error)
+	WalletTonConnectCloseSession(context.Context, *TLWalletTonConnectCloseSession) (*Bool, error)
+	WalletTonConnectGetSessions(context.Context, *TLWalletTonConnectGetSessions) (*Wallet_TonConnectSessions, error)
+	ToncenterPerformApiRequest(context.Context, *TLToncenterPerformApiRequest) (*Toncenter_ApiResponse, error)
+	ToncenterGetStreamingUrl(context.Context, *TLToncenterGetStreamingUrl) (*Toncenter_StreamingUrl, error)
 	PaymentsGetPaymentReceipt(context.Context, *TLPaymentsGetPaymentReceipt) (*Payments_PaymentReceipt, error)
 	PaymentsValidateRequestedInfo(context.Context, *TLPaymentsValidateRequestedInfo) (*Payments_ValidatedRequestedInfo, error)
 	PaymentsSendPaymentForm(context.Context, *TLPaymentsSendPaymentForm) (*Payments_PaymentResult, error)
@@ -25301,6 +26123,108 @@ func (UnimplementedRPCPaymentsServer) MessagesSetBotPrecheckoutResults(context.C
 }
 func (UnimplementedRPCPaymentsServer) PaymentsGetPaymentForm(context.Context, *TLPaymentsGetPaymentForm) (*Payments_PaymentForm, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetPaymentForm not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsGetCurrencyRates(context.Context, *TLPaymentsGetCurrencyRates) (*Payments_CurrencyRates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetCurrencyRates not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsGetOnrampProviders(context.Context, *TLPaymentsGetOnrampProviders) (*Vector_OnrampProviderInfo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetOnrampProviders not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsGetOnrampBaseCurrencies(context.Context, *TLPaymentsGetOnrampBaseCurrencies) (*Vector_String, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetOnrampBaseCurrencies not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsGetOnrampAvailability(context.Context, *TLPaymentsGetOnrampAvailability) (*OnrampAvailability, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetOnrampAvailability not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsGetOnrampLimits(context.Context, *TLPaymentsGetOnrampLimits) (*OnrampLimits, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetOnrampLimits not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsGetOnrampQuote(context.Context, *TLPaymentsGetOnrampQuote) (*OnrampQuote, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetOnrampQuote not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsCreateOnrampSession(context.Context, *TLPaymentsCreateOnrampSession) (*OnrampSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsCreateOnrampSession not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetState(context.Context, *TLWalletGetState) (*WalletState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetState not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetUserAddresses(context.Context, *TLWalletGetUserAddresses) (*Wallet_UserAddresses, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetUserAddresses not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetTransactions(context.Context, *TLWalletGetTransactions) (*Wallet_Transactions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetTransactions not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetTransactionsByIDs(context.Context, *TLWalletGetTransactionsByIDs) (*Wallet_Transactions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetTransactionsByIDs not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetTransactionsByMsgHash(context.Context, *TLWalletGetTransactionsByMsgHash) (*Wallet_Transactions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetTransactionsByMsgHash not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletExportSecretPhrase(context.Context, *TLWalletExportSecretPhrase) (*Wallet_SecretPhraseParts, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletExportSecretPhrase not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletFetchEncryptedSecretPhrasePart(context.Context, *TLWalletFetchEncryptedSecretPhrasePart) (*Wallet_EncryptedSecretPhrasePart, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletFetchEncryptedSecretPhrasePart not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletReplaceWallet(context.Context, *TLWalletReplaceWallet) (*WalletState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletReplaceWallet not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletDisableBackup(context.Context, *TLWalletDisableBackup) (*WalletState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletDisableBackup not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetBackupHolderDcs(context.Context, *TLWalletGetBackupHolderDcs) (*Vector_Wallet_HolderDc, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetBackupHolderDcs not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletEnableBackup(context.Context, *TLWalletEnableBackup) (*WalletState, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletEnableBackup not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetProofChallenge(context.Context, *TLWalletGetProofChallenge) (*Wallet_ProofChallenge, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetProofChallenge not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletSendTransfer(context.Context, *TLWalletSendTransfer) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletSendTransfer not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetGaslessInfo(context.Context, *TLWalletGetGaslessInfo) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetGaslessInfo not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetExistingWaltBalance(context.Context, *TLWalletGetExistingWaltBalance) (*Wallet_ExistingBalance, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetExistingWaltBalance not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletGetNfts(context.Context, *TLWalletGetNfts) (*Wallet_NftItems, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletGetNfts not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectCreateSession(context.Context, *TLWalletTonConnectCreateSession) (*TonConnectSession, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectCreateSession not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectRegisterKey(context.Context, *TLWalletTonConnectRegisterKey) (*Wallet_TonConnectChallenge, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectRegisterKey not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectSubmitConnectResult(context.Context, *TLWalletTonConnectSubmitConnectResult) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectSubmitConnectResult not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectGetPending(context.Context, *TLWalletTonConnectGetPending) (*Wallet_TonConnectPending, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectGetPending not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectClaimRequest(context.Context, *TLWalletTonConnectClaimRequest) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectClaimRequest not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectSubmitResponse(context.Context, *TLWalletTonConnectSubmitResponse) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectSubmitResponse not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectNextEventId(context.Context, *TLWalletTonConnectNextEventId) (*TonConnectNextEventId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectNextEventId not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectCloseSession(context.Context, *TLWalletTonConnectCloseSession) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectCloseSession not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletTonConnectGetSessions(context.Context, *TLWalletTonConnectGetSessions) (*Wallet_TonConnectSessions, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletTonConnectGetSessions not implemented")
+}
+func (UnimplementedRPCPaymentsServer) ToncenterPerformApiRequest(context.Context, *TLToncenterPerformApiRequest) (*Toncenter_ApiResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ToncenterPerformApiRequest not implemented")
+}
+func (UnimplementedRPCPaymentsServer) ToncenterGetStreamingUrl(context.Context, *TLToncenterGetStreamingUrl) (*Toncenter_StreamingUrl, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ToncenterGetStreamingUrl not implemented")
 }
 func (UnimplementedRPCPaymentsServer) PaymentsGetPaymentReceipt(context.Context, *TLPaymentsGetPaymentReceipt) (*Payments_PaymentReceipt, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetPaymentReceipt not implemented")
@@ -25417,6 +26341,618 @@ func _RPCPayments_PaymentsGetPaymentForm_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCPaymentsServer).PaymentsGetPaymentForm(ctx, req.(*TLPaymentsGetPaymentForm))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsGetCurrencyRates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsGetCurrencyRates)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsGetCurrencyRates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsGetCurrencyRates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsGetCurrencyRates(ctx, req.(*TLPaymentsGetCurrencyRates))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsGetOnrampProviders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsGetOnrampProviders)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampProviders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsGetOnrampProviders_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampProviders(ctx, req.(*TLPaymentsGetOnrampProviders))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsGetOnrampBaseCurrencies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsGetOnrampBaseCurrencies)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampBaseCurrencies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsGetOnrampBaseCurrencies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampBaseCurrencies(ctx, req.(*TLPaymentsGetOnrampBaseCurrencies))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsGetOnrampAvailability_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsGetOnrampAvailability)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampAvailability(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsGetOnrampAvailability_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampAvailability(ctx, req.(*TLPaymentsGetOnrampAvailability))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsGetOnrampLimits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsGetOnrampLimits)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampLimits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsGetOnrampLimits_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampLimits(ctx, req.(*TLPaymentsGetOnrampLimits))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsGetOnrampQuote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsGetOnrampQuote)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampQuote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsGetOnrampQuote_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsGetOnrampQuote(ctx, req.(*TLPaymentsGetOnrampQuote))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsCreateOnrampSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsCreateOnrampSession)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsCreateOnrampSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsCreateOnrampSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsCreateOnrampSession(ctx, req.(*TLPaymentsCreateOnrampSession))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetState)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetState_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetState(ctx, req.(*TLWalletGetState))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetUserAddresses_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetUserAddresses)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetUserAddresses(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetUserAddresses_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetUserAddresses(ctx, req.(*TLWalletGetUserAddresses))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetTransactions)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetTransactions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetTransactions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetTransactions(ctx, req.(*TLWalletGetTransactions))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetTransactionsByIDs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetTransactionsByIDs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetTransactionsByIDs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetTransactionsByIDs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetTransactionsByIDs(ctx, req.(*TLWalletGetTransactionsByIDs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetTransactionsByMsgHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetTransactionsByMsgHash)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetTransactionsByMsgHash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetTransactionsByMsgHash_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetTransactionsByMsgHash(ctx, req.(*TLWalletGetTransactionsByMsgHash))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletExportSecretPhrase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletExportSecretPhrase)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletExportSecretPhrase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletExportSecretPhrase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletExportSecretPhrase(ctx, req.(*TLWalletExportSecretPhrase))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletFetchEncryptedSecretPhrasePart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletFetchEncryptedSecretPhrasePart)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletFetchEncryptedSecretPhrasePart(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletFetchEncryptedSecretPhrasePart_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletFetchEncryptedSecretPhrasePart(ctx, req.(*TLWalletFetchEncryptedSecretPhrasePart))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletReplaceWallet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletReplaceWallet)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletReplaceWallet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletReplaceWallet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletReplaceWallet(ctx, req.(*TLWalletReplaceWallet))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletDisableBackup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletDisableBackup)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletDisableBackup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletDisableBackup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletDisableBackup(ctx, req.(*TLWalletDisableBackup))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetBackupHolderDcs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetBackupHolderDcs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetBackupHolderDcs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetBackupHolderDcs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetBackupHolderDcs(ctx, req.(*TLWalletGetBackupHolderDcs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletEnableBackup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletEnableBackup)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletEnableBackup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletEnableBackup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletEnableBackup(ctx, req.(*TLWalletEnableBackup))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetProofChallenge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetProofChallenge)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetProofChallenge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetProofChallenge_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetProofChallenge(ctx, req.(*TLWalletGetProofChallenge))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletSendTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletSendTransfer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletSendTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletSendTransfer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletSendTransfer(ctx, req.(*TLWalletSendTransfer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetGaslessInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetGaslessInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetGaslessInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetGaslessInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetGaslessInfo(ctx, req.(*TLWalletGetGaslessInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetExistingWaltBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetExistingWaltBalance)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetExistingWaltBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetExistingWaltBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetExistingWaltBalance(ctx, req.(*TLWalletGetExistingWaltBalance))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletGetNfts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletGetNfts)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletGetNfts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletGetNfts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletGetNfts(ctx, req.(*TLWalletGetNfts))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectCreateSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectCreateSession)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectCreateSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectCreateSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectCreateSession(ctx, req.(*TLWalletTonConnectCreateSession))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectRegisterKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectRegisterKey)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectRegisterKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectRegisterKey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectRegisterKey(ctx, req.(*TLWalletTonConnectRegisterKey))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectSubmitConnectResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectSubmitConnectResult)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectSubmitConnectResult(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectSubmitConnectResult_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectSubmitConnectResult(ctx, req.(*TLWalletTonConnectSubmitConnectResult))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectGetPending_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectGetPending)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectGetPending(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectGetPending_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectGetPending(ctx, req.(*TLWalletTonConnectGetPending))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectClaimRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectClaimRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectClaimRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectClaimRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectClaimRequest(ctx, req.(*TLWalletTonConnectClaimRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectSubmitResponse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectSubmitResponse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectSubmitResponse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectSubmitResponse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectSubmitResponse(ctx, req.(*TLWalletTonConnectSubmitResponse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectNextEventId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectNextEventId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectNextEventId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectNextEventId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectNextEventId(ctx, req.(*TLWalletTonConnectNextEventId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectCloseSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectCloseSession)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectCloseSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectCloseSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectCloseSession(ctx, req.(*TLWalletTonConnectCloseSession))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletTonConnectGetSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletTonConnectGetSessions)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletTonConnectGetSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletTonConnectGetSessions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletTonConnectGetSessions(ctx, req.(*TLWalletTonConnectGetSessions))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_ToncenterPerformApiRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLToncenterPerformApiRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).ToncenterPerformApiRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_ToncenterPerformApiRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).ToncenterPerformApiRequest(ctx, req.(*TLToncenterPerformApiRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_ToncenterGetStreamingUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLToncenterGetStreamingUrl)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).ToncenterGetStreamingUrl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_ToncenterGetStreamingUrl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).ToncenterGetStreamingUrl(ctx, req.(*TLToncenterGetStreamingUrl))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -25605,6 +27141,142 @@ var RPCPayments_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "payments_getPaymentForm",
 			Handler:    _RPCPayments_PaymentsGetPaymentForm_Handler,
+		},
+		{
+			MethodName: "payments_getCurrencyRates",
+			Handler:    _RPCPayments_PaymentsGetCurrencyRates_Handler,
+		},
+		{
+			MethodName: "payments_getOnrampProviders",
+			Handler:    _RPCPayments_PaymentsGetOnrampProviders_Handler,
+		},
+		{
+			MethodName: "payments_getOnrampBaseCurrencies",
+			Handler:    _RPCPayments_PaymentsGetOnrampBaseCurrencies_Handler,
+		},
+		{
+			MethodName: "payments_getOnrampAvailability",
+			Handler:    _RPCPayments_PaymentsGetOnrampAvailability_Handler,
+		},
+		{
+			MethodName: "payments_getOnrampLimits",
+			Handler:    _RPCPayments_PaymentsGetOnrampLimits_Handler,
+		},
+		{
+			MethodName: "payments_getOnrampQuote",
+			Handler:    _RPCPayments_PaymentsGetOnrampQuote_Handler,
+		},
+		{
+			MethodName: "payments_createOnrampSession",
+			Handler:    _RPCPayments_PaymentsCreateOnrampSession_Handler,
+		},
+		{
+			MethodName: "wallet_getState",
+			Handler:    _RPCPayments_WalletGetState_Handler,
+		},
+		{
+			MethodName: "wallet_getUserAddresses",
+			Handler:    _RPCPayments_WalletGetUserAddresses_Handler,
+		},
+		{
+			MethodName: "wallet_getTransactions",
+			Handler:    _RPCPayments_WalletGetTransactions_Handler,
+		},
+		{
+			MethodName: "wallet_getTransactionsByIDs",
+			Handler:    _RPCPayments_WalletGetTransactionsByIDs_Handler,
+		},
+		{
+			MethodName: "wallet_getTransactionsByMsgHash",
+			Handler:    _RPCPayments_WalletGetTransactionsByMsgHash_Handler,
+		},
+		{
+			MethodName: "wallet_exportSecretPhrase",
+			Handler:    _RPCPayments_WalletExportSecretPhrase_Handler,
+		},
+		{
+			MethodName: "wallet_fetchEncryptedSecretPhrasePart",
+			Handler:    _RPCPayments_WalletFetchEncryptedSecretPhrasePart_Handler,
+		},
+		{
+			MethodName: "wallet_replaceWallet",
+			Handler:    _RPCPayments_WalletReplaceWallet_Handler,
+		},
+		{
+			MethodName: "wallet_disableBackup",
+			Handler:    _RPCPayments_WalletDisableBackup_Handler,
+		},
+		{
+			MethodName: "wallet_getBackupHolderDcs",
+			Handler:    _RPCPayments_WalletGetBackupHolderDcs_Handler,
+		},
+		{
+			MethodName: "wallet_enableBackup",
+			Handler:    _RPCPayments_WalletEnableBackup_Handler,
+		},
+		{
+			MethodName: "wallet_getProofChallenge",
+			Handler:    _RPCPayments_WalletGetProofChallenge_Handler,
+		},
+		{
+			MethodName: "wallet_sendTransfer",
+			Handler:    _RPCPayments_WalletSendTransfer_Handler,
+		},
+		{
+			MethodName: "wallet_getGaslessInfo",
+			Handler:    _RPCPayments_WalletGetGaslessInfo_Handler,
+		},
+		{
+			MethodName: "wallet_getExistingWaltBalance",
+			Handler:    _RPCPayments_WalletGetExistingWaltBalance_Handler,
+		},
+		{
+			MethodName: "wallet_getNfts",
+			Handler:    _RPCPayments_WalletGetNfts_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectCreateSession",
+			Handler:    _RPCPayments_WalletTonConnectCreateSession_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectRegisterKey",
+			Handler:    _RPCPayments_WalletTonConnectRegisterKey_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectSubmitConnectResult",
+			Handler:    _RPCPayments_WalletTonConnectSubmitConnectResult_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectGetPending",
+			Handler:    _RPCPayments_WalletTonConnectGetPending_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectClaimRequest",
+			Handler:    _RPCPayments_WalletTonConnectClaimRequest_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectSubmitResponse",
+			Handler:    _RPCPayments_WalletTonConnectSubmitResponse_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectNextEventId",
+			Handler:    _RPCPayments_WalletTonConnectNextEventId_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectCloseSession",
+			Handler:    _RPCPayments_WalletTonConnectCloseSession_Handler,
+		},
+		{
+			MethodName: "wallet_tonConnectGetSessions",
+			Handler:    _RPCPayments_WalletTonConnectGetSessions_Handler,
+		},
+		{
+			MethodName: "toncenter_performApiRequest",
+			Handler:    _RPCPayments_ToncenterPerformApiRequest_Handler,
+		},
+		{
+			MethodName: "toncenter_getStreamingUrl",
+			Handler:    _RPCPayments_ToncenterGetStreamingUrl_Handler,
 		},
 		{
 			MethodName: "payments_getPaymentReceipt",

@@ -2,24 +2,25 @@ package mtproto
 
 import "testing"
 
-// The layer Telegram Android 12.10 announces - TLRPC.java, LAYER. The schema
-// here is generated up to 228, so this is the number that used to empty every
-// reply the server sent.
-const layerOfTheCarriedClient = 229
+// The newest layer the schema is generated up to (proto/ice9/schema/layers.tl).
+// When Telegram Android 12.10 announced 229 against a schema that stopped at
+// 228, this was the number that emptied every reply the server sent; the
+// schema has 229 to 231 now, and the next client ahead of it will ask for this.
+const layerAheadOfTheSchema = 232
 
 func TestAClientAheadOfTheSchemaIsServedWhatWeHave(t *testing.T) {
-	for _, layer := range []int{layerOfTheCarriedClient, 260} {
+	for _, layer := range []int{layerAheadOfTheSchema, 260} {
 		if id := uint32(GetClazzID(Predicate_config, layer)); id != 0xcc1a241e {
-			t.Errorf("config at layer %d: 0x%x, want the layer 228 constructor 0xcc1a241e", layer, id)
+			t.Errorf("config at layer %d: 0x%x, want the layer 231 constructor 0xcc1a241e", layer, id)
 		}
 		if id := uint32(GetClazzID(Predicate_user, layer)); id != 0xb1b8cc83 {
-			t.Errorf("user at layer %d: 0x%x, want the layer 228 constructor 0xb1b8cc83", layer, id)
+			t.Errorf("user at layer %d: 0x%x, want the layer 231 constructor 0xb1b8cc83", layer, id)
 		}
 	}
 }
 
 func TestALayerTheSchemaKnowsIsUnchanged(t *testing.T) {
-	for layer := 200; layer <= 228; layer++ {
+	for layer := 200; layer <= 231; layer++ {
 		if id := uint32(GetClazzID(Predicate_config, layer)); id != 0xcc1a241e {
 			t.Errorf("config at layer %d: 0x%x, want 0xcc1a241e", layer, id)
 		}
@@ -31,7 +32,7 @@ func TestALayerTheSchemaKnowsIsUnchanged(t *testing.T) {
 // one - which is what every future client will ask for.
 func TestNoPredicateEncodesToNothingAboveTheNewestLayer(t *testing.T) {
 	for name := range clazzNameRegisters2 {
-		for _, layer := range []int{layerOfTheCarriedClient, 260} {
+		for _, layer := range []int{layerAheadOfTheSchema, 260} {
 			if GetClazzID(name, layer) == 0 {
 				t.Fatalf("%s at layer %d has no constructor, so it would be encoded as no bytes at all", name, layer)
 			}
