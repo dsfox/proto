@@ -1,6 +1,6 @@
-// Package oracle reads what teamgram's mtprotoc generated, for the tests
-// that hold the schema to it. The schema itself was read back from the tree
-// once (ice9/schema/README.md says how) and is edited by hand since.
+// Package oracle reads the registers teamgram's mtprotoc generated, for the
+// test that holds the schema to them. The schema itself was read back from
+// the tree once (ice9/schema/README.md says how) and is edited by hand since.
 package oracle
 
 import (
@@ -70,50 +70,4 @@ func ReadRegisters(path string) (*Registers, error) {
 		}
 	}
 	return r, nil
-}
-
-// Services is schema.tl.sync_service.proto read back: the services in order,
-// each with its rpcs in order.
-type Services struct {
-	Order []string
-	RPCs  map[string][]string
-}
-
-var (
-	serviceLine = regexp.MustCompile(`^service (\w+) \{`)
-	rpcLine     = regexp.MustCompile(`^  rpc (\w+)\(`)
-)
-
-// ReadServices parses schema.tl.sync_service.proto.
-func ReadServices(path string) (*Services, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	s := &Services{RPCs: map[string][]string{}}
-	var current string
-	for _, line := range strings.Split(string(data), "\n") {
-		if m := serviceLine.FindStringSubmatch(line); m != nil {
-			current = m[1]
-			s.Order = append(s.Order, current)
-			continue
-		}
-		if m := rpcLine.FindStringSubmatch(line); m != nil && current != "" {
-			s.RPCs[current] = append(s.RPCs[current], m[1])
-		}
-	}
-	return s, nil
-}
-
-// WriteServices prints "service rpc" lines in file order.
-func WriteServices(path string, s *Services) error {
-	var b strings.Builder
-	b.WriteString("# The RPC service each method is answered from, in the order of schema.tl.sync_service.proto.\n")
-	b.WriteString("# Telegram's schema has no such grouping; it is teamgram's, read from their output once.\n")
-	for _, svc := range s.Order {
-		for _, rpc := range s.RPCs[svc] {
-			fmt.Fprintf(&b, "%s %s\n", svc, rpc)
-		}
-	}
-	return os.WriteFile(path, []byte(b.String()), 0o644)
 }
