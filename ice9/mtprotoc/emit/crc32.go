@@ -47,24 +47,20 @@ enum TLConstructor {
   CRC32_rpc_result = -212046591;
 `)
 	for _, group := range [][]*schema.Entity{
-		m.Service.Entities,
+		m.Service,
 		Constructors(m.API),
 		Constructors(m.Teamgram),
 		Methods(m.API),
 		Methods(m.Teamgram),
 	} {
 		for _, e := range group {
-			ids := m.IDs(e)
+			ids := e.IDs()
 			for _, id := range ids {
 				name := m.Names[e]
 				if len(ids) > 1 {
 					name = fmt.Sprintf("%s_%x", name, id)
 				}
-				comment := fmt.Sprintf("%x", id)
-				if v := m.Version(e, id); v != nil && !v.Explicit {
-					comment = "0x" + comment
-				}
-				fmt.Fprintf(&b, "  CRC32_%s = %d; // %s\n", name, int32(id), comment)
+				fmt.Fprintf(&b, "  CRC32_%s = %d; // %s\n", name, int32(id), hexComment(e, id))
 			}
 		}
 	}

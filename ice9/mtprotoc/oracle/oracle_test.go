@@ -24,37 +24,37 @@ func TestTheSchemaIsTheRegisters(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	joined := &schema.Schema{}
+	var paths []string
 	for _, name := range schemaFiles {
-		path := filepath.Join("..", "..", "schema", name)
-		s, err := schema.ParseFile(path)
-		if err != nil {
-			t.Fatal(err)
-		}
+		paths = append(paths, filepath.Join("..", "..", "schema", name))
+	}
+	s, err := schema.ParseFiles(paths...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range paths {
 		text, err := os.ReadFile(path)
 		if err != nil {
 			t.Fatal(err)
 		}
 		var printed bytes.Buffer
-		if err := schema.Write(&printed, s); err != nil {
+		if err := s.Write(&printed, path); err != nil {
 			t.Fatal(err)
 		}
 		if !bytes.Equal(printed.Bytes(), text) {
-			t.Errorf("%s: not what Write prints; the first differing line: %s", name, firstDifference(string(text), printed.String()))
+			t.Errorf("%s: not what Write prints; the first differing line: %s", path, firstDifference(string(text), printed.String()))
 		}
-		joined.Append(s)
 	}
-	top := joined.Layer
-	if len(joined.Entities) != len(registers.Order) {
-		t.Fatalf("schema has %d entities, the registers %d predicates", len(joined.Entities), len(registers.Order))
+	if len(s.Entities) != len(registers.Order) {
+		t.Fatalf("schema has %d entities, the registers %d predicates", len(s.Entities), len(registers.Order))
 	}
-	suffixed := schema.PredicateNames(joined)
-	for i, e := range joined.Entities {
+	names := schema.PredicateNames(s)
+	for i, e := range s.Entities {
 		want := registers.Order[i]
-		if suffixed[e] != want {
-			t.Fatalf("entity %d is %s, the registers have %s", i, suffixed[e], want)
+		if names[e] != want {
+			t.Fatalf("entity %d is %s, the registers have %s", i, names[e], want)
 		}
-		listed := e.Listing(top)
+		listed := e.Listing()
 		theirs := registers.Layers[want]
 		if len(listed) != len(theirs) {
 			t.Errorf("%s: listed at %d layers, the registers at %d", want, len(listed), len(theirs))
@@ -70,21 +70,17 @@ func TestTheSchemaIsTheRegisters(t *testing.T) {
 }
 
 func firstDifference(a, b string) string {
-	al, bl := splitLines(a), splitLines(b)
+	al, bl := strings.Split(a, "\n"), strings.Split(b, "\n")
 	for i := range al {
 		if i >= len(bl) {
-			return "line " + itoa(i+1) + ": " + al[i] + " (missing in the printed text)"
+			return "line " + strconv.Itoa(i+1) + ": " + al[i] + " (missing in the printed text)"
 		}
 		if al[i] != bl[i] {
-			return "line " + itoa(i+1) + ":\n  file:    " + al[i] + "\n  printed: " + bl[i]
+			return "line " + strconv.Itoa(i+1) + ":\n  file:    " + al[i] + "\n  printed: " + bl[i]
 		}
 	}
 	if len(bl) > len(al) {
-		return "printed has extra lines from " + itoa(len(al)+1)
+		return "printed has extra lines from " + strconv.Itoa(len(al)+1)
 	}
 	return "none"
 }
-
-func splitLines(s string) []string { return strings.Split(s, "\n") }
-
-func itoa(n int) string { return strconv.Itoa(n) }

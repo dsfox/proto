@@ -1,22 +1,37 @@
 // Package schema is the multi-layer TL schema the generator reads: every
-// constructor and method teamgram's scheme.tl accumulated, in its order, with
-// the layer each version holds from.
+// constructor and method teamgram's scheme.tl holds, laid out as their
+// input is, so that everything generated comes out in their order.
 //
-// The text format is TL, one line per version, the layer in a trailing comment:
+// The text is TL in sections, one per layer, newest first:
 //
 //	// LAYER 228
 //	---types---
-//	user#3ff6ecb0 flags:# self:flags.10?true ... = User; // 139
-//	user#5d99adee flags:# ... = User; // 145
-//	- messageUserVote // 170
+//	boolFalse#bc799737 = Bool;
+//	...
 //	---functions---
-//	help.getConfig#c4f9186b = Config; // 139
+//	invokeAfterMsg#cb9f372d {X:Type} msg_id:long query:!X = X;
+//	// LAYER 227 from 228
+//	---types---
+//	user#5d99adee flags:# ... = User;
+//	- someConstructorAddedAt228
+//	...
+//	// LAYER 71
+//	---functions---
+//	account.registerDevice#637ea878 token_type:int token:string = Bool;
 //
-// A version holds from its layer until the next version of the same entity or
-// a removal line. Layer 0 is the entry served when a client's layer is not
-// listed (the MTProto service types, the six core predicates). The order of
-// first lines is the order of everything generated: it is teamgram's order,
-// not Telegram's, and it cannot be derived from anything but their output.
+// A section lists what exists at its layer. One written "from" the section
+// above lists only what differs there: a definition that replaces the one
+// above, or "- name" for an entity the layer above has and this one has not.
+// A section without "from" lists exactly its entities (the top one is the
+// whole schema; the old layers 71 to 134 are a handful of methods each;
+// layer 0, in mtproto.tl and teamgram.tl, is what is served when a client's
+// layer is not listed). Within a section, lines are in the order teamgram's
+// input has them at that layer, which is the order of everything generated:
+// the order in which entities are first seen, newest layer first, is the
+// order of the predicates; the order within a section is the order of the
+// ids that layer retires.
+//
+// A line without "#id" has the id TL defines: the crc32 of the line.
 package schema
 
 import (
@@ -37,32 +52,83 @@ type Param struct {
 	Type string
 }
 
-// Version is one definition of an entity, holding from Layer on.
+// Version is one definition line of an entity.
 type Version struct {
-	Layer    int
+	Layer    int // the section's layer: the highest layer this definition holds at
 	ID       uint32
-	Explicit bool     // the id was written in the text; otherwise it is the crc32 of the line, as TL defines it
+	Explicit bool     // the id was written in the text; otherwise it is the crc32 of the line
 	Generics []string // type parameters, "{X:Type}" in the text: the X of query:!X
 	Params   []Param
 	Result   string
 }
 
-// Entity is a constructor or a method with its history.
+// Entity is a constructor or a method: one name, its definitions over the
+// layers. A method whose result type changed is one entity per id (see
+// PredicateNames).
 type Entity struct {
 	Name     string // the TL name: "help.getConfig", "storage.fileUnknown", "req_pq_multi"
 	Method   bool
-	Versions []Version // ascending by Layer
-	Removals []int     // layers from which the entity no longer exists, until a later version brings it back
+	File     string     // the source the entity is first seen in
+	Versions []*Version // one per definition line, in file order: highest layer first
+	listing  map[int]uint32
+}
+
+// Line is one line of a section.
+type Line struct {
+	Entity  *Entity
+	Version *Version // nil for a removal
+}
+
+// Section is one layer's listing.
+type Section struct {
+	File  string
+	Layer int
+	From  *Section // the section this one lists the changes to; nil when it lists everything
+	Lines []*Line
+}
+
+// Schema is every section in file order, and every entity in the order it
+// is first seen.
+type Schema struct {
+	Top      int
+	Sections []*Section
+	Entities []*Entity
 }
 
 // Predicate is the entity's name in the generated code: the TL name with the
 // namespace dot as an underscore ("storage_fileUnknown", "help_getConfig").
 func (e *Entity) Predicate() string { return strings.ReplaceAll(e.Name, ".", "_") }
 
-// Schema is every entity in order, and the top layer the schema knows.
-type Schema struct {
-	Layer    int
-	Entities []*Entity
+// Listing is the id the entity has at each layer it is listed at: exactly
+// class_name_registers.go's map for the entity.
+func (e *Entity) Listing() map[int]uint32 { return e.listing }
+
+// IDs is every id the entity ever had, newest first: the id listed at the
+// highest layer, then the next one down. That is the order the generated
+// files list a predicate's ids in.
+func (e *Entity) IDs() []uint32 {
+	newest := map[uint32]int{}
+	for layer, id := range e.listing {
+		if last, seen := newest[id]; !seen || layer > last {
+			newest[id] = layer
+		}
+	}
+	ids := make([]uint32, 0, len(newest))
+	for id := range newest {
+		ids = append(ids, id)
+	}
+	sort.Slice(ids, func(i, j int) bool { return newest[ids[i]] > newest[ids[j]] })
+	return ids
+}
+
+// Version is the newest definition of the entity that has this id.
+func (e *Entity) Version(id uint32) *Version {
+	for _, v := range e.Versions {
+		if v.ID == id {
+			return v
+		}
+	}
+	return nil
 }
 
 // PredicateNames is the name of every entity in the generated code. A
@@ -70,177 +136,213 @@ type Schema struct {
 // ids is a request type per id, each named with the id's uppercase hex,
 // leading zeros dropped: account_verifyEmail32DA4CF, account_verifyEmailECBA39DB.
 func PredicateNames(s *Schema) map[*Entity]string {
-	versions := map[string]int{}
+	entities := map[string]int{}
 	for _, e := range s.Entities {
 		if e.Method {
-			versions[e.Name]++
+			entities[e.Name]++
 		}
 	}
 	names := make(map[*Entity]string, len(s.Entities))
 	for _, e := range s.Entities {
 		name := e.Predicate()
-		if e.Method && versions[e.Name] > 1 {
-			name += strings.ToUpper(strconv.FormatUint(uint64(e.Last().ID), 16))
+		if e.Method && entities[e.Name] > 1 {
+			name += strings.ToUpper(strconv.FormatUint(uint64(e.Versions[0].ID), 16))
 		}
 		names[e] = name
 	}
 	return names
 }
 
-// Last is the newest version.
-func (e *Entity) Last() *Version { return &e.Versions[len(e.Versions)-1] }
-
-// Listing is the entity as the registers list it: every layer from each
-// version's layer to the next event (a newer version or a removal) or the
-// schema's top layer, with its id; layer 0 when the entity has a layer-0
-// version. This is exactly class_name_registers.go's map for the entity.
-func (e *Entity) Listing(top int) map[int]uint32 {
-	listed := map[int]uint32{}
-	events := make([]event, 0, len(e.Versions)+len(e.Removals))
-	for _, v := range e.Versions {
-		if v.Layer == 0 {
-			listed[0] = v.ID
-			continue
-		}
-		events = append(events, event{layer: v.Layer, id: v.ID, version: true})
-	}
-	for _, r := range e.Removals {
-		events = append(events, event{layer: r})
-	}
-	sort.Slice(events, func(i, j int) bool { return events[i].layer < events[j].layer })
-	for i, ev := range events {
-		if !ev.version {
-			continue
-		}
-		end := top
-		if i+1 < len(events) {
-			end = events[i+1].layer - 1
-		}
-		for l := ev.layer; l <= end; l++ {
-			listed[l] = ev.id
-		}
-	}
-	return listed
+// Source is one file of the schema.
+type Source struct {
+	Name   string
+	Reader io.Reader
 }
 
-type event struct {
-	layer   int
-	id      uint32
-	version bool
-}
-
-// IDAt is the constructor id a client at this layer is written, or 0 when the
-// entity does not exist at that layer.
-func (e *Entity) IDAt(layer int, top int) uint32 { return e.Listing(top)[layer] }
-
-// Find is the entity with this TL name; a method and a constructor may share
-// one, and a method with several ids appears once per id.
-func (s *Schema) Find(name string, method bool) []*Entity {
-	var found []*Entity
-	for _, e := range s.Entities {
-		if e.Name == name && e.Method == method {
-			found = append(found, e)
+// ParseFiles reads the schema from its files, in this order.
+func ParseFiles(paths ...string) (*Schema, error) {
+	var sources []Source
+	for _, path := range paths {
+		f, err := os.Open(path)
+		if err != nil {
+			return nil, err
 		}
+		defer f.Close()
+		sources = append(sources, Source{Name: path, Reader: f})
 	}
-	return found
+	return Parse(sources)
 }
 
-// ParseFile reads the schema text.
-func ParseFile(path string) (*Schema, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	s, err := Parse(f)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", path, err)
-	}
-	return s, nil
-}
-
-// item is one line of the text: a definition, or a removal (no Version).
-type item struct {
-	line    int
+// rawLine is a line as read, before entities exist.
+type rawLine struct {
+	source  string
+	number  int
 	name    string
 	method  bool
-	layer   int
 	version *Version
 }
 
-// Parse reads the schema text; several files parsed in a row are joined by
-// Append, in that order.
+type rawSection struct {
+	file  string
+	layer int
+	from  int
+	lines []rawLine
+}
+
+// Parse reads the sources in order.
 //
 // A constructor is one entity however many ids it had. A method is one entity
-// too, unless its result type ever changed: then every version is an entity of
-// its own, a request type per id in the generated code (account_verifyEmail
+// too, unless its result type ever changed: then every id is an entity of its
+// own, a request type per id in the generated code (account_verifyEmail
 // answered Bool until layer 144 and account.EmailVerified from 145, so there
 // are two; messages_sendMessage had nine ids and always answered Updates, so
 // there is one). That is teamgram's rule, measured on every method they
 // generated: the 23 names with several predicates all changed their result,
 // none of the 139 others did.
-func Parse(r io.Reader) (*Schema, error) {
-	items, layer, err := scan(r)
-	if err != nil {
-		return nil, err
+func Parse(sources []Source) (*Schema, error) {
+	var raws []*rawSection
+	for _, src := range sources {
+		sections, err := scan(src)
+		if err != nil {
+			return nil, err
+		}
+		raws = append(raws, sections...)
 	}
-	s := &Schema{Layer: layer}
 	results := map[string]map[string]bool{}
-	for _, it := range items {
-		if it.version == nil || !it.method {
-			continue
-		}
-		if results[it.name] == nil {
-			results[it.name] = map[string]bool{}
-		}
-		results[it.name][it.version.Result] = true
-	}
-	latest := map[string]*Entity{}
-	for _, it := range items {
-		k := key(it.name, it.method)
-		if it.version == nil {
-			e := latest[k]
-			if e == nil {
-				return nil, fmt.Errorf("line %d: removal of %s, which was never defined", it.line, it.name)
+	for _, sec := range raws {
+		for _, l := range sec.lines {
+			if l.version == nil || !l.method {
+				continue
 			}
-			e.Removals = append(e.Removals, it.layer)
-			continue
+			if results[l.name] == nil {
+				results[l.name] = map[string]bool{}
+			}
+			results[l.name][l.version.Result] = true
 		}
-		e := latest[k]
-		if e == nil || (it.method && len(results[it.name]) > 1) {
-			e = &Entity{Name: it.name, Method: it.method}
-			s.Entities = append(s.Entities, e)
-			latest[k] = e
-		}
-		e.Versions = append(e.Versions, *it.version)
 	}
-	for _, e := range s.Entities {
-		sort.SliceStable(e.Versions, func(i, j int) bool { return e.Versions[i].Layer < e.Versions[j].Layer })
-		sort.Ints(e.Removals)
+	s := &Schema{}
+	byKey := map[string]*Entity{}
+	byName := map[string][]*Entity{}
+	entityOf := func(l rawLine) (*Entity, error) {
+		k := key(l.name, l.method)
+		if l.version == nil {
+			// A removal names whatever entity of that name is current; the
+			// state walk below resolves it, so any entity of the name will do.
+			if es := byName[k]; len(es) > 0 {
+				return es[0], nil
+			}
+			return nil, fmt.Errorf("%s:%d: removal of %s, which was never defined", l.source, l.number, l.name)
+		}
+		if l.method && len(results[l.name]) > 1 {
+			k += "#" + strconv.FormatUint(uint64(l.version.ID), 16)
+		}
+		e := byKey[k]
+		if e == nil {
+			e = &Entity{Name: l.name, Method: l.method, File: l.source, listing: map[int]uint32{}}
+			s.Entities = append(s.Entities, e)
+			byKey[k] = e
+			byName[key(l.name, l.method)] = append(byName[key(l.name, l.method)], e)
+		}
+		e.Versions = append(e.Versions, l.version)
+		return e, nil
+	}
+	type held struct {
+		entity  *Entity
+		version *Version
+	}
+	var states []map[string]held
+	for i, raw := range raws {
+		sec := &Section{File: raw.file, Layer: raw.layer}
+		state := map[string]held{}
+		if raw.from != 0 {
+			base := -1
+			for j := i - 1; j >= 0; j-- {
+				if raws[j].file == raw.file && raws[j].layer == raw.from {
+					base = j
+					break
+				}
+			}
+			if base < 0 {
+				return nil, fmt.Errorf("%s: LAYER %d from %d: no such section above it", raw.file, raw.layer, raw.from)
+			}
+			sec.From = s.Sections[base]
+			for k, h := range states[base] {
+				state[k] = h
+			}
+		}
+		for _, l := range raw.lines {
+			e, err := entityOf(l)
+			if err != nil {
+				return nil, err
+			}
+			k := key(l.name, l.method)
+			if l.version == nil {
+				h, ok := state[k]
+				if !ok {
+					return nil, fmt.Errorf("%s:%d: %s is not in layer %d to be removed from layer %d", l.source, l.number, l.name, raw.from, raw.layer)
+				}
+				sec.Lines = append(sec.Lines, &Line{Entity: h.entity})
+				delete(state, k)
+				continue
+			}
+			if h, ok := state[k]; ok && sec.From != nil && h.version.ID == l.version.ID {
+				return nil, fmt.Errorf("%s:%d: %s already has id %08x at layer %d; the line changes nothing", l.source, l.number, l.name, l.version.ID, raw.from)
+			}
+			state[k] = held{entity: e, version: l.version}
+			sec.Lines = append(sec.Lines, &Line{Entity: e, Version: l.version})
+		}
+		for _, h := range state {
+			h.entity.listing[raw.layer] = h.version.ID
+		}
+		if raw.layer > s.Top {
+			s.Top = raw.layer
+		}
+		s.Sections = append(s.Sections, sec)
+		states = append(states, state)
 	}
 	return s, nil
 }
 
-// scan reads the lines; the schema's top layer comes back with them.
-func scan(r io.Reader) ([]item, int, error) {
-	var items []item
-	top := 0
+func key(name string, method bool) string {
+	if method {
+		return "f:" + name
+	}
+	return "t:" + name
+}
+
+// scan reads one source's sections.
+func scan(src Source) ([]*rawSection, error) {
+	var sections []*rawSection
 	method := false
-	scanner := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(src.Reader)
 	scanner.Buffer(make([]byte, 1<<20), 1<<20)
-	line := 0
+	number := 0
 	for scanner.Scan() {
-		line++
+		number++
 		text := strings.TrimSpace(scanner.Text())
 		switch {
 		case text == "":
 			continue
 		case strings.HasPrefix(text, "// LAYER "):
-			n, err := strconv.Atoi(strings.TrimSpace(strings.TrimPrefix(text, "// LAYER ")))
-			if err != nil {
-				return nil, 0, fmt.Errorf("line %d: bad layer: %s", line, text)
+			fields := strings.Fields(strings.TrimPrefix(text, "// LAYER "))
+			sec := &rawSection{file: src.Name}
+			var err error
+			switch {
+			case len(fields) == 1:
+				sec.layer, err = strconv.Atoi(fields[0])
+			case len(fields) == 3 && fields[1] == "from":
+				sec.layer, err = strconv.Atoi(fields[0])
+				if err == nil {
+					sec.from, err = strconv.Atoi(fields[2])
+				}
+			default:
+				err = fmt.Errorf("not a layer")
 			}
-			top = n
+			if err != nil {
+				return nil, fmt.Errorf("%s:%d: bad section header: %s", src.Name, number, text)
+			}
+			sections = append(sections, sec)
+			method = false
 			continue
 		case strings.HasPrefix(text, "//"):
 			continue
@@ -251,66 +353,46 @@ func scan(r io.Reader) ([]item, int, error) {
 			method = true
 			continue
 		}
-		body, layer, err := splitLayer(text)
-		if err != nil {
-			return nil, 0, fmt.Errorf("line %d: %w", line, err)
+		if len(sections) == 0 {
+			return nil, fmt.Errorf("%s:%d: a line before the first // LAYER", src.Name, number)
 		}
-		if strings.HasPrefix(body, "- ") {
-			items = append(items, item{line: line, name: strings.TrimSpace(body[2:]), method: method, layer: layer})
+		sec := sections[len(sections)-1]
+		if strings.HasPrefix(text, "- ") {
+			sec.lines = append(sec.lines, rawLine{source: src.Name, number: number, name: strings.TrimSpace(text[2:]), method: method})
 			continue
 		}
-		v, name, err := parseDefinition(body)
+		v, name, err := parseDefinition(text)
 		if err != nil {
-			return nil, 0, fmt.Errorf("line %d: %w", line, err)
+			return nil, fmt.Errorf("%s:%d: %w", src.Name, number, err)
 		}
-		v.Layer = layer
-		items = append(items, item{line: line, name: name, method: method, layer: layer, version: &v})
+		v.Layer = sec.layer
+		sec.lines = append(sec.lines, rawLine{source: src.Name, number: number, name: name, method: method, version: v})
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, 0, err
+		return nil, err
 	}
-	return items, top, nil
-}
-
-func key(name string, method bool) string {
-	if method {
-		return "f:" + name
-	}
-	return "t:" + name
-}
-
-// splitLayer takes the "// 139" off the end of a line.
-func splitLayer(text string) (string, int, error) {
-	at := strings.LastIndex(text, "//")
-	if at < 0 {
-		return "", 0, fmt.Errorf("no layer comment: %s", text)
-	}
-	layer, err := strconv.Atoi(strings.TrimSpace(text[at+2:]))
-	if err != nil {
-		return "", 0, fmt.Errorf("bad layer comment: %s", text)
-	}
-	return strings.TrimSpace(text[:at]), layer, nil
+	return sections, nil
 }
 
 // parseDefinition reads "name#id {X:Type} params = Result;". Without "#id"
 // the id is computed, as TL defines it.
-func parseDefinition(body string) (Version, string, error) {
-	var v Version
+func parseDefinition(body string) (*Version, string, error) {
+	v := &Version{}
 	body = strings.TrimSuffix(strings.TrimSpace(body), ";")
 	eq := strings.LastIndex(body, " = ")
 	if eq < 0 {
-		return v, "", fmt.Errorf("no result type: %s", body)
+		return nil, "", fmt.Errorf("no result type: %s", body)
 	}
 	v.Result = strings.TrimSpace(body[eq+3:])
 	head := strings.Fields(body[:eq])
 	if len(head) == 0 {
-		return v, "", fmt.Errorf("empty definition: %s", body)
+		return nil, "", fmt.Errorf("empty definition: %s", body)
 	}
 	name := head[0]
 	if nameID := strings.SplitN(head[0], "#", 2); len(nameID) == 2 {
 		id, err := strconv.ParseUint(nameID[1], 16, 32)
 		if err != nil {
-			return v, "", fmt.Errorf("bad id: %s", head[0])
+			return nil, "", fmt.Errorf("bad id: %s", head[0])
 		}
 		name, v.ID, v.Explicit = nameID[0], uint32(id), true
 	}
@@ -321,7 +403,7 @@ func parseDefinition(body string) (Version, string, error) {
 		}
 		colon := strings.Index(p, ":")
 		if colon < 0 {
-			return v, "", fmt.Errorf("param without a type: %s in %s", p, body)
+			return nil, "", fmt.Errorf("param without a type: %s in %s", p, body)
 		}
 		v.Params = append(v.Params, Param{Name: p[:colon], Type: p[colon+1:]})
 	}
@@ -334,7 +416,7 @@ func parseDefinition(body string) (Version, string, error) {
 // Canonical is the line TL's constructor id is the crc32 of: the definition
 // without the id and the semicolon, flag-only ("flags.N?true") params left
 // out, angle brackets as spaces, "bytes" as "string", generics unbraced.
-func Canonical(name string, v Version) string {
+func Canonical(name string, v *Version) string {
 	var b strings.Builder
 	b.WriteString(name)
 	for _, g := range v.Generics {
@@ -359,44 +441,46 @@ func Canonical(name string, v Version) string {
 }
 
 // CRC32 is the constructor id TL gives the definition.
-func CRC32(name string, v Version) uint32 { return crc32.ChecksumIEEE([]byte(Canonical(name, v))) }
+func CRC32(name string, v *Version) uint32 { return crc32.ChecksumIEEE([]byte(Canonical(name, v))) }
 
-// Write prints the schema in the text format.
-func Write(w io.Writer, s *Schema) error {
+// Write prints one file's sections in the text format.
+func (s *Schema) Write(w io.Writer, file string) error {
 	bw := bufio.NewWriter(w)
-	fmt.Fprintf(bw, "// LAYER %d\n", s.Layer)
-	section := -1
-	for _, e := range s.Entities {
-		want := 0
-		if e.Method {
-			want = 1
+	for _, sec := range s.Sections {
+		if sec.File != file {
+			continue
 		}
-		if want != section {
-			if want == 0 {
-				fmt.Fprintln(bw, "---types---")
+		if sec.From != nil {
+			fmt.Fprintf(bw, "// LAYER %d from %d\n", sec.Layer, sec.From.Layer)
+		} else {
+			fmt.Fprintf(bw, "// LAYER %d\n", sec.Layer)
+		}
+		section := -1
+		for _, l := range sec.Lines {
+			want := 0
+			if l.Entity.Method {
+				want = 1
+			}
+			if want != section {
+				if want == 0 {
+					fmt.Fprintln(bw, "---types---")
+				} else {
+					fmt.Fprintln(bw, "---functions---")
+				}
+				section = want
+			}
+			if l.Version == nil {
+				fmt.Fprintf(bw, "- %s\n", l.Entity.Name)
 			} else {
-				fmt.Fprintln(bw, "---functions---")
+				fmt.Fprintln(bw, Definition(l.Entity.Name, l.Version))
 			}
-			section = want
-		}
-		// Versions and removals in layer order, so the history reads top down.
-		removals := append([]int(nil), e.Removals...)
-		for _, v := range e.Versions {
-			for len(removals) > 0 && removals[0] < v.Layer {
-				fmt.Fprintf(bw, "- %s // %d\n", e.Name, removals[0])
-				removals = removals[1:]
-			}
-			fmt.Fprintf(bw, "%s // %d\n", Definition(e.Name, v), v.Layer)
-		}
-		for _, r := range removals {
-			fmt.Fprintf(bw, "- %s // %d\n", e.Name, r)
 		}
 	}
 	return bw.Flush()
 }
 
-// Definition is the TL line of one version, without the layer.
-func Definition(name string, v Version) string {
+// Definition is the TL line of one version.
+func Definition(name string, v *Version) string {
 	var b strings.Builder
 	b.WriteString(name)
 	if v.Explicit {
@@ -410,12 +494,4 @@ func Definition(name string, v Version) string {
 	}
 	fmt.Fprintf(&b, " = %s;", v.Result)
 	return b.String()
-}
-
-// Append joins another schema's entities after this one's, in their order.
-func (s *Schema) Append(other *Schema) {
-	s.Entities = append(s.Entities, other.Entities...)
-	if other.Layer > s.Layer {
-		s.Layer = other.Layer
-	}
 }

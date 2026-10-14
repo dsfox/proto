@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -20,44 +19,24 @@ func TestTheGeneratorReproducesTheTree(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, file := range []struct {
-		name  string
-		emit  func(*emit.Model) []byte
-		proto bool
-	}{
-		{"schema.tl.crc32.proto", emit.CRC32Proto, true},
-	} {
-		t.Run(file.name, func(t *testing.T) {
-			got := file.emit(m)
-			if file.proto {
-				got = clangFormat(t, got, filepath.Join(tree, file.name))
+	for _, file := range emit.Files {
+		t.Run(file.Name, func(t *testing.T) {
+			path := filepath.Join(tree, file.Name)
+			got, err := file.Formatted(m, path)
+			if err != nil {
+				t.Fatal(err)
 			}
-			want, err := os.ReadFile(filepath.Join(tree, file.name))
+			want, err := os.ReadFile(path)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if !bytes.Equal(got, want) {
-				out := filepath.Join(t.TempDir(), file.name)
+				out := filepath.Join(t.TempDir(), file.Name)
 				os.WriteFile(out, got, 0o644)
-				t.Errorf("%s differs from the tree; %s\nours is at %s", file.name, firstDifference(want, got), out)
+				t.Errorf("%s differs from the tree; %s\nours is at %s", file.Name, firstDifference(want, got), out)
 			}
 		})
 	}
-}
-
-// clangFormat formats a .proto as the tree's .clang-format says, as the
-// build does.
-func clangFormat(t *testing.T, text []byte, as string) []byte {
-	t.Helper()
-	cmd := exec.Command("clang-format", "-assume-filename="+as)
-	cmd.Stdin = bytes.NewReader(text)
-	var stderr bytes.Buffer
-	cmd.Stderr = &stderr
-	out, err := cmd.Output()
-	if err != nil {
-		t.Fatalf("clang-format: %v: %s", err, stderr.String())
-	}
-	return out
 }
 
 func firstDifference(want, got []byte) string {

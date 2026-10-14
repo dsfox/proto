@@ -26,30 +26,32 @@ func TestEveryIDIsTheCRC32OfItsLine(t *testing.T) {
 		t.Fatal(err)
 	}
 	used := map[string]bool{}
+	var paths []string
 	for _, name := range schemaFiles {
-		s, err := schema.ParseFile(filepath.Join(schemaDir, name))
-		if err != nil {
-			t.Fatal(err)
-		}
-		for _, e := range s.Entities {
-			for _, v := range e.Versions {
-				if !v.Explicit {
-					continue
-				}
-				key := fmt.Sprintf("%s %08x", e.Predicate(), v.ID)
-				computed := schema.CRC32(e.Name, v)
-				if computed == v.ID {
-					if overrides[key] != "" {
-						t.Errorf("%s: the id is its line's crc32 now; drop the override (%s)", key, overrides[key])
-					}
-					continue
-				}
-				if overrides[key] != "" {
-					used[key] = true
-					continue
-				}
-				t.Errorf("%s at layer %d: the line's crc32 is %08x: %s", key, v.Layer, computed, schema.Canonical(e.Name, v))
+		paths = append(paths, filepath.Join(schemaDir, name))
+	}
+	s, err := schema.ParseFiles(paths...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range s.Entities {
+		for _, v := range e.Versions {
+			if !v.Explicit {
+				continue
 			}
+			key := fmt.Sprintf("%s %08x", e.Predicate(), v.ID)
+			computed := schema.CRC32(e.Name, v)
+			if computed == v.ID {
+				if overrides[key] != "" {
+					t.Errorf("%s: the id is its line's crc32 now; drop the override (%s)", key, overrides[key])
+				}
+				continue
+			}
+			if overrides[key] != "" {
+				used[key] = true
+				continue
+			}
+			t.Errorf("%s at layer %d: the line's crc32 is %08x: %s", key, v.Layer, computed, schema.Canonical(e.Name, v))
 		}
 	}
 	for key, why := range overrides {
