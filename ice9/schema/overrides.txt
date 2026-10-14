@@ -6,3 +6,4 @@ securePasswordKdfAlgoPBKDF2 bbf2dda0 teamgram's short name for securePasswordKdf
 ipPortSecret 37982646 Telegram's id from mtproto.tl, the crc32 of the line with secret:bytes left as bytes
 accessPointRule 4679b65f Telegram's id from mtproto.tl, not the crc32 of its line in any form tried
 help_configSimple 5a592a6c Telegram's id from mtproto.tl, not the crc32 of its line in any form tried
+initConnection 785188b8 teamgram serves the newest initConnection under the old id at layer 0; the id is the crc32 of the line without params

@@ -133,6 +133,8 @@ var Files = []File{
 	{"schema.tl.handshake_service.proto", HandshakeServiceProto, true},
 	{"schema.tl.transport_service.proto", TransportServiceProto, true},
 	{"schema.tl.sync_service.proto", SyncServiceProto, true},
+	{"schema.tl.crc32_helper.pb.go", CRC32Helper, false},
+	{"codec_schema.tl.pb.go", Codec, false},
 }
 
 // Formatted is the file as it is written: emitted, then formatted as the

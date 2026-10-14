@@ -50,7 +50,11 @@ func runGenerate(args []string) error {
 	for _, file := range emit.Files {
 		text, err := file.Formatted(m, filepath.Join(*out, file.Name))
 		if err != nil {
-			return fmt.Errorf("%s: %w", file.Name, err)
+			// The unformatted text is left beside, so the line the
+			// formatter names can be read.
+			raw := filepath.Join(*out, file.Name+".unformatted")
+			os.WriteFile(raw, file.Emit(m), 0o644)
+			return fmt.Errorf("%s: %w (the text is at %s)", file.Name, err, raw)
 		}
 		if err := os.WriteFile(filepath.Join(*out, file.Name), text, 0o644); err != nil {
 			return err

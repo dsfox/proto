@@ -3,6 +3,7 @@ package emit
 import (
 	"bytes"
 	"fmt"
+	"strings"
 
 	"github.com/teamgram/proto/ice9/mtprotoc/schema"
 )
@@ -46,6 +47,25 @@ enum TLConstructor {
   CRC32_gzip_packed = 812830625;
   CRC32_rpc_result = -212046591;
 `)
+	for _, c := range m.crc32Constants() {
+		fmt.Fprintf(&b, "  CRC32_%s = %d; // %s\n", c.name, int32(c.id), c.comment)
+	}
+	b.WriteString("}\n")
+	return b.Bytes()
+}
+
+// crc32Constant is one value of the TLConstructor enum.
+type crc32Constant struct {
+	name    string
+	id      uint32
+	comment string
+}
+
+// crc32Constants is the enum's values after the six parsed by hand: the
+// service types, the constructors of the API and of teamgram, the methods of
+// both; a predicate with several ids has a value per id, newest first.
+func (m *Model) crc32Constants() []crc32Constant {
+	var out []crc32Constant
 	for _, group := range [][]*schema.Entity{
 		m.Service,
 		Constructors(m.API),
@@ -60,10 +80,34 @@ enum TLConstructor {
 				if len(ids) > 1 {
 					name = fmt.Sprintf("%s_%x", name, id)
 				}
-				fmt.Fprintf(&b, "  CRC32_%s = %d; // %s\n", name, int32(id), hexComment(e, id))
+				out = append(out, crc32Constant{name: name, id: id, comment: hexComment(e, id)})
 			}
 		}
 	}
-	b.WriteString("}\n")
+	return out
+}
+
+// CRC32Helper is schema.tl.crc32_helper.pb.go before gofmt: the TLConstructor
+// enum of schema.tl.crc32.proto as Go constants, in the same order with the
+// same comments.
+func CRC32Helper(m *Model) []byte {
+	var b bytes.Buffer
+	b.WriteString(protoHeader[:strings.Index(protoHeader, "\nsyntax")])
+	b.WriteString(`
+package mtproto
+
+const (
+	CRC32_UNKNOWN TLConstructor = 0
+	CRC32_vector TLConstructor = 481674261
+	CRC32_message2 TLConstructor = 1538843921
+	CRC32_msg_container TLConstructor = 1945237724
+	CRC32_msg_copy TLConstructor = 530561358
+	CRC32_gzip_packed TLConstructor = 812830625
+	CRC32_rpc_result TLConstructor = -212046591
+`)
+	for _, c := range m.crc32Constants() {
+		fmt.Fprintf(&b, "\tCRC32_%s TLConstructor = %d // %s\n", c.name, int32(c.id), c.comment)
+	}
+	b.WriteString(")\n")
 	return b.Bytes()
 }
