@@ -289,3 +289,47 @@ func TestOurMethodsKnowWhereToGo(t *testing.T) {
 // them from the text, and it does the same for both clients - which is the
 // whole point, since a number that agrees with itself here and with nothing
 // else is exactly the failure that matters.
+
+// The key log carries proofs, and a hash lost or reordered on the wire turns a
+// true proof into a refusal - or, worse, a check that compares nothing (#44).
+func TestTheKeyLogSurvivesItsOwnEncoding(t *testing.T) {
+	t.Run("getKeyLog", func(t *testing.T) {
+		var decoded TLMlsGetKeyLog
+		roundTrip(t, &TLMlsGetKeyLog{UserId: 136908563, KnownSize: 41}, &decoded)
+		if decoded.UserId != 136908563 || decoded.KnownSize != 41 {
+			t.Fatalf("came back as %d, %d", decoded.UserId, decoded.KnownSize)
+		}
+	})
+
+	t.Run("keyLog", func(t *testing.T) {
+		original := &Mls_KeyLog{
+			Head: &Mls_KeyLogHead{Size: 3, Root: bytes.Repeat([]byte{7}, 32), Date: 99,
+				LogKey: []byte{1, 2}, Signature: []byte{3, 4, 5}},
+			Entries: []*Mls_KeyLogEntry{
+				{Index: 0, Name: []byte("7/1"), SignatureKey: []byte{8}, Proof: [][]byte{{1}, {2}}},
+				{Index: 2, Name: []byte("7/2"), SignatureKey: []byte{9}},
+			},
+			Consistency: [][]byte{{5}, {6}, {7}},
+		}
+		var decoded Mls_KeyLog
+		roundTrip(t, original, &decoded)
+		h := decoded.Head
+		if h.Size != 3 || !bytes.Equal(h.Root, original.Head.Root) || h.Date != 99 ||
+			!bytes.Equal(h.LogKey, []byte{1, 2}) || !bytes.Equal(h.Signature, []byte{3, 4, 5}) {
+			t.Fatalf("the head came back as %v", h)
+		}
+		if len(decoded.Entries) != 2 || decoded.Entries[1].Index != 2 ||
+			!bytes.Equal(decoded.Entries[0].Name, []byte("7/1")) ||
+			len(decoded.Entries[0].Proof) != 2 || !bytes.Equal(decoded.Entries[0].Proof[1], []byte{2}) ||
+			len(decoded.Entries[1].Proof) != 0 {
+			t.Fatalf("the entries came back as %v", decoded.Entries)
+		}
+		if len(decoded.Consistency) != 3 || !bytes.Equal(decoded.Consistency[2], []byte{7}) {
+			t.Fatalf("the consistency proof came back as %v", decoded.Consistency)
+		}
+	})
+
+	if _, ok := GetRPCContextRegisters()["TLMlsGetKeyLog"]; !ok {
+		t.Error("mls.getKeyLog has no route, so the proxy would refuse it")
+	}
+}

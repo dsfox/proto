@@ -77,6 +77,16 @@ const (
 
 	// mls.confirmCommits ids:Vector<long> = mls.Ok;
 	CRC32_mls_confirmCommits = int32(96655983) // 0x05c2da6f
+
+	// Key transparency (#44).
+	// mls.getKeyLog user_id:long known_size:long = mls.KeyLog;
+	CRC32_mls_getKeyLog = int32(1641178120) // 0x61d26408
+	// mls.keyLogHead size:long root:bytes date:int log_key:bytes signature:bytes = mls.KeyLogHead;
+	CRC32_mls_keyLogHead = int32(1654801443) // 0x62a24423
+	// mls.keyLogEntry index:long name:bytes signature_key:bytes proof:Vector<bytes> = mls.KeyLogEntry;
+	CRC32_mls_keyLogEntry = int32(1287681784) // 0x4cc076f8
+	// mls.keyLog head:mls.KeyLogHead entries:Vector<mls.KeyLogEntry> consistency:Vector<bytes> = mls.KeyLog;
+	CRC32_mls_keyLog = int32(1042434330) // 0x3e22491a
 )
 
 // A welcome is what lets a device into a conversation somebody started with it.
@@ -453,6 +463,137 @@ func (m *Mls_KeyPackages) Decode(dBuf *DecodeBuf) error {
 	return dBuf.err
 }
 
+func (m *TLMlsGetKeyLog) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_getKeyLog)
+	x.Long(m.UserId)
+	x.Long(m.KnownSize)
+	return nil
+}
+
+func (m *TLMlsGetKeyLog) Decode(dBuf *DecodeBuf) error {
+	m.UserId = dBuf.Long()
+	m.KnownSize = dBuf.Long()
+	return dBuf.err
+}
+
+func (m *Mls_KeyLogHead) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_keyLogHead)
+	x.Long(m.Size)
+	x.StringBytes(m.Root)
+	x.Int(m.Date)
+	x.StringBytes(m.LogKey)
+	x.StringBytes(m.Signature)
+	return nil
+}
+
+func (m *Mls_KeyLogHead) Decode(dBuf *DecodeBuf) error {
+	m.Size = dBuf.Long()
+	m.Root = dBuf.StringBytes()
+	m.Date = dBuf.Int()
+	m.LogKey = dBuf.StringBytes()
+	m.Signature = dBuf.StringBytes()
+	return dBuf.err
+}
+
+// A proof is at most one hash per level of the tree; 64 levels hold any log.
+func encodeHashes(x *EncodeBuf, hashes [][]byte) {
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(hashes)))
+	for _, h := range hashes {
+		x.StringBytes(h)
+	}
+}
+
+func decodeHashes(dBuf *DecodeBuf, what string) ([][]byte, error) {
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return nil, fmt.Errorf("%s: expected a vector of hashes, got %d", what, v)
+	}
+	count := dBuf.Int()
+	if count < 0 || count > 128 {
+		return nil, fmt.Errorf("%s: %d is not a number of hashes in a proof", what, count)
+	}
+	hashes := make([][]byte, 0, count)
+	for i := int32(0); i < count; i++ {
+		hashes = append(hashes, dBuf.StringBytes())
+	}
+	return hashes, nil
+}
+
+func (m *Mls_KeyLogEntry) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_keyLogEntry)
+	x.Long(m.Index)
+	x.StringBytes(m.Name)
+	x.StringBytes(m.SignatureKey)
+	encodeHashes(x, m.Proof)
+	return nil
+}
+
+func (m *Mls_KeyLogEntry) Decode(dBuf *DecodeBuf) error {
+	m.Index = dBuf.Long()
+	m.Name = dBuf.StringBytes()
+	m.SignatureKey = dBuf.StringBytes()
+	proof, err := decodeHashes(dBuf, "mls.keyLogEntry")
+	if err != nil {
+		return err
+	}
+	m.Proof = proof
+	return dBuf.err
+}
+
+func (m *Mls_KeyLog) Encode(x *EncodeBuf, layer int32) error {
+	x.Int(CRC32_mls_keyLog)
+	head := m.Head
+	if head == nil {
+		head = &Mls_KeyLogHead{}
+	}
+	if err := head.Encode(x, layer); err != nil {
+		return err
+	}
+	x.Int(int32(0x1cb5c415))
+	x.Int(int32(len(m.Entries)))
+	for _, e := range m.Entries {
+		if err := e.Encode(x, layer); err != nil {
+			return err
+		}
+	}
+	encodeHashes(x, m.Consistency)
+	return nil
+}
+
+func (m *Mls_KeyLog) Decode(dBuf *DecodeBuf) error {
+	if v := dBuf.Int(); v != CRC32_mls_keyLogHead {
+		return fmt.Errorf("mls.keyLog: expected a head, got %d", v)
+	}
+	m.Head = &Mls_KeyLogHead{}
+	if err := m.Head.Decode(dBuf); err != nil {
+		return err
+	}
+	if v := dBuf.Int(); v != int32(0x1cb5c415) {
+		return fmt.Errorf("mls.keyLog: expected a vector of entries, got %d", v)
+	}
+	count := dBuf.Int()
+	if count < 0 || count > 1000 {
+		return fmt.Errorf("mls.keyLog: %d is not a number of entries", count)
+	}
+	m.Entries = make([]*Mls_KeyLogEntry, 0, count)
+	for i := int32(0); i < count; i++ {
+		if v := dBuf.Int(); v != CRC32_mls_keyLogEntry {
+			return fmt.Errorf("mls.keyLog: expected an entry, got %d", v)
+		}
+		e := &Mls_KeyLogEntry{}
+		if err := e.Decode(dBuf); err != nil {
+			return err
+		}
+		m.Entries = append(m.Entries, e)
+	}
+	consistency, err := decodeHashes(dBuf, "mls.keyLog")
+	if err != nil {
+		return err
+	}
+	m.Consistency = consistency
+	return dBuf.err
+}
+
 // Registered here rather than in the generated table, so that regenerating that
 // table from upstream cannot silently drop them.
 // A commit moves a conversation to its next epoch. It travels through its own
@@ -623,6 +764,10 @@ func init() {
 	clazzIdRegisters2[CRC32_mls_commits] = func() TLObject { return &Mls_Commits{} }
 	clazzIdRegisters2[CRC32_mls_commit] = func() TLObject { return &Mls_Commit{} }
 	clazzIdRegisters2[CRC32_mls_confirmCommits] = func() TLObject { return &TLMlsConfirmCommits{} }
+	clazzIdRegisters2[CRC32_mls_getKeyLog] = func() TLObject { return &TLMlsGetKeyLog{} }
+	clazzIdRegisters2[CRC32_mls_keyLogHead] = func() TLObject { return &Mls_KeyLogHead{} }
+	clazzIdRegisters2[CRC32_mls_keyLogEntry] = func() TLObject { return &Mls_KeyLogEntry{} }
+	clazzIdRegisters2[CRC32_mls_keyLog] = func() TLObject { return &Mls_KeyLog{} }
 
 	// And where each request goes. Without this the proxy has nowhere to send
 	// them and answers "not found method", which names the symptom and not the
@@ -671,6 +816,10 @@ func init() {
 		"/mtproto.RPCMls/mls_setRecoverySecret",
 		func() interface{} { return new(Mls_Ok) },
 	}
+	rpcContextRegisters["TLMlsGetKeyLog"] = RPCContextTuple{
+		"/mtproto.RPCMls/mls_getKeyLog",
+		func() interface{} { return new(Mls_KeyLog) },
+	}
 }
 
 // MlsConstructorNames is what the log and the tests use to name our methods,
@@ -699,6 +848,10 @@ func MlsConstructorNames() map[int32]string {
 		CRC32_mls_membersOf:          "mls.membersOf",
 		CRC32_mls_leaf:               "mls.leaf",
 		CRC32_mls_members:            "mls.members",
+		CRC32_mls_getKeyLog:          "mls.getKeyLog",
+		CRC32_mls_keyLogHead:         "mls.keyLogHead",
+		CRC32_mls_keyLogEntry:        "mls.keyLogEntry",
+		CRC32_mls_keyLog:             "mls.keyLog",
 		CRC32_updateMlsMailbox:       "updateMlsMailbox",
 	}
 }

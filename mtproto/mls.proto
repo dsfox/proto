@@ -294,6 +294,7 @@ service RPCMls {
   rpc mls_confirmCommits(TL_mls_confirmCommits) returns (mls_Ok) {}
   rpc mls_membersOf(TL_mls_membersOf) returns (mls_Members) {}
   rpc mls_claimConversation(TL_mls_claimConversation) returns (mls_Conversation) {}
+  rpc mls_getKeyLog(TL_mls_getKeyLog) returns (mls_KeyLog) {}
 }
 
 // A device registering the way back into its own account.
@@ -308,4 +309,48 @@ service RPCMls {
 // that never sees the words cannot read the backup either.
 message TL_mls_setRecoverySecret {
   string secret = 1;
+}
+
+// Key transparency (#44): which signature key belongs to which device, in a log
+// that can only grow. A key package is signed by its device's key, but which key
+// is whose a phone could only take on the server's word - so a server could hand
+// out a package of its own under somebody's name. Every key the server hands out
+// is in this log first, the owner's own devices read their account's entries,
+// and a key none of them made is seen.
+//
+// The tree is RFC 6962's (golang.org/x/mod/sumdb/tlog), so the proofs are the
+// standard ones. A record is "ice9-key-log-1" || user_id (8 bytes, big-endian)
+// || len(name) (2) || name || len(signature_key) (2) || signature_key.
+message TL_mls_getKeyLog {
+  int64 user_id = 1;
+  // The size of the log the caller last saw, or 0. The answer proves the log
+  // it gives now holds that one as a prefix.
+  int64 known_size = 2;
+}
+
+// The log as it stands, signed by the log's own key. The signature is over
+// "ice9-key-log-head-1" || size (8, big-endian) || root (32) || date (4), so a
+// head the server gave one person can be shown to another (#44, part 5).
+message mls_KeyLogHead {
+  int64 size = 1;
+  bytes root = 2;
+  int32 date = 3;
+  bytes log_key = 4;
+  bytes signature = 5;
+}
+
+// One key of the person asked about, and the proof it is in the head's tree.
+message mls_KeyLogEntry {
+  int64 index = 1;
+  bytes name = 2;
+  bytes signature_key = 3;
+  repeated bytes proof = 4;
+}
+
+message mls_KeyLog {
+  mls_KeyLogHead head = 1;
+  repeated mls_KeyLogEntry entries = 2;
+  // That the head's tree holds the one of known_size as a prefix; empty when
+  // known_size was 0 or is the head's size.
+  repeated bytes consistency = 3;
 }

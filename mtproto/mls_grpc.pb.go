@@ -41,6 +41,7 @@ const (
 	RPCMls_MlsConfirmCommits_FullMethodName     = "/mtproto.RPCMls/mls_confirmCommits"
 	RPCMls_MlsMembersOf_FullMethodName          = "/mtproto.RPCMls/mls_membersOf"
 	RPCMls_MlsClaimConversation_FullMethodName  = "/mtproto.RPCMls/mls_claimConversation"
+	RPCMls_MlsGetKeyLog_FullMethodName          = "/mtproto.RPCMls/mls_getKeyLog"
 )
 
 // RPCMlsClient is the client API for RPCMls service.
@@ -58,6 +59,7 @@ type RPCMlsClient interface {
 	MlsConfirmCommits(ctx context.Context, in *TLMlsConfirmCommits, opts ...grpc.CallOption) (*Mls_Ok, error)
 	MlsMembersOf(ctx context.Context, in *TLMlsMembersOf, opts ...grpc.CallOption) (*Mls_Members, error)
 	MlsClaimConversation(ctx context.Context, in *TLMlsClaimConversation, opts ...grpc.CallOption) (*Mls_Conversation, error)
+	MlsGetKeyLog(ctx context.Context, in *TLMlsGetKeyLog, opts ...grpc.CallOption) (*Mls_KeyLog, error)
 }
 
 type rPCMlsClient struct {
@@ -178,6 +180,16 @@ func (c *rPCMlsClient) MlsClaimConversation(ctx context.Context, in *TLMlsClaimC
 	return out, nil
 }
 
+func (c *rPCMlsClient) MlsGetKeyLog(ctx context.Context, in *TLMlsGetKeyLog, opts ...grpc.CallOption) (*Mls_KeyLog, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Mls_KeyLog)
+	err := c.cc.Invoke(ctx, RPCMls_MlsGetKeyLog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCMlsServer is the server API for RPCMls service.
 // All implementations should embed UnimplementedRPCMlsServer
 // for forward compatibility.
@@ -193,6 +205,7 @@ type RPCMlsServer interface {
 	MlsConfirmCommits(context.Context, *TLMlsConfirmCommits) (*Mls_Ok, error)
 	MlsMembersOf(context.Context, *TLMlsMembersOf) (*Mls_Members, error)
 	MlsClaimConversation(context.Context, *TLMlsClaimConversation) (*Mls_Conversation, error)
+	MlsGetKeyLog(context.Context, *TLMlsGetKeyLog) (*Mls_KeyLog, error)
 }
 
 // UnimplementedRPCMlsServer should be embedded to have
@@ -234,6 +247,9 @@ func (UnimplementedRPCMlsServer) MlsMembersOf(context.Context, *TLMlsMembersOf) 
 }
 func (UnimplementedRPCMlsServer) MlsClaimConversation(context.Context, *TLMlsClaimConversation) (*Mls_Conversation, error) {
 	return nil, status.Error(codes.Unimplemented, "method MlsClaimConversation not implemented")
+}
+func (UnimplementedRPCMlsServer) MlsGetKeyLog(context.Context, *TLMlsGetKeyLog) (*Mls_KeyLog, error) {
+	return nil, status.Error(codes.Unimplemented, "method MlsGetKeyLog not implemented")
 }
 func (UnimplementedRPCMlsServer) testEmbeddedByValue() {}
 
@@ -453,6 +469,24 @@ func _RPCMls_MlsClaimConversation_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCMls_MlsGetKeyLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMlsGetKeyLog)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMlsServer).MlsGetKeyLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMls_MlsGetKeyLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMlsServer).MlsGetKeyLog(ctx, req.(*TLMlsGetKeyLog))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCMls_ServiceDesc is the grpc.ServiceDesc for RPCMls service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -503,6 +537,10 @@ var RPCMls_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "mls_claimConversation",
 			Handler:    _RPCMls_MlsClaimConversation_Handler,
+		},
+		{
+			MethodName: "mls_getKeyLog",
+			Handler:    _RPCMls_MlsGetKeyLog_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

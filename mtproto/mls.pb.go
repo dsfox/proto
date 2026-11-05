@@ -289,6 +289,12 @@ type TLMlsSendWelcome struct {
 	// the conversation under that person: a group ends up recorded as the
 	// conversation with whoever invited them, and a private message to that
 	// person is then written with the group's keys (#115).
+	//
+	// Said as the sender sees it, and turned round by the server for whoever it
+	// is left for. A chat between two has no single dialog id - each side calls
+	// it by the other person - so an invitation naming the person being invited
+	// names, to them, a chat with themselves, and the conversation is filed where
+	// nothing will ever look for it again (#155).
 	PeerId        int64 `protobuf:"varint,3,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -593,8 +599,11 @@ func (x *TLMlsConfirmWelcomes) GetIds() []int64 {
 // so of two commits made from the same epoch exactly one can be taken - the
 // server keeps that order, which RFC 9420 gives to the delivery service.
 //
-// The members are named because the server does not know who is in a group and
-// must not: it is told where to leave the commit, not asked who belongs.
+// `members` names where to leave the commit - the accounts whose mailboxes it
+// has to reach. It used to carry "because the server does not know who is in a
+// group and must not" beside it. Nobody had written that rule down, it bought
+// no privacy, and working around it cost five issues (#147); `holds` below now
+// names the membership outright.
 type TLMlsSendCommit struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	GroupId []byte                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
@@ -1179,9 +1188,14 @@ func (x *Mls_Members) GetWanting() []int64 {
 // chat into a conversation of their own by inviting everybody to it; this only
 // writes down where the chat ended up.
 type TLMlsClaimConversation struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	PeerId  int64                  `protobuf:"varint,1,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
-	GroupId []byte                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The chat, as the caller sees it. The server keys the answer by the chat
+	// itself, which for a chat between two is the pair of its people rather than
+	// either side's name for it: alpha claimed one chat under delta's number and
+	// delta the same chat under alpha's, both were first, and the two of them
+	// ended up in conversations that could not read each other (#155).
+	PeerId  int64  `protobuf:"varint,1,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
+	GroupId []byte `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	// The same roster as on a commit, because a group's first membership arrives
 	// with no commit at all: the creator accepts its own commit locally and never
 	// posts it, deliberately - there is nobody to have raced with (#147).
@@ -1349,6 +1363,280 @@ func (x *TLMlsSetRecoverySecret) GetSecret() string {
 	return ""
 }
 
+// Key transparency (#44): which signature key belongs to which device, in a log
+// that can only grow. A key package is signed by its device's key, but which key
+// is whose a phone could only take on the server's word - so a server could hand
+// out a package of its own under somebody's name. Every key the server hands out
+// is in this log first, the owner's own devices read their account's entries,
+// and a key none of them made is seen.
+//
+// The tree is RFC 6962's (golang.org/x/mod/sumdb/tlog), so the proofs are the
+// standard ones. A record is "ice9-key-log-1" || user_id (8 bytes, big-endian)
+// || len(name) (2) || name || len(signature_key) (2) || signature_key.
+type TLMlsGetKeyLog struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	UserId int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	// The size of the log the caller last saw, or 0. The answer proves the log
+	// it gives now holds that one as a prefix.
+	KnownSize     int64 `protobuf:"varint,2,opt,name=known_size,json=knownSize,proto3" json:"known_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TLMlsGetKeyLog) Reset() {
+	*x = TLMlsGetKeyLog{}
+	mi := &file_mtproto_mls_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TLMlsGetKeyLog) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TLMlsGetKeyLog) ProtoMessage() {}
+
+func (x *TLMlsGetKeyLog) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TLMlsGetKeyLog.ProtoReflect.Descriptor instead.
+func (*TLMlsGetKeyLog) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *TLMlsGetKeyLog) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *TLMlsGetKeyLog) GetKnownSize() int64 {
+	if x != nil {
+		return x.KnownSize
+	}
+	return 0
+}
+
+// The log as it stands, signed by the log's own key. The signature is over
+// "ice9-key-log-head-1" || size (8, big-endian) || root (32) || date (4), so a
+// head the server gave one person can be shown to another (#44, part 5).
+type Mls_KeyLogHead struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Size          int64                  `protobuf:"varint,1,opt,name=size,proto3" json:"size,omitempty"`
+	Root          []byte                 `protobuf:"bytes,2,opt,name=root,proto3" json:"root,omitempty"`
+	Date          int32                  `protobuf:"varint,3,opt,name=date,proto3" json:"date,omitempty"`
+	LogKey        []byte                 `protobuf:"bytes,4,opt,name=log_key,json=logKey,proto3" json:"log_key,omitempty"`
+	Signature     []byte                 `protobuf:"bytes,5,opt,name=signature,proto3" json:"signature,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_KeyLogHead) Reset() {
+	*x = Mls_KeyLogHead{}
+	mi := &file_mtproto_mls_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_KeyLogHead) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_KeyLogHead) ProtoMessage() {}
+
+func (x *Mls_KeyLogHead) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_KeyLogHead.ProtoReflect.Descriptor instead.
+func (*Mls_KeyLogHead) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *Mls_KeyLogHead) GetSize() int64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *Mls_KeyLogHead) GetRoot() []byte {
+	if x != nil {
+		return x.Root
+	}
+	return nil
+}
+
+func (x *Mls_KeyLogHead) GetDate() int32 {
+	if x != nil {
+		return x.Date
+	}
+	return 0
+}
+
+func (x *Mls_KeyLogHead) GetLogKey() []byte {
+	if x != nil {
+		return x.LogKey
+	}
+	return nil
+}
+
+func (x *Mls_KeyLogHead) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
+}
+
+// One key of the person asked about, and the proof it is in the head's tree.
+type Mls_KeyLogEntry struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Index         int64                  `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Name          []byte                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	SignatureKey  []byte                 `protobuf:"bytes,3,opt,name=signature_key,json=signatureKey,proto3" json:"signature_key,omitempty"`
+	Proof         [][]byte               `protobuf:"bytes,4,rep,name=proof,proto3" json:"proof,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_KeyLogEntry) Reset() {
+	*x = Mls_KeyLogEntry{}
+	mi := &file_mtproto_mls_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_KeyLogEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_KeyLogEntry) ProtoMessage() {}
+
+func (x *Mls_KeyLogEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_KeyLogEntry.ProtoReflect.Descriptor instead.
+func (*Mls_KeyLogEntry) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *Mls_KeyLogEntry) GetIndex() int64 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *Mls_KeyLogEntry) GetName() []byte {
+	if x != nil {
+		return x.Name
+	}
+	return nil
+}
+
+func (x *Mls_KeyLogEntry) GetSignatureKey() []byte {
+	if x != nil {
+		return x.SignatureKey
+	}
+	return nil
+}
+
+func (x *Mls_KeyLogEntry) GetProof() [][]byte {
+	if x != nil {
+		return x.Proof
+	}
+	return nil
+}
+
+type Mls_KeyLog struct {
+	state   protoimpl.MessageState `protogen:"open.v1"`
+	Head    *Mls_KeyLogHead        `protobuf:"bytes,1,opt,name=head,proto3" json:"head,omitempty"`
+	Entries []*Mls_KeyLogEntry     `protobuf:"bytes,2,rep,name=entries,proto3" json:"entries,omitempty"`
+	// That the head's tree holds the one of known_size as a prefix; empty when
+	// known_size was 0 or is the head's size.
+	Consistency   [][]byte `protobuf:"bytes,3,rep,name=consistency,proto3" json:"consistency,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Mls_KeyLog) Reset() {
+	*x = Mls_KeyLog{}
+	mi := &file_mtproto_mls_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Mls_KeyLog) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Mls_KeyLog) ProtoMessage() {}
+
+func (x *Mls_KeyLog) ProtoReflect() protoreflect.Message {
+	mi := &file_mtproto_mls_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Mls_KeyLog.ProtoReflect.Descriptor instead.
+func (*Mls_KeyLog) Descriptor() ([]byte, []int) {
+	return file_mtproto_mls_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *Mls_KeyLog) GetHead() *Mls_KeyLogHead {
+	if x != nil {
+		return x.Head
+	}
+	return nil
+}
+
+func (x *Mls_KeyLog) GetEntries() []*Mls_KeyLogEntry {
+	if x != nil {
+		return x.Entries
+	}
+	return nil
+}
+
+func (x *Mls_KeyLog) GetConsistency() [][]byte {
+	if x != nil {
+		return x.Consistency
+	}
+	return nil
+}
+
 var File_mtproto_mls_proto protoreflect.FileDescriptor
 
 const file_mtproto_mls_proto_rawDesc = "" +
@@ -1424,7 +1712,27 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\apeer_id\x18\x01 \x01(\x03R\x06peerId\x12\x19\n" +
 	"\bgroup_id\x18\x02 \x01(\fR\agroupId\"2\n" +
 	"\x18TL_mls_setRecoverySecret\x12\x16\n" +
-	"\x06secret\x18\x01 \x01(\tR\x06secret2\xd7\x06\n" +
+	"\x06secret\x18\x01 \x01(\tR\x06secret\"J\n" +
+	"\x10TL_mls_getKeyLog\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1d\n" +
+	"\n" +
+	"known_size\x18\x02 \x01(\x03R\tknownSize\"\x83\x01\n" +
+	"\x0emls_KeyLogHead\x12\x12\n" +
+	"\x04size\x18\x01 \x01(\x03R\x04size\x12\x12\n" +
+	"\x04root\x18\x02 \x01(\fR\x04root\x12\x12\n" +
+	"\x04date\x18\x03 \x01(\x05R\x04date\x12\x17\n" +
+	"\alog_key\x18\x04 \x01(\fR\x06logKey\x12\x1c\n" +
+	"\tsignature\x18\x05 \x01(\fR\tsignature\"v\n" +
+	"\x0fmls_KeyLogEntry\x12\x14\n" +
+	"\x05index\x18\x01 \x01(\x03R\x05index\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\fR\x04name\x12#\n" +
+	"\rsignature_key\x18\x03 \x01(\fR\fsignatureKey\x12\x14\n" +
+	"\x05proof\x18\x04 \x03(\fR\x05proof\"\x8f\x01\n" +
+	"\n" +
+	"mls_KeyLog\x12+\n" +
+	"\x04head\x18\x01 \x01(\v2\x17.mtproto.mls_KeyLogHeadR\x04head\x122\n" +
+	"\aentries\x18\x02 \x03(\v2\x18.mtproto.mls_KeyLogEntryR\aentries\x12 \n" +
+	"\vconsistency\x18\x03 \x03(\fR\vconsistency2\x9a\a\n" +
 	"\x06RPCMls\x12Z\n" +
 	"\x16mls_publishKeyPackages\x12\".mtproto.TL_mls_publishKeyPackages\x1a\x1a.mtproto.mls_PublishResult\"\x00\x12T\n" +
 	"\x14mls_claimKeyPackages\x12 .mtproto.TL_mls_claimKeyPackages\x1a\x18.mtproto.mls_KeyPackages\"\x00\x12A\n" +
@@ -1436,7 +1744,8 @@ const file_mtproto_mls_proto_rawDesc = "" +
 	"\x0emls_getCommits\x12\x1a.mtproto.TL_mls_getCommits\x1a\x14.mtproto.mls_Commits\"\x00\x12G\n" +
 	"\x12mls_confirmCommits\x12\x1e.mtproto.TL_mls_confirmCommits\x1a\x0f.mtproto.mls_Ok\"\x00\x12B\n" +
 	"\rmls_membersOf\x12\x19.mtproto.TL_mls_membersOf\x1a\x14.mtproto.mls_Members\"\x00\x12W\n" +
-	"\x15mls_claimConversation\x12!.mtproto.TL_mls_claimConversation\x1a\x19.mtproto.mls_Conversation\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
+	"\x15mls_claimConversation\x12!.mtproto.TL_mls_claimConversation\x1a\x19.mtproto.mls_Conversation\"\x00\x12A\n" +
+	"\rmls_getKeyLog\x12\x19.mtproto.TL_mls_getKeyLog\x1a\x13.mtproto.mls_KeyLog\"\x00B#Z!github.com/teamgram/proto/mtprotob\x06proto3"
 
 var (
 	file_mtproto_mls_proto_rawDescOnce sync.Once
@@ -1450,7 +1759,7 @@ func file_mtproto_mls_proto_rawDescGZIP() []byte {
 	return file_mtproto_mls_proto_rawDescData
 }
 
-var file_mtproto_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_mtproto_mls_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_mtproto_mls_proto_goTypes = []any{
 	(*TLMlsPublishKeyPackages)(nil), // 0: mtproto.TL_mls_publishKeyPackages
 	(*Mls_PublishResult)(nil),       // 1: mtproto.mls_PublishResult
@@ -1474,38 +1783,46 @@ var file_mtproto_mls_proto_goTypes = []any{
 	(*TLMlsClaimConversation)(nil),  // 19: mtproto.TL_mls_claimConversation
 	(*Mls_Conversation)(nil),        // 20: mtproto.mls_Conversation
 	(*TLMlsSetRecoverySecret)(nil),  // 21: mtproto.TL_mls_setRecoverySecret
+	(*TLMlsGetKeyLog)(nil),          // 22: mtproto.TL_mls_getKeyLog
+	(*Mls_KeyLogHead)(nil),          // 23: mtproto.mls_KeyLogHead
+	(*Mls_KeyLogEntry)(nil),         // 24: mtproto.mls_KeyLogEntry
+	(*Mls_KeyLog)(nil),              // 25: mtproto.mls_KeyLog
 }
 var file_mtproto_mls_proto_depIdxs = []int32{
 	7,  // 0: mtproto.mls_Welcomes.welcomes:type_name -> mtproto.mls_Welcome
 	13, // 1: mtproto.mls_Commits.commits:type_name -> mtproto.mls_Commit
 	17, // 2: mtproto.mls_Members.holds:type_name -> mtproto.mls_Leaf
-	0,  // 3: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
-	2,  // 4: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
-	4,  // 5: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
-	5,  // 6: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
-	9,  // 7: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
-	21, // 8: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
-	10, // 9: mtproto.RPCMls.mls_sendCommit:input_type -> mtproto.TL_mls_sendCommit
-	12, // 10: mtproto.RPCMls.mls_getCommits:input_type -> mtproto.TL_mls_getCommits
-	15, // 11: mtproto.RPCMls.mls_confirmCommits:input_type -> mtproto.TL_mls_confirmCommits
-	16, // 12: mtproto.RPCMls.mls_membersOf:input_type -> mtproto.TL_mls_membersOf
-	19, // 13: mtproto.RPCMls.mls_claimConversation:input_type -> mtproto.TL_mls_claimConversation
-	1,  // 14: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
-	3,  // 15: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
-	6,  // 16: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
-	8,  // 17: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
-	6,  // 18: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
-	6,  // 19: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
-	11, // 20: mtproto.RPCMls.mls_sendCommit:output_type -> mtproto.mls_CommitResult
-	14, // 21: mtproto.RPCMls.mls_getCommits:output_type -> mtproto.mls_Commits
-	6,  // 22: mtproto.RPCMls.mls_confirmCommits:output_type -> mtproto.mls_Ok
-	18, // 23: mtproto.RPCMls.mls_membersOf:output_type -> mtproto.mls_Members
-	20, // 24: mtproto.RPCMls.mls_claimConversation:output_type -> mtproto.mls_Conversation
-	14, // [14:25] is the sub-list for method output_type
-	3,  // [3:14] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	23, // 3: mtproto.mls_KeyLog.head:type_name -> mtproto.mls_KeyLogHead
+	24, // 4: mtproto.mls_KeyLog.entries:type_name -> mtproto.mls_KeyLogEntry
+	0,  // 5: mtproto.RPCMls.mls_publishKeyPackages:input_type -> mtproto.TL_mls_publishKeyPackages
+	2,  // 6: mtproto.RPCMls.mls_claimKeyPackages:input_type -> mtproto.TL_mls_claimKeyPackages
+	4,  // 7: mtproto.RPCMls.mls_sendWelcome:input_type -> mtproto.TL_mls_sendWelcome
+	5,  // 8: mtproto.RPCMls.mls_getWelcomes:input_type -> mtproto.TL_mls_getWelcomes
+	9,  // 9: mtproto.RPCMls.mls_confirmWelcomes:input_type -> mtproto.TL_mls_confirmWelcomes
+	21, // 10: mtproto.RPCMls.mls_setRecoverySecret:input_type -> mtproto.TL_mls_setRecoverySecret
+	10, // 11: mtproto.RPCMls.mls_sendCommit:input_type -> mtproto.TL_mls_sendCommit
+	12, // 12: mtproto.RPCMls.mls_getCommits:input_type -> mtproto.TL_mls_getCommits
+	15, // 13: mtproto.RPCMls.mls_confirmCommits:input_type -> mtproto.TL_mls_confirmCommits
+	16, // 14: mtproto.RPCMls.mls_membersOf:input_type -> mtproto.TL_mls_membersOf
+	19, // 15: mtproto.RPCMls.mls_claimConversation:input_type -> mtproto.TL_mls_claimConversation
+	22, // 16: mtproto.RPCMls.mls_getKeyLog:input_type -> mtproto.TL_mls_getKeyLog
+	1,  // 17: mtproto.RPCMls.mls_publishKeyPackages:output_type -> mtproto.mls_PublishResult
+	3,  // 18: mtproto.RPCMls.mls_claimKeyPackages:output_type -> mtproto.mls_KeyPackages
+	6,  // 19: mtproto.RPCMls.mls_sendWelcome:output_type -> mtproto.mls_Ok
+	8,  // 20: mtproto.RPCMls.mls_getWelcomes:output_type -> mtproto.mls_Welcomes
+	6,  // 21: mtproto.RPCMls.mls_confirmWelcomes:output_type -> mtproto.mls_Ok
+	6,  // 22: mtproto.RPCMls.mls_setRecoverySecret:output_type -> mtproto.mls_Ok
+	11, // 23: mtproto.RPCMls.mls_sendCommit:output_type -> mtproto.mls_CommitResult
+	14, // 24: mtproto.RPCMls.mls_getCommits:output_type -> mtproto.mls_Commits
+	6,  // 25: mtproto.RPCMls.mls_confirmCommits:output_type -> mtproto.mls_Ok
+	18, // 26: mtproto.RPCMls.mls_membersOf:output_type -> mtproto.mls_Members
+	20, // 27: mtproto.RPCMls.mls_claimConversation:output_type -> mtproto.mls_Conversation
+	25, // 28: mtproto.RPCMls.mls_getKeyLog:output_type -> mtproto.mls_KeyLog
+	17, // [17:29] is the sub-list for method output_type
+	5,  // [5:17] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_mtproto_mls_proto_init() }
@@ -1519,7 +1836,7 @@ func file_mtproto_mls_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mtproto_mls_proto_rawDesc), len(file_mtproto_mls_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
