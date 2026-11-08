@@ -1,0 +1,45 @@
+// LAYER 0
+---types---
+int32 v:int = Int32;
+long v:long = Int64;
+int64 v:long = Int64;
+double v:double = Double;
+string v:string = String;
+void = Void;
+authKeyInfo auth_key_id:long auth_key:bytes auth_key_type:int perm_auth_key_id:long temp_auth_key_id:long media_temp_auth_key_id:long = AuthKeyInfo;
+inputPeerUsername username:string = InputPeer;
+updateAccountResetAuthorization user_id:long auth_key_id:long = Updates;
+predefinedUser flags:# phone:string first_name:flags.0?string last_name:flags.1?string username:flags.2?string code:string verified:flags.3?true registered_user_id:flags.4?long last_seen_at:flags.5?int banned:flags.6?true = PredefinedUser;
+bizDataRaw data:bytes = BizDataRaw;
+inputMediaBizDataRaw biz_data:BizDataRaw = InputMedia;
+messageMediaBizDataRaw biz_data:BizDataRaw = MessageMedia;
+messageActionBizDataRaw biz_data:BizDataRaw = MessageAction;
+updateBizDataRaw biz_data:BizDataRaw = Update;
+peerUtil self_id:long peer_type:int peer_id:long access_hash:long = PeerUtil;
+messageBox flags:# user_id:long message_id:int sender_user_id:long peer_type:int peer_id:long random_id:long dialog_id1:long dialog_id2:long dialog_message_id:long message_filter_type:int message:Message mentioned:flags.0?true media_unread:flags.1?true pinned:flags.2?true pts:int pts_count:int views:int reply_owner_id:long forwards:int reaction:string comment_group_id:long comment_group_msg_id:int reply_to_msg_id:int reply_to_top_id:int ttl_period:int has_reaction:flags.3?true = MessageBox;
+messageBoxList box_list:Vector<MessageBox> = MessageBoxList;
+messageBoxListSlice count:int box_list:Vector<MessageBox> = MessageBoxList;
+updateList updates:Vector<Update> = UpdateList;
+privacyKeyRules key:int rules:Vector<PrivacyRule> = PrivacyKeyRules;
+contactData flags:# user_id:long contact_user_id:long first_name:flags.0?string last_name:flags.1?string mutual_contact:flags.2?true phone:flags.3?string close_friend:flags.4?true stories_hidden:flags.5?true = ContactData;
+botData flags:# id:long bot_type:int creator:long token:string description:string bot_chat_history:flags.1?true bot_nochats:flags.2?true bot_inline_geo:flags.3?true bot_info_version:int bot_inline_placeholder:flags.4?string bot_attach_menu:flags.5?true attach_menu_enabled:flags.6?true bot_can_edit:flags.7?true bot_business:flags.8?true bot_has_main_app:flags.9?true bot_active_users:flags.10?int = BotData;
+userData flags:# id:long access_hash:long user_type:int sceret_key_id:long first_name:string last_name:string username:string phone:string profile_photo:flags.0?Photo bot:flags.8?BotData country_code:string verified:flags.1?true support:flags.2?true scam:flags.3?true fake:flags.4?true about:flags.5?string restricted:flags.7?true restriction_reason:flags.7?Vector<RestrictionReason> contacts_version:int privacies_version:int deleted:flags.9?true premium:flags.11?true emoji_status:flags.12?EmojiStatus stories_unavailable:flags.13?true color:flags.14?PeerColor profile_color:flags.15?PeerColor stories_max_id:int birthday:string personal_channel_id:long premium_expire_date:flags.16?long saved_music:flags.17?Document main_tab:flags.18?ProfileTab usernames:flags.19?Vector<Username> = UserData;
+immutableUser flags:# user:UserData last_seen_at:long contacts:flags.0?Vector<ContactData> reverse_contacts:flags.1?Vector<ContactData> keys_privacy_rules:Vector<PrivacyKeyRules> = ImmutableUser;
+mutableUsers users:Vector<ImmutableUser> = MutableUsers;
+immutableChatParticipant flags:# id:long chat_id:long user_id:long state:int participant_type:int link:string useage:int inviter_user_id:long invited_at:long kicked_at:long left_at:long admin_rights:ChatAdminRights date:long is_bot:flags.0?true rank:string = ImmutableChatParticipant;
+immutableChat flags:# id:long creator:long title:string photo:Photo deactivated:flags.0?true call_active:flags.1?true call_not_empty:flags.2?true noforwards:flags.25?true participants_count:int date:long version:int migrated_to:flags.3?InputChannel default_banned_rights:ChatBannedRights can_set_username:flags.4?true about:string exported_invite:flags.5?ExportedChatInvite bot_info:flags.6?Vector<BotInfo> call:flags.7?InputGroupCall available_reactions_type:int available_reactions:Vector<string> ttl_period:int = ImmutableChat;
+mutableChat chat:ImmutableChat chat_participants:Vector<ImmutableChatParticipant> = MutableChat;
+---functions---
+initConnection#785188b8 {X:Type} flags:# api_id:int device_model:string system_version:string app_version:string system_lang_code:string lang_pack:string lang_code:string proxy:flags.0?InputClientProxy params:flags.1?JSONValue query:!X = X;
+help.test#c0e202f7 = Bool;
+predefined.createPredefinedUser flags:# phone:string first_name:flags.0?string last_name:flags.1?string username:flags.2?string code:string verified:flags.3?true = PredefinedUser;
+predefined.updatePredefinedUsername phone:string username:string = PredefinedUser;
+predefined.updatePredefinedProfile flags:# phone:string first_name:flags.0?string last_name:flags.1?string about:flags.2?string = PredefinedUser;
+predefined.updatePredefinedVerified flags:# phone:string verified:flags.0?true = PredefinedUser;
+predefined.updatePredefinedCode phone:string code:string = PredefinedUser;
+predefined.getPredefinedUser phone:string = PredefinedUser;
+predefined.getPredefinedUsers = Vector<PredefinedUser>;
+users.getMe id:long token:string = User;
+account.updateVerified flags:# id:long verified:flags.0?true = User;
+auth.toggleBan flags:# phone:string predefined:flags.0?true expires:flags.1?int reason:flags.1?string = PredefinedUser;
+biz.invokeBizDataRaw biz_data:BizDataRaw = BizDataRaw;

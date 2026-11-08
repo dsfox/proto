@@ -23,3 +23,5 @@ v2/rpc/server/server
 .cursor/
 
 mtproto/specs
+# The schema proto/mtproto is generated from (#276); every other .tl stays out.
+!ice9/schema/*.tl
