@@ -10627,6 +10627,8 @@ const (
 	RPCContacts_ContactsEditCloseFriends_FullMethodName            = "/mtproto.RPCContacts/contacts_editCloseFriends"
 	RPCContacts_ContactsSetBlocked_FullMethodName                  = "/mtproto.RPCContacts/contacts_setBlocked"
 	RPCContacts_ContactsUpdateContactNote_FullMethodName           = "/mtproto.RPCContacts/contacts_updateContactNote"
+	RPCContacts_ContactsExportNoPaidMessagesToken_FullMethodName   = "/mtproto.RPCContacts/contacts_exportNoPaidMessagesToken"
+	RPCContacts_ContactsImportNoPaidMessagesToken_FullMethodName   = "/mtproto.RPCContacts/contacts_importNoPaidMessagesToken"
 )
 
 // RPCContactsClient is the client API for RPCContacts service.
@@ -10656,6 +10658,8 @@ type RPCContactsClient interface {
 	ContactsEditCloseFriends(ctx context.Context, in *TLContactsEditCloseFriends, opts ...grpc.CallOption) (*Bool, error)
 	ContactsSetBlocked(ctx context.Context, in *TLContactsSetBlocked, opts ...grpc.CallOption) (*Bool, error)
 	ContactsUpdateContactNote(ctx context.Context, in *TLContactsUpdateContactNote, opts ...grpc.CallOption) (*Bool, error)
+	ContactsExportNoPaidMessagesToken(ctx context.Context, in *TLContactsExportNoPaidMessagesToken, opts ...grpc.CallOption) (*ExportedNoPaidMessagesToken, error)
+	ContactsImportNoPaidMessagesToken(ctx context.Context, in *TLContactsImportNoPaidMessagesToken, opts ...grpc.CallOption) (*User, error)
 }
 
 type rPCContactsClient struct {
@@ -10896,6 +10900,26 @@ func (c *rPCContactsClient) ContactsUpdateContactNote(ctx context.Context, in *T
 	return out, nil
 }
 
+func (c *rPCContactsClient) ContactsExportNoPaidMessagesToken(ctx context.Context, in *TLContactsExportNoPaidMessagesToken, opts ...grpc.CallOption) (*ExportedNoPaidMessagesToken, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExportedNoPaidMessagesToken)
+	err := c.cc.Invoke(ctx, RPCContacts_ContactsExportNoPaidMessagesToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCContactsClient) ContactsImportNoPaidMessagesToken(ctx context.Context, in *TLContactsImportNoPaidMessagesToken, opts ...grpc.CallOption) (*User, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(User)
+	err := c.cc.Invoke(ctx, RPCContacts_ContactsImportNoPaidMessagesToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCContactsServer is the server API for RPCContacts service.
 // All implementations should embed UnimplementedRPCContactsServer
 // for forward compatibility.
@@ -10923,6 +10947,8 @@ type RPCContactsServer interface {
 	ContactsEditCloseFriends(context.Context, *TLContactsEditCloseFriends) (*Bool, error)
 	ContactsSetBlocked(context.Context, *TLContactsSetBlocked) (*Bool, error)
 	ContactsUpdateContactNote(context.Context, *TLContactsUpdateContactNote) (*Bool, error)
+	ContactsExportNoPaidMessagesToken(context.Context, *TLContactsExportNoPaidMessagesToken) (*ExportedNoPaidMessagesToken, error)
+	ContactsImportNoPaidMessagesToken(context.Context, *TLContactsImportNoPaidMessagesToken) (*User, error)
 }
 
 // UnimplementedRPCContactsServer should be embedded to have
@@ -11000,6 +11026,12 @@ func (UnimplementedRPCContactsServer) ContactsSetBlocked(context.Context, *TLCon
 }
 func (UnimplementedRPCContactsServer) ContactsUpdateContactNote(context.Context, *TLContactsUpdateContactNote) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ContactsUpdateContactNote not implemented")
+}
+func (UnimplementedRPCContactsServer) ContactsExportNoPaidMessagesToken(context.Context, *TLContactsExportNoPaidMessagesToken) (*ExportedNoPaidMessagesToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ContactsExportNoPaidMessagesToken not implemented")
+}
+func (UnimplementedRPCContactsServer) ContactsImportNoPaidMessagesToken(context.Context, *TLContactsImportNoPaidMessagesToken) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ContactsImportNoPaidMessagesToken not implemented")
 }
 func (UnimplementedRPCContactsServer) testEmbeddedByValue() {}
 
@@ -11435,6 +11467,42 @@ func _RPCContacts_ContactsUpdateContactNote_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCContacts_ContactsExportNoPaidMessagesToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLContactsExportNoPaidMessagesToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCContactsServer).ContactsExportNoPaidMessagesToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCContacts_ContactsExportNoPaidMessagesToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCContactsServer).ContactsExportNoPaidMessagesToken(ctx, req.(*TLContactsExportNoPaidMessagesToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCContacts_ContactsImportNoPaidMessagesToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLContactsImportNoPaidMessagesToken)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCContactsServer).ContactsImportNoPaidMessagesToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCContacts_ContactsImportNoPaidMessagesToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCContactsServer).ContactsImportNoPaidMessagesToken(ctx, req.(*TLContactsImportNoPaidMessagesToken))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCContacts_ServiceDesc is the grpc.ServiceDesc for RPCContacts service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -11533,6 +11601,14 @@ var RPCContacts_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "contacts_updateContactNote",
 			Handler:    _RPCContacts_ContactsUpdateContactNote_Handler,
+		},
+		{
+			MethodName: "contacts_exportNoPaidMessagesToken",
+			Handler:    _RPCContacts_ContactsExportNoPaidMessagesToken_Handler,
+		},
+		{
+			MethodName: "contacts_importNoPaidMessagesToken",
+			Handler:    _RPCContacts_ContactsImportNoPaidMessagesToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -23038,24 +23114,30 @@ var RPCMessages_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCMiniBotApps_MessagesRequestWebView_FullMethodName               = "/mtproto.RPCMiniBotApps/messages_requestWebView"
-	RPCMiniBotApps_MessagesProlongWebView_FullMethodName               = "/mtproto.RPCMiniBotApps/messages_prolongWebView"
-	RPCMiniBotApps_MessagesRequestSimpleWebView413A3E73_FullMethodName = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView413A3E73"
-	RPCMiniBotApps_MessagesSendWebViewResultMessage_FullMethodName     = "/mtproto.RPCMiniBotApps/messages_sendWebViewResultMessage"
-	RPCMiniBotApps_MessagesSendWebViewData_FullMethodName              = "/mtproto.RPCMiniBotApps/messages_sendWebViewData"
-	RPCMiniBotApps_MessagesGetBotApp_FullMethodName                    = "/mtproto.RPCMiniBotApps/messages_getBotApp"
-	RPCMiniBotApps_MessagesRequestAppWebView53618BCE_FullMethodName    = "/mtproto.RPCMiniBotApps/messages_requestAppWebView53618BCE"
-	RPCMiniBotApps_MessagesRequestChatJoinWebView_FullMethodName       = "/mtproto.RPCMiniBotApps/messages_requestChatJoinWebView"
-	RPCMiniBotApps_BotsCanSendMessage_FullMethodName                   = "/mtproto.RPCMiniBotApps/bots_canSendMessage"
-	RPCMiniBotApps_BotsAllowSendMessage_FullMethodName                 = "/mtproto.RPCMiniBotApps/bots_allowSendMessage"
-	RPCMiniBotApps_BotsInvokeWebViewCustomMethod_FullMethodName        = "/mtproto.RPCMiniBotApps/bots_invokeWebViewCustomMethod"
-	RPCMiniBotApps_BotsCheckDownloadFileParams_FullMethodName          = "/mtproto.RPCMiniBotApps/bots_checkDownloadFileParams"
-	RPCMiniBotApps_BotsRequestWebViewButton_FullMethodName             = "/mtproto.RPCMiniBotApps/bots_requestWebViewButton"
-	RPCMiniBotApps_BotsGetRequestedWebViewButton_FullMethodName        = "/mtproto.RPCMiniBotApps/bots_getRequestedWebViewButton"
-	RPCMiniBotApps_MessagesRequestSimpleWebView1A46500A_FullMethodName = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView1A46500A"
-	RPCMiniBotApps_MessagesRequestAppWebView8C5A3B3C_FullMethodName    = "/mtproto.RPCMiniBotApps/messages_requestAppWebView8C5A3B3C"
-	RPCMiniBotApps_MessagesRequestSimpleWebView299BEC8E_FullMethodName = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView299BEC8E"
-	RPCMiniBotApps_MessagesRequestSimpleWebView6ABB2F73_FullMethodName = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView6ABB2F73"
+	RPCMiniBotApps_MessagesRequestWebView_FullMethodName                 = "/mtproto.RPCMiniBotApps/messages_requestWebView"
+	RPCMiniBotApps_MessagesProlongWebView_FullMethodName                 = "/mtproto.RPCMiniBotApps/messages_prolongWebView"
+	RPCMiniBotApps_MessagesRequestSimpleWebView413A3E73_FullMethodName   = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView413A3E73"
+	RPCMiniBotApps_MessagesSendWebViewResultMessage_FullMethodName       = "/mtproto.RPCMiniBotApps/messages_sendWebViewResultMessage"
+	RPCMiniBotApps_MessagesSendWebViewData_FullMethodName                = "/mtproto.RPCMiniBotApps/messages_sendWebViewData"
+	RPCMiniBotApps_MessagesGetBotApp_FullMethodName                      = "/mtproto.RPCMiniBotApps/messages_getBotApp"
+	RPCMiniBotApps_MessagesRequestAppWebView53618BCE_FullMethodName      = "/mtproto.RPCMiniBotApps/messages_requestAppWebView53618BCE"
+	RPCMiniBotApps_MessagesRequestChatJoinWebView_FullMethodName         = "/mtproto.RPCMiniBotApps/messages_requestChatJoinWebView"
+	RPCMiniBotApps_MessagesGetBotWidgetQueryAnswer_FullMethodName        = "/mtproto.RPCMiniBotApps/messages_getBotWidgetQueryAnswer"
+	RPCMiniBotApps_MessagesSetBotWidgetQueryAnswer_FullMethodName        = "/mtproto.RPCMiniBotApps/messages_setBotWidgetQueryAnswer"
+	RPCMiniBotApps_MessagesEditMessageWidgetData_FullMethodName          = "/mtproto.RPCMiniBotApps/messages_editMessageWidgetData"
+	RPCMiniBotApps_MessagesEditInlineBotMessageWidgetData_FullMethodName = "/mtproto.RPCMiniBotApps/messages_editInlineBotMessageWidgetData"
+	RPCMiniBotApps_MessagesEditWidgetData_FullMethodName                 = "/mtproto.RPCMiniBotApps/messages_editWidgetData"
+	RPCMiniBotApps_MessagesGetWidgetPublicData_FullMethodName            = "/mtproto.RPCMiniBotApps/messages_getWidgetPublicData"
+	RPCMiniBotApps_BotsCanSendMessage_FullMethodName                     = "/mtproto.RPCMiniBotApps/bots_canSendMessage"
+	RPCMiniBotApps_BotsAllowSendMessage_FullMethodName                   = "/mtproto.RPCMiniBotApps/bots_allowSendMessage"
+	RPCMiniBotApps_BotsInvokeWebViewCustomMethod_FullMethodName          = "/mtproto.RPCMiniBotApps/bots_invokeWebViewCustomMethod"
+	RPCMiniBotApps_BotsCheckDownloadFileParams_FullMethodName            = "/mtproto.RPCMiniBotApps/bots_checkDownloadFileParams"
+	RPCMiniBotApps_BotsRequestWebViewButton_FullMethodName               = "/mtproto.RPCMiniBotApps/bots_requestWebViewButton"
+	RPCMiniBotApps_BotsGetRequestedWebViewButton_FullMethodName          = "/mtproto.RPCMiniBotApps/bots_getRequestedWebViewButton"
+	RPCMiniBotApps_MessagesRequestSimpleWebView1A46500A_FullMethodName   = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView1A46500A"
+	RPCMiniBotApps_MessagesRequestAppWebView8C5A3B3C_FullMethodName      = "/mtproto.RPCMiniBotApps/messages_requestAppWebView8C5A3B3C"
+	RPCMiniBotApps_MessagesRequestSimpleWebView299BEC8E_FullMethodName   = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView299BEC8E"
+	RPCMiniBotApps_MessagesRequestSimpleWebView6ABB2F73_FullMethodName   = "/mtproto.RPCMiniBotApps/messages_requestSimpleWebView6ABB2F73"
 )
 
 // RPCMiniBotAppsClient is the client API for RPCMiniBotApps service.
@@ -23070,6 +23152,12 @@ type RPCMiniBotAppsClient interface {
 	MessagesGetBotApp(ctx context.Context, in *TLMessagesGetBotApp, opts ...grpc.CallOption) (*Messages_BotApp, error)
 	MessagesRequestAppWebView53618BCE(ctx context.Context, in *TLMessagesRequestAppWebView53618BCE, opts ...grpc.CallOption) (*WebViewResult, error)
 	MessagesRequestChatJoinWebView(ctx context.Context, in *TLMessagesRequestChatJoinWebView, opts ...grpc.CallOption) (*WebViewResult, error)
+	MessagesGetBotWidgetQueryAnswer(ctx context.Context, in *TLMessagesGetBotWidgetQueryAnswer, opts ...grpc.CallOption) (*Messages_BotWidgetQueryAnswer, error)
+	MessagesSetBotWidgetQueryAnswer(ctx context.Context, in *TLMessagesSetBotWidgetQueryAnswer, opts ...grpc.CallOption) (*Bool, error)
+	MessagesEditMessageWidgetData(ctx context.Context, in *TLMessagesEditMessageWidgetData, opts ...grpc.CallOption) (*Updates, error)
+	MessagesEditInlineBotMessageWidgetData(ctx context.Context, in *TLMessagesEditInlineBotMessageWidgetData, opts ...grpc.CallOption) (*Bool, error)
+	MessagesEditWidgetData(ctx context.Context, in *TLMessagesEditWidgetData, opts ...grpc.CallOption) (*Bool, error)
+	MessagesGetWidgetPublicData(ctx context.Context, in *TLMessagesGetWidgetPublicData, opts ...grpc.CallOption) (*Messages_WidgetPublicData, error)
 	BotsCanSendMessage(ctx context.Context, in *TLBotsCanSendMessage, opts ...grpc.CallOption) (*Bool, error)
 	BotsAllowSendMessage(ctx context.Context, in *TLBotsAllowSendMessage, opts ...grpc.CallOption) (*Updates, error)
 	BotsInvokeWebViewCustomMethod(ctx context.Context, in *TLBotsInvokeWebViewCustomMethod, opts ...grpc.CallOption) (*DataJSON, error)
@@ -23164,6 +23252,66 @@ func (c *rPCMiniBotAppsClient) MessagesRequestChatJoinWebView(ctx context.Contex
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(WebViewResult)
 	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesRequestChatJoinWebView_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) MessagesGetBotWidgetQueryAnswer(ctx context.Context, in *TLMessagesGetBotWidgetQueryAnswer, opts ...grpc.CallOption) (*Messages_BotWidgetQueryAnswer, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_BotWidgetQueryAnswer)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesGetBotWidgetQueryAnswer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) MessagesSetBotWidgetQueryAnswer(ctx context.Context, in *TLMessagesSetBotWidgetQueryAnswer, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesSetBotWidgetQueryAnswer_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) MessagesEditMessageWidgetData(ctx context.Context, in *TLMessagesEditMessageWidgetData, opts ...grpc.CallOption) (*Updates, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Updates)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesEditMessageWidgetData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) MessagesEditInlineBotMessageWidgetData(ctx context.Context, in *TLMessagesEditInlineBotMessageWidgetData, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesEditInlineBotMessageWidgetData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) MessagesEditWidgetData(ctx context.Context, in *TLMessagesEditWidgetData, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesEditWidgetData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCMiniBotAppsClient) MessagesGetWidgetPublicData(ctx context.Context, in *TLMessagesGetWidgetPublicData, opts ...grpc.CallOption) (*Messages_WidgetPublicData, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_WidgetPublicData)
+	err := c.cc.Invoke(ctx, RPCMiniBotApps_MessagesGetWidgetPublicData_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -23282,6 +23430,12 @@ type RPCMiniBotAppsServer interface {
 	MessagesGetBotApp(context.Context, *TLMessagesGetBotApp) (*Messages_BotApp, error)
 	MessagesRequestAppWebView53618BCE(context.Context, *TLMessagesRequestAppWebView53618BCE) (*WebViewResult, error)
 	MessagesRequestChatJoinWebView(context.Context, *TLMessagesRequestChatJoinWebView) (*WebViewResult, error)
+	MessagesGetBotWidgetQueryAnswer(context.Context, *TLMessagesGetBotWidgetQueryAnswer) (*Messages_BotWidgetQueryAnswer, error)
+	MessagesSetBotWidgetQueryAnswer(context.Context, *TLMessagesSetBotWidgetQueryAnswer) (*Bool, error)
+	MessagesEditMessageWidgetData(context.Context, *TLMessagesEditMessageWidgetData) (*Updates, error)
+	MessagesEditInlineBotMessageWidgetData(context.Context, *TLMessagesEditInlineBotMessageWidgetData) (*Bool, error)
+	MessagesEditWidgetData(context.Context, *TLMessagesEditWidgetData) (*Bool, error)
+	MessagesGetWidgetPublicData(context.Context, *TLMessagesGetWidgetPublicData) (*Messages_WidgetPublicData, error)
 	BotsCanSendMessage(context.Context, *TLBotsCanSendMessage) (*Bool, error)
 	BotsAllowSendMessage(context.Context, *TLBotsAllowSendMessage) (*Updates, error)
 	BotsInvokeWebViewCustomMethod(context.Context, *TLBotsInvokeWebViewCustomMethod) (*DataJSON, error)
@@ -23324,6 +23478,24 @@ func (UnimplementedRPCMiniBotAppsServer) MessagesRequestAppWebView53618BCE(conte
 }
 func (UnimplementedRPCMiniBotAppsServer) MessagesRequestChatJoinWebView(context.Context, *TLMessagesRequestChatJoinWebView) (*WebViewResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesRequestChatJoinWebView not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) MessagesGetBotWidgetQueryAnswer(context.Context, *TLMessagesGetBotWidgetQueryAnswer) (*Messages_BotWidgetQueryAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetBotWidgetQueryAnswer not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) MessagesSetBotWidgetQueryAnswer(context.Context, *TLMessagesSetBotWidgetQueryAnswer) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesSetBotWidgetQueryAnswer not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) MessagesEditMessageWidgetData(context.Context, *TLMessagesEditMessageWidgetData) (*Updates, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesEditMessageWidgetData not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) MessagesEditInlineBotMessageWidgetData(context.Context, *TLMessagesEditInlineBotMessageWidgetData) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesEditInlineBotMessageWidgetData not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) MessagesEditWidgetData(context.Context, *TLMessagesEditWidgetData) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesEditWidgetData not implemented")
+}
+func (UnimplementedRPCMiniBotAppsServer) MessagesGetWidgetPublicData(context.Context, *TLMessagesGetWidgetPublicData) (*Messages_WidgetPublicData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetWidgetPublicData not implemented")
 }
 func (UnimplementedRPCMiniBotAppsServer) BotsCanSendMessage(context.Context, *TLBotsCanSendMessage) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BotsCanSendMessage not implemented")
@@ -23515,6 +23687,114 @@ func _RPCMiniBotApps_MessagesRequestChatJoinWebView_Handler(srv interface{}, ctx
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCMiniBotAppsServer).MessagesRequestChatJoinWebView(ctx, req.(*TLMessagesRequestChatJoinWebView))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_MessagesGetBotWidgetQueryAnswer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesGetBotWidgetQueryAnswer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).MessagesGetBotWidgetQueryAnswer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_MessagesGetBotWidgetQueryAnswer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).MessagesGetBotWidgetQueryAnswer(ctx, req.(*TLMessagesGetBotWidgetQueryAnswer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_MessagesSetBotWidgetQueryAnswer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesSetBotWidgetQueryAnswer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).MessagesSetBotWidgetQueryAnswer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_MessagesSetBotWidgetQueryAnswer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).MessagesSetBotWidgetQueryAnswer(ctx, req.(*TLMessagesSetBotWidgetQueryAnswer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_MessagesEditMessageWidgetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesEditMessageWidgetData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).MessagesEditMessageWidgetData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_MessagesEditMessageWidgetData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).MessagesEditMessageWidgetData(ctx, req.(*TLMessagesEditMessageWidgetData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_MessagesEditInlineBotMessageWidgetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesEditInlineBotMessageWidgetData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).MessagesEditInlineBotMessageWidgetData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_MessagesEditInlineBotMessageWidgetData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).MessagesEditInlineBotMessageWidgetData(ctx, req.(*TLMessagesEditInlineBotMessageWidgetData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_MessagesEditWidgetData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesEditWidgetData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).MessagesEditWidgetData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_MessagesEditWidgetData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).MessagesEditWidgetData(ctx, req.(*TLMessagesEditWidgetData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCMiniBotApps_MessagesGetWidgetPublicData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesGetWidgetPublicData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCMiniBotAppsServer).MessagesGetWidgetPublicData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCMiniBotApps_MessagesGetWidgetPublicData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCMiniBotAppsServer).MessagesGetWidgetPublicData(ctx, req.(*TLMessagesGetWidgetPublicData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -23737,6 +24017,30 @@ var RPCMiniBotApps_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_requestChatJoinWebView",
 			Handler:    _RPCMiniBotApps_MessagesRequestChatJoinWebView_Handler,
+		},
+		{
+			MethodName: "messages_getBotWidgetQueryAnswer",
+			Handler:    _RPCMiniBotApps_MessagesGetBotWidgetQueryAnswer_Handler,
+		},
+		{
+			MethodName: "messages_setBotWidgetQueryAnswer",
+			Handler:    _RPCMiniBotApps_MessagesSetBotWidgetQueryAnswer_Handler,
+		},
+		{
+			MethodName: "messages_editMessageWidgetData",
+			Handler:    _RPCMiniBotApps_MessagesEditMessageWidgetData_Handler,
+		},
+		{
+			MethodName: "messages_editInlineBotMessageWidgetData",
+			Handler:    _RPCMiniBotApps_MessagesEditInlineBotMessageWidgetData_Handler,
+		},
+		{
+			MethodName: "messages_editWidgetData",
+			Handler:    _RPCMiniBotApps_MessagesEditWidgetData_Handler,
+		},
+		{
+			MethodName: "messages_getWidgetPublicData",
+			Handler:    _RPCMiniBotApps_MessagesGetWidgetPublicData_Handler,
 		},
 		{
 			MethodName: "bots_canSendMessage",
@@ -25477,6 +25781,10 @@ const (
 	RPCPayments_MessagesSetBotPrecheckoutResults_FullMethodName     = "/mtproto.RPCPayments/messages_setBotPrecheckoutResults"
 	RPCPayments_PaymentsGetPaymentForm_FullMethodName               = "/mtproto.RPCPayments/payments_getPaymentForm"
 	RPCPayments_PaymentsGetCurrencyRates_FullMethodName             = "/mtproto.RPCPayments/payments_getCurrencyRates"
+	RPCPayments_PaymentsWithdrawStarGift_FullMethodName             = "/mtproto.RPCPayments/payments_withdrawStarGift"
+	RPCPayments_PaymentsDepositStarGift_FullMethodName              = "/mtproto.RPCPayments/payments_depositStarGift"
+	RPCPayments_PaymentsDisplayStarGift_FullMethodName              = "/mtproto.RPCPayments/payments_displayStarGift"
+	RPCPayments_PaymentsDeleteStarGift_FullMethodName               = "/mtproto.RPCPayments/payments_deleteStarGift"
 	RPCPayments_PaymentsGetOnrampProviders_FullMethodName           = "/mtproto.RPCPayments/payments_getOnrampProviders"
 	RPCPayments_PaymentsGetOnrampBaseCurrencies_FullMethodName      = "/mtproto.RPCPayments/payments_getOnrampBaseCurrencies"
 	RPCPayments_PaymentsGetOnrampAvailability_FullMethodName        = "/mtproto.RPCPayments/payments_getOnrampAvailability"
@@ -25484,6 +25792,7 @@ const (
 	RPCPayments_PaymentsGetOnrampQuote_FullMethodName               = "/mtproto.RPCPayments/payments_getOnrampQuote"
 	RPCPayments_PaymentsCreateOnrampSession_FullMethodName          = "/mtproto.RPCPayments/payments_createOnrampSession"
 	RPCPayments_WalletGetState_FullMethodName                       = "/mtproto.RPCPayments/wallet_getState"
+	RPCPayments_WalletSetCardStickers_FullMethodName                = "/mtproto.RPCPayments/wallet_setCardStickers"
 	RPCPayments_WalletGetUserAddresses_FullMethodName               = "/mtproto.RPCPayments/wallet_getUserAddresses"
 	RPCPayments_WalletGetTransactions_FullMethodName                = "/mtproto.RPCPayments/wallet_getTransactions"
 	RPCPayments_WalletGetTransactionsByIDs_FullMethodName           = "/mtproto.RPCPayments/wallet_getTransactionsByIDs"
@@ -25530,6 +25839,10 @@ type RPCPaymentsClient interface {
 	MessagesSetBotPrecheckoutResults(ctx context.Context, in *TLMessagesSetBotPrecheckoutResults, opts ...grpc.CallOption) (*Bool, error)
 	PaymentsGetPaymentForm(ctx context.Context, in *TLPaymentsGetPaymentForm, opts ...grpc.CallOption) (*Payments_PaymentForm, error)
 	PaymentsGetCurrencyRates(ctx context.Context, in *TLPaymentsGetCurrencyRates, opts ...grpc.CallOption) (*Payments_CurrencyRates, error)
+	PaymentsWithdrawStarGift(ctx context.Context, in *TLPaymentsWithdrawStarGift, opts ...grpc.CallOption) (*Bool, error)
+	PaymentsDepositStarGift(ctx context.Context, in *TLPaymentsDepositStarGift, opts ...grpc.CallOption) (*Payments_StarGiftDepositPayload, error)
+	PaymentsDisplayStarGift(ctx context.Context, in *TLPaymentsDisplayStarGift, opts ...grpc.CallOption) (*Bool, error)
+	PaymentsDeleteStarGift(ctx context.Context, in *TLPaymentsDeleteStarGift, opts ...grpc.CallOption) (*Bool, error)
 	PaymentsGetOnrampProviders(ctx context.Context, in *TLPaymentsGetOnrampProviders, opts ...grpc.CallOption) (*Vector_OnrampProviderInfo, error)
 	PaymentsGetOnrampBaseCurrencies(ctx context.Context, in *TLPaymentsGetOnrampBaseCurrencies, opts ...grpc.CallOption) (*Vector_String, error)
 	PaymentsGetOnrampAvailability(ctx context.Context, in *TLPaymentsGetOnrampAvailability, opts ...grpc.CallOption) (*OnrampAvailability, error)
@@ -25537,6 +25850,7 @@ type RPCPaymentsClient interface {
 	PaymentsGetOnrampQuote(ctx context.Context, in *TLPaymentsGetOnrampQuote, opts ...grpc.CallOption) (*OnrampQuote, error)
 	PaymentsCreateOnrampSession(ctx context.Context, in *TLPaymentsCreateOnrampSession, opts ...grpc.CallOption) (*OnrampSession, error)
 	WalletGetState(ctx context.Context, in *TLWalletGetState, opts ...grpc.CallOption) (*WalletState, error)
+	WalletSetCardStickers(ctx context.Context, in *TLWalletSetCardStickers, opts ...grpc.CallOption) (*Wallet_Card, error)
 	WalletGetUserAddresses(ctx context.Context, in *TLWalletGetUserAddresses, opts ...grpc.CallOption) (*Wallet_UserAddresses, error)
 	WalletGetTransactions(ctx context.Context, in *TLWalletGetTransactions, opts ...grpc.CallOption) (*Wallet_Transactions, error)
 	WalletGetTransactionsByIDs(ctx context.Context, in *TLWalletGetTransactionsByIDs, opts ...grpc.CallOption) (*Wallet_Transactions, error)
@@ -25632,6 +25946,46 @@ func (c *rPCPaymentsClient) PaymentsGetCurrencyRates(ctx context.Context, in *TL
 	return out, nil
 }
 
+func (c *rPCPaymentsClient) PaymentsWithdrawStarGift(ctx context.Context, in *TLPaymentsWithdrawStarGift, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsWithdrawStarGift_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsDepositStarGift(ctx context.Context, in *TLPaymentsDepositStarGift, opts ...grpc.CallOption) (*Payments_StarGiftDepositPayload, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Payments_StarGiftDepositPayload)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsDepositStarGift_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsDisplayStarGift(ctx context.Context, in *TLPaymentsDisplayStarGift, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsDisplayStarGift_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) PaymentsDeleteStarGift(ctx context.Context, in *TLPaymentsDeleteStarGift, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCPayments_PaymentsDeleteStarGift_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rPCPaymentsClient) PaymentsGetOnrampProviders(ctx context.Context, in *TLPaymentsGetOnrampProviders, opts ...grpc.CallOption) (*Vector_OnrampProviderInfo, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Vector_OnrampProviderInfo)
@@ -25696,6 +26050,16 @@ func (c *rPCPaymentsClient) WalletGetState(ctx context.Context, in *TLWalletGetS
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(WalletState)
 	err := c.cc.Invoke(ctx, RPCPayments_WalletGetState_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCPaymentsClient) WalletSetCardStickers(ctx context.Context, in *TLWalletSetCardStickers, opts ...grpc.CallOption) (*Wallet_Card, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Wallet_Card)
+	err := c.cc.Invoke(ctx, RPCPayments_WalletSetCardStickers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -26061,6 +26425,10 @@ type RPCPaymentsServer interface {
 	MessagesSetBotPrecheckoutResults(context.Context, *TLMessagesSetBotPrecheckoutResults) (*Bool, error)
 	PaymentsGetPaymentForm(context.Context, *TLPaymentsGetPaymentForm) (*Payments_PaymentForm, error)
 	PaymentsGetCurrencyRates(context.Context, *TLPaymentsGetCurrencyRates) (*Payments_CurrencyRates, error)
+	PaymentsWithdrawStarGift(context.Context, *TLPaymentsWithdrawStarGift) (*Bool, error)
+	PaymentsDepositStarGift(context.Context, *TLPaymentsDepositStarGift) (*Payments_StarGiftDepositPayload, error)
+	PaymentsDisplayStarGift(context.Context, *TLPaymentsDisplayStarGift) (*Bool, error)
+	PaymentsDeleteStarGift(context.Context, *TLPaymentsDeleteStarGift) (*Bool, error)
 	PaymentsGetOnrampProviders(context.Context, *TLPaymentsGetOnrampProviders) (*Vector_OnrampProviderInfo, error)
 	PaymentsGetOnrampBaseCurrencies(context.Context, *TLPaymentsGetOnrampBaseCurrencies) (*Vector_String, error)
 	PaymentsGetOnrampAvailability(context.Context, *TLPaymentsGetOnrampAvailability) (*OnrampAvailability, error)
@@ -26068,6 +26436,7 @@ type RPCPaymentsServer interface {
 	PaymentsGetOnrampQuote(context.Context, *TLPaymentsGetOnrampQuote) (*OnrampQuote, error)
 	PaymentsCreateOnrampSession(context.Context, *TLPaymentsCreateOnrampSession) (*OnrampSession, error)
 	WalletGetState(context.Context, *TLWalletGetState) (*WalletState, error)
+	WalletSetCardStickers(context.Context, *TLWalletSetCardStickers) (*Wallet_Card, error)
 	WalletGetUserAddresses(context.Context, *TLWalletGetUserAddresses) (*Wallet_UserAddresses, error)
 	WalletGetTransactions(context.Context, *TLWalletGetTransactions) (*Wallet_Transactions, error)
 	WalletGetTransactionsByIDs(context.Context, *TLWalletGetTransactionsByIDs) (*Wallet_Transactions, error)
@@ -26127,6 +26496,18 @@ func (UnimplementedRPCPaymentsServer) PaymentsGetPaymentForm(context.Context, *T
 func (UnimplementedRPCPaymentsServer) PaymentsGetCurrencyRates(context.Context, *TLPaymentsGetCurrencyRates) (*Payments_CurrencyRates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetCurrencyRates not implemented")
 }
+func (UnimplementedRPCPaymentsServer) PaymentsWithdrawStarGift(context.Context, *TLPaymentsWithdrawStarGift) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsWithdrawStarGift not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsDepositStarGift(context.Context, *TLPaymentsDepositStarGift) (*Payments_StarGiftDepositPayload, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsDepositStarGift not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsDisplayStarGift(context.Context, *TLPaymentsDisplayStarGift) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsDisplayStarGift not implemented")
+}
+func (UnimplementedRPCPaymentsServer) PaymentsDeleteStarGift(context.Context, *TLPaymentsDeleteStarGift) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PaymentsDeleteStarGift not implemented")
+}
 func (UnimplementedRPCPaymentsServer) PaymentsGetOnrampProviders(context.Context, *TLPaymentsGetOnrampProviders) (*Vector_OnrampProviderInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PaymentsGetOnrampProviders not implemented")
 }
@@ -26147,6 +26528,9 @@ func (UnimplementedRPCPaymentsServer) PaymentsCreateOnrampSession(context.Contex
 }
 func (UnimplementedRPCPaymentsServer) WalletGetState(context.Context, *TLWalletGetState) (*WalletState, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WalletGetState not implemented")
+}
+func (UnimplementedRPCPaymentsServer) WalletSetCardStickers(context.Context, *TLWalletSetCardStickers) (*Wallet_Card, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WalletSetCardStickers not implemented")
 }
 func (UnimplementedRPCPaymentsServer) WalletGetUserAddresses(context.Context, *TLWalletGetUserAddresses) (*Wallet_UserAddresses, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WalletGetUserAddresses not implemented")
@@ -26363,6 +26747,78 @@ func _RPCPayments_PaymentsGetCurrencyRates_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCPayments_PaymentsWithdrawStarGift_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsWithdrawStarGift)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsWithdrawStarGift(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsWithdrawStarGift_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsWithdrawStarGift(ctx, req.(*TLPaymentsWithdrawStarGift))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsDepositStarGift_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsDepositStarGift)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsDepositStarGift(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsDepositStarGift_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsDepositStarGift(ctx, req.(*TLPaymentsDepositStarGift))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsDisplayStarGift_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsDisplayStarGift)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsDisplayStarGift(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsDisplayStarGift_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsDisplayStarGift(ctx, req.(*TLPaymentsDisplayStarGift))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_PaymentsDeleteStarGift_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLPaymentsDeleteStarGift)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).PaymentsDeleteStarGift(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_PaymentsDeleteStarGift_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).PaymentsDeleteStarGift(ctx, req.(*TLPaymentsDeleteStarGift))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RPCPayments_PaymentsGetOnrampProviders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TLPaymentsGetOnrampProviders)
 	if err := dec(in); err != nil {
@@ -26485,6 +26941,24 @@ func _RPCPayments_WalletGetState_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RPCPaymentsServer).WalletGetState(ctx, req.(*TLWalletGetState))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCPayments_WalletSetCardStickers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLWalletSetCardStickers)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCPaymentsServer).WalletSetCardStickers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCPayments_WalletSetCardStickers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCPaymentsServer).WalletSetCardStickers(ctx, req.(*TLWalletSetCardStickers))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -27147,6 +27621,22 @@ var RPCPayments_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RPCPayments_PaymentsGetCurrencyRates_Handler,
 		},
 		{
+			MethodName: "payments_withdrawStarGift",
+			Handler:    _RPCPayments_PaymentsWithdrawStarGift_Handler,
+		},
+		{
+			MethodName: "payments_depositStarGift",
+			Handler:    _RPCPayments_PaymentsDepositStarGift_Handler,
+		},
+		{
+			MethodName: "payments_displayStarGift",
+			Handler:    _RPCPayments_PaymentsDisplayStarGift_Handler,
+		},
+		{
+			MethodName: "payments_deleteStarGift",
+			Handler:    _RPCPayments_PaymentsDeleteStarGift_Handler,
+		},
+		{
 			MethodName: "payments_getOnrampProviders",
 			Handler:    _RPCPayments_PaymentsGetOnrampProviders_Handler,
 		},
@@ -27173,6 +27663,10 @@ var RPCPayments_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "wallet_getState",
 			Handler:    _RPCPayments_WalletGetState_Handler,
+		},
+		{
+			MethodName: "wallet_setCardStickers",
+			Handler:    _RPCPayments_WalletSetCardStickers_Handler,
 		},
 		{
 			MethodName: "wallet_getUserAddresses",
@@ -37340,6 +37834,8 @@ const (
 	RPCThemes_AccountGetChatThemes_FullMethodName           = "/mtproto.RPCThemes/account_getChatThemes"
 	RPCThemes_AccountGetUniqueGiftChatThemes_FullMethodName = "/mtproto.RPCThemes/account_getUniqueGiftChatThemes"
 	RPCThemes_MessagesSetChatTheme_FullMethodName           = "/mtproto.RPCThemes/messages_setChatTheme"
+	RPCThemes_MessagesSetShareTheme_FullMethodName          = "/mtproto.RPCThemes/messages_setShareTheme"
+	RPCThemes_MessagesGetShareThemeBackdrops_FullMethodName = "/mtproto.RPCThemes/messages_getShareThemeBackdrops"
 )
 
 // RPCThemesClient is the client API for RPCThemes service.
@@ -37356,6 +37852,8 @@ type RPCThemesClient interface {
 	AccountGetChatThemes(ctx context.Context, in *TLAccountGetChatThemes, opts ...grpc.CallOption) (*Account_Themes, error)
 	AccountGetUniqueGiftChatThemes(ctx context.Context, in *TLAccountGetUniqueGiftChatThemes, opts ...grpc.CallOption) (*Account_ChatThemes, error)
 	MessagesSetChatTheme(ctx context.Context, in *TLMessagesSetChatTheme, opts ...grpc.CallOption) (*Updates, error)
+	MessagesSetShareTheme(ctx context.Context, in *TLMessagesSetShareTheme, opts ...grpc.CallOption) (*Bool, error)
+	MessagesGetShareThemeBackdrops(ctx context.Context, in *TLMessagesGetShareThemeBackdrops, opts ...grpc.CallOption) (*ShareThemeBackdrops, error)
 }
 
 type rPCThemesClient struct {
@@ -37466,6 +37964,26 @@ func (c *rPCThemesClient) MessagesSetChatTheme(ctx context.Context, in *TLMessag
 	return out, nil
 }
 
+func (c *rPCThemesClient) MessagesSetShareTheme(ctx context.Context, in *TLMessagesSetShareTheme, opts ...grpc.CallOption) (*Bool, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, RPCThemes_MessagesSetShareTheme_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCThemesClient) MessagesGetShareThemeBackdrops(ctx context.Context, in *TLMessagesGetShareThemeBackdrops, opts ...grpc.CallOption) (*ShareThemeBackdrops, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ShareThemeBackdrops)
+	err := c.cc.Invoke(ctx, RPCThemes_MessagesGetShareThemeBackdrops_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCThemesServer is the server API for RPCThemes service.
 // All implementations should embed UnimplementedRPCThemesServer
 // for forward compatibility.
@@ -37480,6 +37998,8 @@ type RPCThemesServer interface {
 	AccountGetChatThemes(context.Context, *TLAccountGetChatThemes) (*Account_Themes, error)
 	AccountGetUniqueGiftChatThemes(context.Context, *TLAccountGetUniqueGiftChatThemes) (*Account_ChatThemes, error)
 	MessagesSetChatTheme(context.Context, *TLMessagesSetChatTheme) (*Updates, error)
+	MessagesSetShareTheme(context.Context, *TLMessagesSetShareTheme) (*Bool, error)
+	MessagesGetShareThemeBackdrops(context.Context, *TLMessagesGetShareThemeBackdrops) (*ShareThemeBackdrops, error)
 }
 
 // UnimplementedRPCThemesServer should be embedded to have
@@ -37518,6 +38038,12 @@ func (UnimplementedRPCThemesServer) AccountGetUniqueGiftChatThemes(context.Conte
 }
 func (UnimplementedRPCThemesServer) MessagesSetChatTheme(context.Context, *TLMessagesSetChatTheme) (*Updates, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesSetChatTheme not implemented")
+}
+func (UnimplementedRPCThemesServer) MessagesSetShareTheme(context.Context, *TLMessagesSetShareTheme) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesSetShareTheme not implemented")
+}
+func (UnimplementedRPCThemesServer) MessagesGetShareThemeBackdrops(context.Context, *TLMessagesGetShareThemeBackdrops) (*ShareThemeBackdrops, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetShareThemeBackdrops not implemented")
 }
 func (UnimplementedRPCThemesServer) testEmbeddedByValue() {}
 
@@ -37719,6 +38245,42 @@ func _RPCThemes_MessagesSetChatTheme_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCThemes_MessagesSetShareTheme_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesSetShareTheme)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCThemesServer).MessagesSetShareTheme(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCThemes_MessagesSetShareTheme_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCThemesServer).MessagesSetShareTheme(ctx, req.(*TLMessagesSetShareTheme))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCThemes_MessagesGetShareThemeBackdrops_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesGetShareThemeBackdrops)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCThemesServer).MessagesGetShareThemeBackdrops(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCThemes_MessagesGetShareThemeBackdrops_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCThemesServer).MessagesGetShareThemeBackdrops(ctx, req.(*TLMessagesGetShareThemeBackdrops))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCThemes_ServiceDesc is the grpc.ServiceDesc for RPCThemes service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -37765,6 +38327,14 @@ var RPCThemes_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_setChatTheme",
 			Handler:    _RPCThemes_MessagesSetChatTheme_Handler,
+		},
+		{
+			MethodName: "messages_setShareTheme",
+			Handler:    _RPCThemes_MessagesSetShareTheme_Handler,
+		},
+		{
+			MethodName: "messages_getShareThemeBackdrops",
+			Handler:    _RPCThemes_MessagesGetShareThemeBackdrops_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -38148,8 +38718,10 @@ var RPCTos_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	RPCTranscription_MessagesTranscribeAudio_FullMethodName      = "/mtproto.RPCTranscription/messages_transcribeAudio"
-	RPCTranscription_MessagesRateTranscribedAudio_FullMethodName = "/mtproto.RPCTranscription/messages_rateTranscribedAudio"
+	RPCTranscription_MessagesTranscribeAudio_FullMethodName       = "/mtproto.RPCTranscription/messages_transcribeAudio"
+	RPCTranscription_MessagesRateTranscribedAudio_FullMethodName  = "/mtproto.RPCTranscription/messages_rateTranscribedAudio"
+	RPCTranscription_MessagesTranscribeAudioFile_FullMethodName   = "/mtproto.RPCTranscription/messages_transcribeAudioFile"
+	RPCTranscription_MessagesGetTranscriptionLangs_FullMethodName = "/mtproto.RPCTranscription/messages_getTranscriptionLangs"
 )
 
 // RPCTranscriptionClient is the client API for RPCTranscription service.
@@ -38158,6 +38730,8 @@ const (
 type RPCTranscriptionClient interface {
 	MessagesTranscribeAudio(ctx context.Context, in *TLMessagesTranscribeAudio, opts ...grpc.CallOption) (*Messages_TranscribedAudio, error)
 	MessagesRateTranscribedAudio(ctx context.Context, in *TLMessagesRateTranscribedAudio, opts ...grpc.CallOption) (*Bool, error)
+	MessagesTranscribeAudioFile(ctx context.Context, in *TLMessagesTranscribeAudioFile, opts ...grpc.CallOption) (*Messages_TranscribedAudio, error)
+	MessagesGetTranscriptionLangs(ctx context.Context, in *TLMessagesGetTranscriptionLangs, opts ...grpc.CallOption) (*Vector_String, error)
 }
 
 type rPCTranscriptionClient struct {
@@ -38188,12 +38762,34 @@ func (c *rPCTranscriptionClient) MessagesRateTranscribedAudio(ctx context.Contex
 	return out, nil
 }
 
+func (c *rPCTranscriptionClient) MessagesTranscribeAudioFile(ctx context.Context, in *TLMessagesTranscribeAudioFile, opts ...grpc.CallOption) (*Messages_TranscribedAudio, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Messages_TranscribedAudio)
+	err := c.cc.Invoke(ctx, RPCTranscription_MessagesTranscribeAudioFile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rPCTranscriptionClient) MessagesGetTranscriptionLangs(ctx context.Context, in *TLMessagesGetTranscriptionLangs, opts ...grpc.CallOption) (*Vector_String, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Vector_String)
+	err := c.cc.Invoke(ctx, RPCTranscription_MessagesGetTranscriptionLangs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RPCTranscriptionServer is the server API for RPCTranscription service.
 // All implementations should embed UnimplementedRPCTranscriptionServer
 // for forward compatibility.
 type RPCTranscriptionServer interface {
 	MessagesTranscribeAudio(context.Context, *TLMessagesTranscribeAudio) (*Messages_TranscribedAudio, error)
 	MessagesRateTranscribedAudio(context.Context, *TLMessagesRateTranscribedAudio) (*Bool, error)
+	MessagesTranscribeAudioFile(context.Context, *TLMessagesTranscribeAudioFile) (*Messages_TranscribedAudio, error)
+	MessagesGetTranscriptionLangs(context.Context, *TLMessagesGetTranscriptionLangs) (*Vector_String, error)
 }
 
 // UnimplementedRPCTranscriptionServer should be embedded to have
@@ -38208,6 +38804,12 @@ func (UnimplementedRPCTranscriptionServer) MessagesTranscribeAudio(context.Conte
 }
 func (UnimplementedRPCTranscriptionServer) MessagesRateTranscribedAudio(context.Context, *TLMessagesRateTranscribedAudio) (*Bool, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MessagesRateTranscribedAudio not implemented")
+}
+func (UnimplementedRPCTranscriptionServer) MessagesTranscribeAudioFile(context.Context, *TLMessagesTranscribeAudioFile) (*Messages_TranscribedAudio, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesTranscribeAudioFile not implemented")
+}
+func (UnimplementedRPCTranscriptionServer) MessagesGetTranscriptionLangs(context.Context, *TLMessagesGetTranscriptionLangs) (*Vector_String, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MessagesGetTranscriptionLangs not implemented")
 }
 func (UnimplementedRPCTranscriptionServer) testEmbeddedByValue() {}
 
@@ -38265,6 +38867,42 @@ func _RPCTranscription_MessagesRateTranscribedAudio_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RPCTranscription_MessagesTranscribeAudioFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesTranscribeAudioFile)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCTranscriptionServer).MessagesTranscribeAudioFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCTranscription_MessagesTranscribeAudioFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCTranscriptionServer).MessagesTranscribeAudioFile(ctx, req.(*TLMessagesTranscribeAudioFile))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RPCTranscription_MessagesGetTranscriptionLangs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TLMessagesGetTranscriptionLangs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RPCTranscriptionServer).MessagesGetTranscriptionLangs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RPCTranscription_MessagesGetTranscriptionLangs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RPCTranscriptionServer).MessagesGetTranscriptionLangs(ctx, req.(*TLMessagesGetTranscriptionLangs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RPCTranscription_ServiceDesc is the grpc.ServiceDesc for RPCTranscription service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -38279,6 +38917,14 @@ var RPCTranscription_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "messages_rateTranscribedAudio",
 			Handler:    _RPCTranscription_MessagesRateTranscribedAudio_Handler,
+		},
+		{
+			MethodName: "messages_transcribeAudioFile",
+			Handler:    _RPCTranscription_MessagesTranscribeAudioFile_Handler,
+		},
+		{
+			MethodName: "messages_getTranscriptionLangs",
+			Handler:    _RPCTranscription_MessagesGetTranscriptionLangs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -5,22 +5,22 @@ import "testing"
 // The newest layer the schema is generated up to (proto/ice9/schema/layers.tl).
 // When Telegram Android 12.10 announced 229 against a schema that stopped at
 // 228, this was the number that emptied every reply the server sent; the
-// schema has 229 to 231 now, and the next client ahead of it will ask for this.
-const layerAheadOfTheSchema = 232
+// schema has 229 to 233 now, and the next client ahead of it will ask for this.
+const layerAheadOfTheSchema = 234
 
 func TestAClientAheadOfTheSchemaIsServedWhatWeHave(t *testing.T) {
 	for _, layer := range []int{layerAheadOfTheSchema, 260} {
 		if id := uint32(GetClazzID(Predicate_config, layer)); id != 0xcc1a241e {
-			t.Errorf("config at layer %d: 0x%x, want the layer 231 constructor 0xcc1a241e", layer, id)
+			t.Errorf("config at layer %d: 0x%x, want the layer 233 constructor 0xcc1a241e", layer, id)
 		}
 		if id := uint32(GetClazzID(Predicate_user, layer)); id != 0xb1b8cc83 {
-			t.Errorf("user at layer %d: 0x%x, want the layer 231 constructor 0xb1b8cc83", layer, id)
+			t.Errorf("user at layer %d: 0x%x, want the layer 233 constructor 0xb1b8cc83", layer, id)
 		}
 	}
 }
 
 func TestALayerTheSchemaKnowsIsUnchanged(t *testing.T) {
-	for layer := 200; layer <= 231; layer++ {
+	for layer := 200; layer <= 233; layer++ {
 		if id := uint32(GetClazzID(Predicate_config, layer)); id != 0xcc1a241e {
 			t.Errorf("config at layer %d: 0x%x, want 0xcc1a241e", layer, id)
 		}

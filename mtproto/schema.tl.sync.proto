@@ -706,6 +706,7 @@ message TL_botInfo {
 }
 
 // BotInlineMessage <--
+//  + TL_botInlineMessageWidget
 //  + TL_botInlineMessageMediaAuto
 //  + TL_botInlineMessageText
 //  + TL_botInlineMessageMediaGeo
@@ -719,35 +720,47 @@ message BotInlineMessage {
   string predicate_name = 1;
   TLConstructor constructor = 2;
   bool invert_media = 3;
-  string message = 4;
-  repeated MessageEntity entities = 5;
-  ReplyMarkup reply_markup = 6;
-  bool no_webpage = 7;
-  GeoPoint geo = 8;
-  google.protobuf.Int32Value heading = 9;
-  google.protobuf.Int32Value period = 10;
-  google.protobuf.Int32Value proximity_notification_radius = 11;
-  string title = 12;
-  string address = 13;
-  string provider = 14;
-  string venue_id = 15;
-  string venue_type = 16;
-  string phone_number = 17;
-  string first_name = 18;
-  string last_name = 19;
-  string vcard = 20;
-  bool shipping_address_requested = 21;
-  bool test = 22;
-  string description = 23;
-  WebDocument photo = 24;
-  string currency = 25;
-  int64 total_amount = 26;
-  bool force_large_media = 27;
-  bool force_small_media = 28;
-  bool manual = 29;
-  bool safe = 30;
-  string url = 31;
-  RichMessage rich_message = 32;
+  int32 width = 4;
+  int32 height = 5;
+  bytes payload = 6;
+  google.protobuf.StringValue public_data = 7;
+  google.protobuf.Int64Value public_data_hash = 8;
+  google.protobuf.StringValue chat_data = 9;
+  ReplyMarkup reply_markup = 10;
+  google.protobuf.Int64Value widget_id = 11;
+  string message = 12;
+  repeated MessageEntity entities = 13;
+  bool no_webpage = 14;
+  GeoPoint geo = 15;
+  google.protobuf.Int32Value heading = 16;
+  google.protobuf.Int32Value period = 17;
+  google.protobuf.Int32Value proximity_notification_radius = 18;
+  string title = 19;
+  string address = 20;
+  string provider = 21;
+  string venue_id = 22;
+  string venue_type = 23;
+  string phone_number = 24;
+  string first_name = 25;
+  string last_name = 26;
+  string vcard = 27;
+  bool shipping_address_requested = 28;
+  bool test = 29;
+  string description = 30;
+  WebDocument photo = 31;
+  string currency = 32;
+  int64 total_amount = 33;
+  bool force_large_media = 34;
+  bool force_small_media = 35;
+  bool manual = 36;
+  bool safe = 37;
+  string url = 38;
+  RichMessage rich_message = 39;
+}
+
+// TL_botInlineMessageWidget
+message TL_botInlineMessageWidget {
+  BotInlineMessage data2 = 1;
 }
 
 // TL_botInlineMessageMediaAuto
@@ -1852,6 +1865,7 @@ message TL_channelParticipantsMentions {
 //  + TL_channel
 //  + TL_channel
 //  + TL_channel
+//  + TL_channel
 //
 message Chat {
   string predicate_name = 1;
@@ -1894,28 +1908,31 @@ message Chat {
   bool broadcast_messages_allowed = 38;
   bool monoforum = 39;
   bool forum_tabs = 40;
-  google.protobuf.Int64Value access_hash_FLAGINT64 = 41;
-  google.protobuf.StringValue username = 42;
-  repeated RestrictionReason restriction_reason = 43;
-  ChatBannedRights banned_rights = 44;
-  google.protobuf.Int32Value participants_count_FLAGINT32 = 45;
-  repeated Username usernames = 46;
-  RecentStory stories_max_id_FLAGRECENTSTORY = 47;
-  PeerColor color_FLAGPEERCOLOR = 48;
-  PeerColor profile_color = 49;
-  EmojiStatus emoji_status = 50;
-  google.protobuf.Int32Value level = 51;
-  google.protobuf.Int32Value subscription_until_date = 52;
-  google.protobuf.Int64Value bot_verification_icon = 53;
-  google.protobuf.Int64Value send_paid_messages_stars = 54;
-  google.protobuf.Int64Value linked_monoforum_id = 55;
-  google.protobuf.Int64Value linked_community_id = 56;
-  int64 access_hash_INT64 = 57;
-  google.protobuf.Int32Value until_date = 58;
-  bool collapsed_in_dialogs = 59;
-  google.protobuf.Int32Value stories_max_id_FLAGINT32 = 60;
-  google.protobuf.Int32Value color_FLAGINT32 = 61;
-  google.protobuf.Int64Value background_emoji_id = 62;
+  bool in_news = 41;
+  bool forum_sidebar = 42;
+  google.protobuf.Int64Value access_hash_FLAGINT64 = 43;
+  google.protobuf.StringValue username = 44;
+  repeated RestrictionReason restriction_reason = 45;
+  ChatBannedRights banned_rights = 46;
+  google.protobuf.Int32Value participants_count_FLAGINT32 = 47;
+  repeated Username usernames = 48;
+  RecentStory stories_max_id_FLAGRECENTSTORY = 49;
+  PeerColor color_FLAGPEERCOLOR = 50;
+  PeerColor profile_color = 51;
+  EmojiStatus emoji_status = 52;
+  google.protobuf.Int32Value level = 53;
+  google.protobuf.Int32Value subscription_until_date = 54;
+  google.protobuf.Int64Value bot_verification_icon = 55;
+  google.protobuf.Int64Value send_paid_messages_stars = 56;
+  google.protobuf.Int64Value linked_monoforum_id = 57;
+  google.protobuf.Int64Value linked_community_id = 58;
+  google.protobuf.Int32Value pinned_msg_id = 59;
+  int64 access_hash_INT64 = 60;
+  google.protobuf.Int32Value until_date = 61;
+  bool collapsed_in_dialogs = 62;
+  google.protobuf.Int32Value stories_max_id_FLAGINT32 = 63;
+  google.protobuf.Int32Value color_FLAGINT32 = 64;
+  google.protobuf.Int64Value background_emoji_id = 65;
   google.protobuf.Int32Value color = 100;
 }
 
@@ -2048,6 +2065,7 @@ message TL_chatBannedRights {
 //  + TL_channelFull
 //  + TL_channelFull
 //  + TL_channelFull
+//  + TL_channelFull
 //  + TL_chatFull
 //  + TL_channelFull
 //  + TL_channelFull
@@ -2129,9 +2147,10 @@ message ChatFull {
   google.protobuf.Int64Value send_paid_messages_stars = 69;
   ProfileTab main_tab = 70;
   google.protobuf.Int64Value guard_bot_id = 71;
-  repeated CommunityPeer linked_peers = 72;
-  google.protobuf.Int32Value peer_link_requests_pending = 73;
-  repeated string available_reactions_FLAGVECTORSTRING = 74;
+  ShareTheme share_theme = 72;
+  repeated CommunityPeer linked_peers = 73;
+  google.protobuf.Int32Value peer_link_requests_pending = 74;
+  repeated string available_reactions_FLAGVECTORSTRING = 75;
 }
 
 // TL_chatFull
@@ -2426,55 +2445,56 @@ message Config {
   bool revoke_pm_inbox = 5;
   bool blocked_mode = 6;
   bool force_try_ipv6 = 7;
-  int32 date = 8;
-  int32 expires = 9;
-  Bool test_mode = 10;
-  int32 this_dc = 11;
-  repeated DcOption dc_options = 12;
-  string dc_txt_domain_name = 13;
-  int32 chat_size_max = 14;
-  int32 megagroup_size_max = 15;
-  int32 forwarded_count_max = 16;
-  int32 online_update_period_ms = 17;
-  int32 offline_blur_timeout_ms = 18;
-  int32 offline_idle_timeout_ms = 19;
-  int32 online_cloud_timeout_ms = 20;
-  int32 notify_cloud_delay_ms = 21;
-  int32 notify_default_delay_ms = 22;
-  int32 push_chat_period_ms = 23;
-  int32 push_chat_limit = 24;
-  int32 edit_time_limit = 25;
-  int32 revoke_time_limit = 26;
-  int32 revoke_pm_time_limit = 27;
-  int32 rating_e_decay = 28;
-  int32 stickers_recent_limit = 29;
-  int32 channels_read_media_period = 30;
-  google.protobuf.Int32Value tmp_sessions = 31;
-  int32 call_receive_timeout_ms = 32;
-  int32 call_ring_timeout_ms = 33;
-  int32 call_connect_timeout_ms = 34;
-  int32 call_packet_timeout_ms = 35;
-  string me_url_prefix = 36;
-  google.protobuf.StringValue autoupdate_url_prefix = 37;
-  google.protobuf.StringValue gif_search_username = 38;
-  google.protobuf.StringValue venue_search_username = 39;
-  google.protobuf.StringValue img_search_username = 40;
-  google.protobuf.StringValue static_maps_provider = 41;
-  int32 caption_length_max = 42;
-  int32 message_length_max = 43;
-  int32 webfile_dc_id = 44;
-  google.protobuf.StringValue suggested_lang_code = 45;
-  google.protobuf.Int32Value lang_pack_version = 46;
-  google.protobuf.Int32Value base_lang_pack_version = 47;
-  Reaction reactions_default = 48;
-  google.protobuf.StringValue autologin_token = 49;
-  bool phonecalls_enabled = 50;
-  bool ignore_phone_entities = 51;
-  bool pfs_enabled = 52;
-  int32 saved_gifs_limit = 53;
-  int32 stickers_faved_limit = 54;
-  int32 pinned_dialogs_count_max = 55;
-  int32 pinned_infolder_count_max = 56;
+  bool fpnv_allowed = 8;
+  int32 date = 9;
+  int32 expires = 10;
+  Bool test_mode = 11;
+  int32 this_dc = 12;
+  repeated DcOption dc_options = 13;
+  string dc_txt_domain_name = 14;
+  int32 chat_size_max = 15;
+  int32 megagroup_size_max = 16;
+  int32 forwarded_count_max = 17;
+  int32 online_update_period_ms = 18;
+  int32 offline_blur_timeout_ms = 19;
+  int32 offline_idle_timeout_ms = 20;
+  int32 online_cloud_timeout_ms = 21;
+  int32 notify_cloud_delay_ms = 22;
+  int32 notify_default_delay_ms = 23;
+  int32 push_chat_period_ms = 24;
+  int32 push_chat_limit = 25;
+  int32 edit_time_limit = 26;
+  int32 revoke_time_limit = 27;
+  int32 revoke_pm_time_limit = 28;
+  int32 rating_e_decay = 29;
+  int32 stickers_recent_limit = 30;
+  int32 channels_read_media_period = 31;
+  google.protobuf.Int32Value tmp_sessions = 32;
+  int32 call_receive_timeout_ms = 33;
+  int32 call_ring_timeout_ms = 34;
+  int32 call_connect_timeout_ms = 35;
+  int32 call_packet_timeout_ms = 36;
+  string me_url_prefix = 37;
+  google.protobuf.StringValue autoupdate_url_prefix = 38;
+  google.protobuf.StringValue gif_search_username = 39;
+  google.protobuf.StringValue venue_search_username = 40;
+  google.protobuf.StringValue img_search_username = 41;
+  google.protobuf.StringValue static_maps_provider = 42;
+  int32 caption_length_max = 43;
+  int32 message_length_max = 44;
+  int32 webfile_dc_id = 45;
+  google.protobuf.StringValue suggested_lang_code = 46;
+  google.protobuf.Int32Value lang_pack_version = 47;
+  google.protobuf.Int32Value base_lang_pack_version = 48;
+  Reaction reactions_default = 49;
+  google.protobuf.StringValue autologin_token = 50;
+  bool phonecalls_enabled = 51;
+  bool ignore_phone_entities = 52;
+  bool pfs_enabled = 53;
+  int32 saved_gifs_limit = 54;
+  int32 stickers_faved_limit = 55;
+  int32 pinned_dialogs_count_max = 56;
+  int32 pinned_infolder_count_max = 57;
 }
 
 // TL_config
@@ -3391,6 +3411,22 @@ message TL_exportedMessageLink {
   ExportedMessageLink data2 = 1;
 }
 
+// ExportedNoPaidMessagesToken <--
+//  + TL_exportedNoPaidMessagesToken
+//
+message ExportedNoPaidMessagesToken {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  string token = 3;
+  string url = 4;
+  google.protobuf.Int32Value expires = 5;
+}
+
+// TL_exportedNoPaidMessagesToken
+message TL_exportedNoPaidMessagesToken {
+  ExportedNoPaidMessagesToken data2 = 1;
+}
+
 // ExportedStoryLink <--
 //  + TL_exportedStoryLink
 //
@@ -4138,6 +4174,8 @@ message TL_inputBotAppShortName {
 }
 
 // InputBotInlineMessage <--
+//  + TL_inputBotInlineMessageWidget
+//  + TL_inputBotInlineMessageWidgetId
 //  + TL_inputBotInlineMessageMediaAuto
 //  + TL_inputBotInlineMessageText
 //  + TL_inputBotInlineMessageMediaGeo
@@ -4151,34 +4189,52 @@ message TL_inputBotAppShortName {
 message InputBotInlineMessage {
   string predicate_name = 1;
   TLConstructor constructor = 2;
-  bool invert_media = 3;
-  string message = 4;
-  repeated MessageEntity entities = 5;
-  ReplyMarkup reply_markup = 6;
-  bool no_webpage = 7;
-  InputGeoPoint geo_point = 8;
-  google.protobuf.Int32Value heading = 9;
-  google.protobuf.Int32Value period = 10;
-  google.protobuf.Int32Value proximity_notification_radius = 11;
-  string title = 12;
-  string address = 13;
-  string provider = 14;
-  string venue_id = 15;
-  string venue_type = 16;
-  string phone_number = 17;
-  string first_name = 18;
-  string last_name = 19;
-  string vcard = 20;
-  string description = 21;
-  InputWebDocument photo = 22;
-  Invoice invoice = 23;
-  bytes payload = 24;
-  DataJSON provider_data = 25;
-  bool force_large_media = 26;
-  bool force_small_media = 27;
-  bool optional = 28;
-  string url = 29;
-  InputRichMessage rich_message = 30;
+  bool allow_queries = 3;
+  bool shared_widget = 4;
+  bool invert_media = 5;
+  int32 width = 6;
+  int32 height = 7;
+  string html = 8;
+  google.protobuf.StringValue public_data = 9;
+  google.protobuf.StringValue chat_data = 10;
+  ReplyMarkup reply_markup = 11;
+  string message = 12;
+  repeated MessageEntity entities = 13;
+  int64 widget_id = 14;
+  bool no_webpage = 15;
+  InputGeoPoint geo_point = 16;
+  google.protobuf.Int32Value heading = 17;
+  google.protobuf.Int32Value period = 18;
+  google.protobuf.Int32Value proximity_notification_radius = 19;
+  string title = 20;
+  string address = 21;
+  string provider = 22;
+  string venue_id = 23;
+  string venue_type = 24;
+  string phone_number = 25;
+  string first_name = 26;
+  string last_name = 27;
+  string vcard = 28;
+  string description = 29;
+  InputWebDocument photo = 30;
+  Invoice invoice = 31;
+  bytes payload = 32;
+  DataJSON provider_data = 33;
+  bool force_large_media = 34;
+  bool force_small_media = 35;
+  bool optional = 36;
+  string url = 37;
+  InputRichMessage rich_message = 38;
+}
+
+// TL_inputBotInlineMessageWidget
+message TL_inputBotInlineMessageWidget {
+  InputBotInlineMessage data2 = 1;
+}
+
+// TL_inputBotInlineMessageWidgetId
+message TL_inputBotInlineMessageWidgetId {
+  InputBotInlineMessage data2 = 1;
 }
 
 // TL_inputBotInlineMessageMediaAuto
@@ -5025,6 +5081,8 @@ message TL_inputInvoiceStarGiftAuctionBid {
 //  + TL_inputMediaPaidMedia
 //  + TL_inputMediaTodo
 //  + TL_inputMediaStakeDice
+//  + TL_inputMediaWidget
+//  + TL_inputMediaWidgetId
 //  + TL_inputMediaUploadedPhoto
 //  + TL_inputMediaPhoto
 //  + TL_inputMediaPoll
@@ -5099,9 +5157,17 @@ message InputMedia {
   string game_hash = 59;
   int64 ton_amount = 60;
   bytes client_seed = 61;
-  repeated bytes correct_answers_FLAGVECTORBYTES = 62;
-  InputUser user_id = 63;
-  BizDataRaw biz_data = 64;
+  bool allow_queries = 62;
+  bool shared_widget = 63;
+  int32 width = 64;
+  int32 height = 65;
+  string html = 66;
+  google.protobuf.StringValue public_data = 67;
+  google.protobuf.StringValue chat_data = 68;
+  int64 widget_id = 69;
+  repeated bytes correct_answers_FLAGVECTORBYTES = 70;
+  InputUser user_id = 71;
+  BizDataRaw biz_data = 72;
 }
 
 // TL_inputMediaEmpty
@@ -5201,6 +5267,16 @@ message TL_inputMediaTodo {
 
 // TL_inputMediaStakeDice
 message TL_inputMediaStakeDice {
+  InputMedia data2 = 1;
+}
+
+// TL_inputMediaWidget
+message TL_inputMediaWidget {
+  InputMedia data2 = 1;
+}
+
+// TL_inputMediaWidgetId
+message TL_inputMediaWidgetId {
   InputMedia data2 = 1;
 }
 
@@ -5714,6 +5790,7 @@ message TL_inputQuickReplyShortcutId {
 //  + TL_inputReplyToMessage
 //  + TL_inputReplyToMessage
 //  + TL_inputReplyToMessage
+//  + TL_inputReplyToMessage
 //  + TL_inputReplyToStory
 //  + TL_inputReplyToMessage
 //  + TL_inputReplyToMessage
@@ -5730,10 +5807,11 @@ message InputReplyTo {
   InputPeer monoforum_peer_id = 9;
   google.protobuf.Int32Value todo_item_id = 10;
   bytes poll_option = 11;
-  InputPeer peer = 12;
-  int32 story_id = 13;
-  int32 id = 14;
-  InputUser user_id = 15;
+  repeated RichText quote_rich = 12;
+  InputPeer peer = 13;
+  int32 story_id = 14;
+  int32 id = 15;
+  InputUser user_id = 16;
 }
 
 // TL_inputReplyToMessage
@@ -6270,6 +6348,21 @@ message TL_inputWallPaperSlug {
 // TL_inputWallPaperNoFile
 message TL_inputWallPaperNoFile {
   InputWallPaper data2 = 1;
+}
+
+// InputWalletCardSticker <--
+//  + TL_inputWalletCardSticker
+//
+message InputWalletCardSticker {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  MediaAreaCoordinates coordinates = 3;
+  string nft_address = 4;
+}
+
+// TL_inputWalletCardSticker
+message TL_inputWalletCardSticker {
+  InputWalletCardSticker data2 = 1;
 }
 
 // InputWalletReplacement <--
@@ -7063,6 +7156,7 @@ message TL_messageService {
 //  + TL_messageActionPollDeleteAnswer
 //  + TL_messageActionManagedBotCreated
 //  + TL_messageActionChangeCommunity
+//  + TL_messageActionNoPaidMessagesTokenUsed
 //  + TL_messageActionChatJoinedViaCommunity
 //  + TL_messageActionGramTransfer
 //  + TL_messageActionWalletTonConnectRequest
@@ -7591,6 +7685,11 @@ message TL_messageActionChangeCommunity {
   MessageAction data2 = 1;
 }
 
+// TL_messageActionNoPaidMessagesTokenUsed
+message TL_messageActionNoPaidMessagesTokenUsed {
+  MessageAction data2 = 1;
+}
+
 // TL_messageActionChatJoinedViaCommunity
 message TL_messageActionChatJoinedViaCommunity {
   MessageAction data2 = 1;
@@ -7948,6 +8047,7 @@ message TL_messageInteractionCounters {
 //  + TL_messageMediaPaidMedia
 //  + TL_messageMediaToDo
 //  + TL_messageMediaVideoStream
+//  + TL_messageMediaWidget
 //  + TL_messageMediaPhoto
 //  + TL_messageMediaPoll
 //  + TL_messageMediaDice
@@ -8039,9 +8139,19 @@ message MessageMedia {
   repeated TodoCompletion completions = 74;
   bool rtmp_stream = 75;
   InputGroupCall call = 76;
-  Document alt_document = 77;
-  int32 months_INT32 = 78;
-  BizDataRaw biz_data = 79;
+  bool is_copy = 77;
+  bool can_query = 78;
+  bool background_query = 79;
+  int32 width = 80;
+  int32 height = 81;
+  bytes payload = 82;
+  google.protobuf.StringValue public_data = 83;
+  google.protobuf.Int64Value public_data_hash = 84;
+  google.protobuf.StringValue chat_data = 85;
+  google.protobuf.Int64Value widget_id = 86;
+  Document alt_document = 87;
+  int32 months_INT32 = 88;
+  BizDataRaw biz_data = 89;
 }
 
 // TL_messageMediaEmpty
@@ -8136,6 +8246,11 @@ message TL_messageMediaToDo {
 
 // TL_messageMediaVideoStream
 message TL_messageMediaVideoStream {
+  MessageMedia data2 = 1;
+}
+
+// TL_messageMediaWidget
+message TL_messageMediaWidget {
   MessageMedia data2 = 1;
 }
 
@@ -8274,6 +8389,7 @@ message TL_messageReplies {
 //  + TL_messageReplyStoryHeader
 //  + TL_messageReplyHeader
 //  + TL_messageReplyHeader
+//  + TL_messageReplyHeader
 //  + TL_messageReplyStoryHeader
 //  + TL_messageReplyHeader
 //  + TL_messageReplyHeader
@@ -8295,10 +8411,11 @@ message MessageReplyHeader {
   google.protobuf.Int32Value quote_offset = 14;
   google.protobuf.Int32Value todo_item_id = 15;
   bytes poll_option = 16;
-  Peer peer = 17;
-  int32 story_id = 18;
-  int64 user_id = 19;
-  int32 reply_to_msg_id_INT32 = 20;
+  repeated RichText quote_rich = 17;
+  Peer peer = 18;
+  int32 story_id = 19;
+  int64 user_id = 20;
+  int32 reply_to_msg_id_INT32 = 21;
   int32 reply_to_msg_id = 100;
 }
 
@@ -11726,6 +11843,81 @@ message TL_sendMessageRichMessageDraftAction {
   SendMessageAction data2 = 1;
 }
 
+// ShareTheme <--
+//  + TL_shareThemeDefault
+//  + TL_shareThemeEmojiBackdrop
+//  + TL_shareThemeGift
+//  + TL_inputShareThemeGift
+//
+message ShareTheme {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  google.protobuf.Int32Value backdrop_id = 3;
+  repeated Reaction emojis = 4;
+  StarGift stargift_STARGIFT = 5;
+  InputSavedStarGift stargift_INPUTSAVEDSTARGIFT = 6;
+}
+
+// TL_shareThemeDefault
+message TL_shareThemeDefault {
+  ShareTheme data2 = 1;
+}
+
+// TL_shareThemeEmojiBackdrop
+message TL_shareThemeEmojiBackdrop {
+  ShareTheme data2 = 1;
+}
+
+// TL_shareThemeGift
+message TL_shareThemeGift {
+  ShareTheme data2 = 1;
+}
+
+// TL_inputShareThemeGift
+message TL_inputShareThemeGift {
+  ShareTheme data2 = 1;
+}
+
+// ShareThemeBackdropOption <--
+//  + TL_shareThemeBackdropOption
+//
+message ShareThemeBackdropOption {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  int32 backdrop_id = 3;
+  string name = 4;
+  int32 center_color = 5;
+  int32 edge_color = 6;
+  int32 pattern_color = 7;
+  int32 text_color = 8;
+}
+
+// TL_shareThemeBackdropOption
+message TL_shareThemeBackdropOption {
+  ShareThemeBackdropOption data2 = 1;
+}
+
+// ShareThemeBackdrops <--
+//  + TL_shareThemeBackdropsNotModified
+//  + TL_shareThemeBackdrops
+//
+message ShareThemeBackdrops {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  int32 hash = 3;
+  repeated ShareThemeBackdropOption backdrops = 4;
+}
+
+// TL_shareThemeBackdropsNotModified
+message TL_shareThemeBackdropsNotModified {
+  ShareThemeBackdrops data2 = 1;
+}
+
+// TL_shareThemeBackdrops
+message TL_shareThemeBackdrops {
+  ShareThemeBackdrops data2 = 1;
+}
+
 // ShippingOption <--
 //  + TL_shippingOption
 //
@@ -13473,6 +13665,12 @@ message TL_topPeerCategoryPeers {
 //  + TL_updateEditEphemeralMessage
 //  + TL_updateEphemeralBotCallbackQuery
 //  + TL_updateBotStarsSubscription
+//  + TL_updateEditForumTopic
+//  + TL_updateBotWidgetQuery
+//  + TL_updateInlineBotWidgetQuery
+//  + TL_updateBotWidgetCopyQuery
+//  + TL_updateMessageWidgetData
+//  + TL_updateTranscribedAudioFile
 //  + TL_updateWalletState
 //  + TL_updateSentWalletTransaction
 //  + TL_updateWalletGaslessInfo
@@ -13703,31 +13901,44 @@ message Update {
   bool canceled = 186;
   bool payment_failed = 187;
   bool restored = 188;
-  WalletState state_WALLETSTATE = 189;
-  bool gasless = 190;
-  string msg_hash = 191;
-  WalletTransaction transaction = 192;
-  bool available = 193;
-  int32 left = 194;
-  int32 reset_at = 195;
-  int64 min_amount = 196;
-  string relayer_address = 197;
-  TonConnectSession session = 198;
-  repeated int64 session_ids = 199;
-  google.protobuf.Int64Value chat_id_FLAGINT64 = 200;
-  TextWithEntities message_TEXTWITHENTITIES = 201;
-  BroadcastRevenueBalances balances = 202;
-  Bool private_BOOL = 203;
-  int64 balance_INT64 = 204;
-  string invoice_slug = 205;
-  int32 until_date = 206;
-  MessageExtendedMedia extended_media_MESSAGEEXTENDEDMEDIA = 207;
-  Bool blocked_BOOL = 208;
-  UserProfilePhoto photo = 209;
-  Bool previous = 210;
-  google.protobuf.Int32Value topic_id_FLAGINT32 = 211;
-  string username = 212;
-  BizDataRaw biz_data = 213;
+  google.protobuf.StringValue title = 189;
+  google.protobuf.Int64Value icon_emoji_id = 190;
+  Bool closed = 191;
+  Bool hidden = 192;
+  WidgetQueryType query_type = 193;
+  string chat_type = 194;
+  google.protobuf.Int64Value widget_id_FLAGINT64 = 195;
+  wallet_Card wallet_card = 196;
+  InputBotInlineMessageID inline_message_id = 197;
+  int64 widget_id_INT64 = 198;
+  google.protobuf.StringValue public_data = 199;
+  google.protobuf.Int64Value public_data_hash = 200;
+  google.protobuf.StringValue chat_data = 201;
+  WalletState state_WALLETSTATE = 202;
+  bool gasless = 203;
+  string msg_hash = 204;
+  WalletTransaction transaction = 205;
+  bool available = 206;
+  int32 left = 207;
+  int32 reset_at = 208;
+  int64 min_amount = 209;
+  string relayer_address = 210;
+  TonConnectSession session = 211;
+  repeated int64 session_ids = 212;
+  google.protobuf.Int64Value chat_id_FLAGINT64 = 213;
+  TextWithEntities message_TEXTWITHENTITIES = 214;
+  BroadcastRevenueBalances balances = 215;
+  Bool private_BOOL = 216;
+  int64 balance_INT64 = 217;
+  string invoice_slug = 218;
+  int32 until_date = 219;
+  MessageExtendedMedia extended_media_MESSAGEEXTENDEDMEDIA = 220;
+  Bool blocked_BOOL = 221;
+  UserProfilePhoto photo = 222;
+  Bool previous = 223;
+  google.protobuf.Int32Value topic_id_FLAGINT32 = 224;
+  string username = 225;
+  BizDataRaw biz_data = 226;
 }
 
 // TL_updateNewMessage
@@ -14555,6 +14766,36 @@ message TL_updateBotStarsSubscription {
   Update data2 = 1;
 }
 
+// TL_updateEditForumTopic
+message TL_updateEditForumTopic {
+  Update data2 = 1;
+}
+
+// TL_updateBotWidgetQuery
+message TL_updateBotWidgetQuery {
+  Update data2 = 1;
+}
+
+// TL_updateInlineBotWidgetQuery
+message TL_updateInlineBotWidgetQuery {
+  Update data2 = 1;
+}
+
+// TL_updateBotWidgetCopyQuery
+message TL_updateBotWidgetCopyQuery {
+  Update data2 = 1;
+}
+
+// TL_updateMessageWidgetData
+message TL_updateMessageWidgetData {
+  Update data2 = 1;
+}
+
+// TL_updateTranscribedAudioFile
+message TL_updateTranscribedAudioFile {
+  Update data2 = 1;
+}
+
 // TL_updateWalletState
 message TL_updateWalletState {
   Update data2 = 1;
@@ -14805,29 +15046,30 @@ message User {
   bool bot_can_manage_bots = 31;
   bool bot_guestchat = 32;
   bool bot_guard = 33;
-  google.protobuf.Int64Value access_hash = 34;
-  google.protobuf.StringValue first_name = 35;
-  google.protobuf.StringValue last_name = 36;
-  google.protobuf.StringValue username = 37;
-  google.protobuf.StringValue phone = 38;
-  UserProfilePhoto photo = 39;
-  UserStatus status = 40;
-  google.protobuf.Int32Value bot_info_version = 41;
-  repeated RestrictionReason restriction_reason = 42;
-  google.protobuf.StringValue bot_inline_placeholder = 43;
-  google.protobuf.StringValue lang_code = 44;
-  EmojiStatus emoji_status = 45;
-  repeated Username usernames = 46;
-  RecentStory stories_max_id_FLAGRECENTSTORY = 47;
-  PeerColor color_FLAGPEERCOLOR = 48;
-  PeerColor profile_color = 49;
-  google.protobuf.Int32Value bot_active_users = 50;
-  google.protobuf.Int64Value bot_verification_icon = 51;
-  google.protobuf.Int64Value send_paid_messages_stars = 52;
-  google.protobuf.Int64Value linked_community_id = 53;
-  google.protobuf.Int32Value stories_max_id_FLAGINT32 = 54;
-  google.protobuf.Int32Value color_FLAGINT32 = 55;
-  google.protobuf.Int64Value background_emoji_id = 56;
+  bool bot_forum_sidebar = 34;
+  google.protobuf.Int64Value access_hash = 35;
+  google.protobuf.StringValue first_name = 36;
+  google.protobuf.StringValue last_name = 37;
+  google.protobuf.StringValue username = 38;
+  google.protobuf.StringValue phone = 39;
+  UserProfilePhoto photo = 40;
+  UserStatus status = 41;
+  google.protobuf.Int32Value bot_info_version = 42;
+  repeated RestrictionReason restriction_reason = 43;
+  google.protobuf.StringValue bot_inline_placeholder = 44;
+  google.protobuf.StringValue lang_code = 45;
+  EmojiStatus emoji_status = 46;
+  repeated Username usernames = 47;
+  RecentStory stories_max_id_FLAGRECENTSTORY = 48;
+  PeerColor color_FLAGPEERCOLOR = 49;
+  PeerColor profile_color = 50;
+  google.protobuf.Int32Value bot_active_users = 51;
+  google.protobuf.Int64Value bot_verification_icon = 52;
+  google.protobuf.Int64Value send_paid_messages_stars = 53;
+  google.protobuf.Int64Value linked_community_id = 54;
+  google.protobuf.Int32Value stories_max_id_FLAGINT32 = 55;
+  google.protobuf.Int32Value color_FLAGINT32 = 56;
+  google.protobuf.Int64Value background_emoji_id = 57;
   google.protobuf.Int32Value color = 100;
 }
 
@@ -14888,6 +15130,7 @@ message TL_userData {
 }
 
 // UserFull <--
+//  + TL_userFull
 //  + TL_userFull
 //  + TL_userFull
 //  + TL_userFull
@@ -14970,9 +15213,11 @@ message UserFull {
   Document saved_music = 58;
   TextWithEntities note = 59;
   google.protobuf.Int64Value bot_manager_id = 60;
-  google.protobuf.StringValue theme_emoticon = 61;
-  repeated PremiumGiftOption premium_gifts = 62;
-  UserStories stories_FLAGUSERSTORIES = 63;
+  wallet_Card wallet_card = 61;
+  ShareTheme share_theme = 62;
+  google.protobuf.StringValue theme_emoticon = 63;
+  repeated PremiumGiftOption premium_gifts = 64;
+  UserStories stories_FLAGUSERSTORIES = 65;
 }
 
 // TL_userFull
@@ -15094,6 +15339,23 @@ message UserStories {
 // TL_userStories
 message TL_userStories {
   UserStories data2 = 1;
+}
+
+// UserWallet <--
+//  + TL_userWallet
+//
+message UserWallet {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  string address = 3;
+  int64 balance = 4;
+  bytes public_key = 5;
+  bytes state_init = 6;
+}
+
+// TL_userWallet
+message TL_userWallet {
+  UserWallet data2 = 1;
 }
 
 // Username <--
@@ -15280,6 +15542,8 @@ message TL_walletTransaction {
 }
 
 // WalletTransactionPeer <--
+//  + TL_walletTransactionPeerChannel
+//  + TL_walletTransactionPeerTelegramGift
 //  + TL_walletTransactionPeerUser
 //  + TL_walletTransactionPeerAddress
 //  + TL_walletTransactionPeerOnramp
@@ -15288,10 +15552,22 @@ message TL_walletTransaction {
 message WalletTransactionPeer {
   string predicate_name = 1;
   TLConstructor constructor = 2;
-  int64 user_id = 3;
+  int64 channel_id = 3;
   string address = 4;
   google.protobuf.StringValue domain = 5;
-  string provider_name = 6;
+  bool own_profile = 6;
+  int64 user_id = 7;
+  string provider_name = 8;
+}
+
+// TL_walletTransactionPeerChannel
+message TL_walletTransactionPeerChannel {
+  WalletTransactionPeer data2 = 1;
+}
+
+// TL_walletTransactionPeerTelegramGift
+message TL_walletTransactionPeerTelegramGift {
+  WalletTransactionPeer data2 = 1;
 }
 
 // TL_walletTransactionPeerUser
@@ -15548,6 +15824,35 @@ message WebViewResult {
 // TL_webViewResultUrl
 message TL_webViewResultUrl {
   WebViewResult data2 = 1;
+}
+
+// WidgetQueryType <--
+//  + TL_widgetQueryTypeData
+//  + TL_widgetQueryTypeSignData
+//  + TL_widgetQueryTypeSentTransaction
+//
+message WidgetQueryType {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  bool with_wallet = 3;
+  UserWallet wallet = 4;
+  DataJSON sign_data = 5;
+  string msg_hash = 6;
+}
+
+// TL_widgetQueryTypeData
+message TL_widgetQueryTypeData {
+  WidgetQueryType data2 = 1;
+}
+
+// TL_widgetQueryTypeSignData
+message TL_widgetQueryTypeSignData {
+  WidgetQueryType data2 = 1;
+}
+
+// TL_widgetQueryTypeSentTransaction
+message TL_widgetQueryTypeSentTransaction {
+  WidgetQueryType data2 = 1;
 }
 
 // account_AuthorizationForm <--
@@ -17504,6 +17809,20 @@ message TL_messages_botResults {
   messages_BotResults data2 = 1;
 }
 
+// messages_BotWidgetQueryAnswer <--
+//  + TL_messages_botWidgetQueryAnswer
+//
+message messages_BotWidgetQueryAnswer {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  google.protobuf.StringValue result = 3;
+}
+
+// TL_messages_botWidgetQueryAnswer
+message TL_messages_botWidgetQueryAnswer {
+  messages_BotWidgetQueryAnswer data2 = 1;
+}
+
 // messages_ChatAdminsWithInvites <--
 //  + TL_messages_chatAdminsWithInvites
 //
@@ -18593,6 +18912,28 @@ message TL_messages_webPagePreview {
   messages_WebPagePreview data2 = 1;
 }
 
+// messages_WidgetPublicData <--
+//  + TL_messages_widgetPublicDataNotModified
+//  + TL_messages_widgetPublicData
+//
+message messages_WidgetPublicData {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  int32 period = 3;
+  int64 hash = 4;
+  string data = 5;
+}
+
+// TL_messages_widgetPublicDataNotModified
+message TL_messages_widgetPublicDataNotModified {
+  messages_WidgetPublicData data2 = 1;
+}
+
+// TL_messages_widgetPublicData
+message TL_messages_widgetPublicData {
+  messages_WidgetPublicData data2 = 1;
+}
+
 // payments_BankCardData <--
 //  + TL_payments_bankCardData
 //
@@ -18963,6 +19304,22 @@ message TL_payments_starGiftCollectionsNotModified {
 // TL_payments_starGiftCollections
 message TL_payments_starGiftCollections {
   payments_StarGiftCollections data2 = 1;
+}
+
+// payments_StarGiftDepositPayload <--
+//  + TL_payments_starGiftDepositPayload
+//
+message payments_StarGiftDepositPayload {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  string nft_address = 3;
+  bytes payload = 4;
+  int64 amount = 5;
+}
+
+// TL_payments_starGiftDepositPayload
+message TL_payments_starGiftDepositPayload {
+  payments_StarGiftDepositPayload data2 = 1;
 }
 
 // payments_StarGiftUpgradeAttributes <--
@@ -20210,6 +20567,38 @@ message TL_users_usersSlice {
   users_Users data2 = 1;
 }
 
+// wallet_Card <--
+//  + TL_wallet_card
+//
+message wallet_Card {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  repeated wallet_CardSticker stickers = 3;
+  wallet_NftItem bg_nft_item = 4;
+  string address = 5;
+  int64 balance = 6;
+}
+
+// TL_wallet_card
+message TL_wallet_card {
+  wallet_Card data2 = 1;
+}
+
+// wallet_CardSticker <--
+//  + TL_wallet_cardSticker
+//
+message wallet_CardSticker {
+  string predicate_name = 1;
+  TLConstructor constructor = 2;
+  MediaAreaCoordinates coordinates = 3;
+  wallet_NftItem nft = 4;
+}
+
+// TL_wallet_cardSticker
+message TL_wallet_cardSticker {
+  wallet_CardSticker data2 = 1;
+}
+
 // wallet_EncryptedSecretPhrasePart <--
 //  + TL_wallet_encryptedSecretPhrasePart
 //
@@ -20271,6 +20660,7 @@ message TL_wallet_nftAttribute {
 
 // wallet_NftItem <--
 //  + TL_wallet_nftItem
+//  + TL_wallet_nftItem
 //
 message wallet_NftItem {
   string predicate_name = 1;
@@ -20287,6 +20677,7 @@ message wallet_NftItem {
   WebDocument lottie = 12;
   repeated wallet_NftAttribute attributes = 13;
   DataJSON extra = 14;
+  StarGift gift = 15;
 }
 
 // TL_wallet_nftItem
